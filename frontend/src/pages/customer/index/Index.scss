@@ -1,0 +1,28 @@
+.home{
+  overflow-x: hidden;
+
+  .homeContainer {
+    overflow-x: hidden; /* Ensure container does not scroll horizontally */
+   
+  }
+  
+  .swiper-container {
+    overflow-x: hidden; /* Hide horizontal scrollbar for Swiper */
+  }
+ 
+  .broken-hr {
+    border: none;
+    height: 10px;
+  
+    background: repeating-linear-gradient(
+        to right,
+        transparent,
+        transparent 10px,
+        black 10px,
+        black 30px
+    );
+    margin: 20px 0;
+    width: 100%;
+  }
+}
+

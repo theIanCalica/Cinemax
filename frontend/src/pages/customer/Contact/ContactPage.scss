@@ -1,0 +1,14 @@
+.broken-hr {
+  border: none;
+  height: 10px;
+
+  background: repeating-linear-gradient(
+      to right,
+      transparent,
+      transparent 10px,
+      black 10px,
+      black 30px
+  );
+  margin: 20px 0;
+  width: 100%;
+}

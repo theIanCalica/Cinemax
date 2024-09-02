@@ -1,0 +1,14 @@
+.widget{
+  background-color: black;
+  img{
+    transform: rotate(65deg);
+    width: 350px;
+    height: 350px;
+    object-fit: cover;
+  }
+  .icon{
+    border-radius:50%;
+    height: 80px;
+    width: 170px;
+  }
+}
