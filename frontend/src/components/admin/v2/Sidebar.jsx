@@ -33,8 +33,8 @@ const Sidebar = ({ isMinimized }) => {
 
   return (
     <aside
-      className={` h-screen text-white overflow-y-auto  ${
-        isMinimized ? "w-20" : "w-64"
+      className={` h-screen text-white overflow-hidden  ${
+        isMinimized ? "w-20" : "w-80"
       }`}
       style={{ backgroundColor: "#181824" }}
     >
@@ -77,7 +77,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
@@ -118,7 +120,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
@@ -157,7 +161,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
@@ -195,7 +201,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
@@ -207,7 +215,9 @@ const Sidebar = ({ isMinimized }) => {
             Foods
           </span>
           <div
-            className="ml-auto cursor-pointer"
+            className={`ml-auto cursor-pointer ${
+              isMinimized ? "hidden" : "block"
+            }`}
             onClick={() => toggleExpansion("foods")}
           >
             {expanded.foods ? (
@@ -248,7 +258,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
@@ -260,7 +272,9 @@ const Sidebar = ({ isMinimized }) => {
             Movies
           </span>
           <div
-            className="ml-auto cursor-pointer"
+            className={`ml-auto cursor-pointer ${
+              isMinimized ? "hidden" : "block"
+            }`}
             onClick={() => toggleExpansion("other")}
           >
             {expanded.other ? (
@@ -318,7 +332,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
@@ -361,7 +377,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
@@ -403,7 +421,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
@@ -445,7 +465,9 @@ const Sidebar = ({ isMinimized }) => {
             />
           </div>
           <span
-            className="transition-all ease-in-out duration-500"
+            className={`transition-all ease-in-out duration-500 ${
+              isMinimized ? "hidden" : "block"
+            }`}
             style={{
               fontSize: "16px",
               color:
