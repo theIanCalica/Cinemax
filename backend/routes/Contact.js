@@ -6,7 +6,7 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "cinemax@gmail.com",
+    user: "cinemax.inc.manila@gmail.com",
     pass: "cinemax12345",
   },
 });
@@ -38,7 +38,7 @@ router.post("/", async (req, res) => {
 
     // Send email
     const mailOptions = {
-      from: "cinemax@gmail.com",
+      from: "cinemax.inc.manila@gmail.com",
       to: email,
       subject: "Thank you for contacting us!",
       html: ` <div

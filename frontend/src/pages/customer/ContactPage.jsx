@@ -1,7 +1,6 @@
 import React from "react";
-import Navbar from "../../../components/customer/Navbar/Navbar";
-import Hero from "../../../components/customer/Hero/Hero";
-import "./ContactPage.scss";
+import Navbar from "../../components/customer/Navbar/Navbar";
+import Hero from "../../components/customer/Hero/Hero";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import axios from "axios";
@@ -76,7 +75,17 @@ const ContactPage = () => {
     <div className="container">
       <Navbar />
       <Hero type="Contact" />
-      <hr className="broken-hr" />
+      <hr
+        className="broken-hr"
+        style={{
+          border: "none",
+          height: "10px",
+          background:
+            "repeating-linear-gradient(to right, transparent, transparent 10px, black 10px, black 30px)",
+          margin: "20px 0",
+          width: "100%",
+        }}
+      />
       <div className="flex justify-center items-center flex-col mt-40">
         <p className="text-gray-500 font-serif">Contact With Us</p>
         <h1 className="text-4xl font-bold font-sans">

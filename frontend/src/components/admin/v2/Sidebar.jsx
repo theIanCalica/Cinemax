@@ -11,7 +11,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import EmailIcon from "@mui/icons-material/Email";
 import MessageIcon from "@mui/icons-material/Message";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-const Sidebar = () => {
+
+const Sidebar = ({ isMinimized }) => {
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState("dashboard");
   const [expanded, setExpanded] = useState({
@@ -31,13 +32,21 @@ const Sidebar = () => {
   };
 
   return (
-    <div
-      className="w-64 h-screen text-white overflow-y-auto"
+    <aside
+      className={` h-screen text-white overflow-y-auto  ${
+        isMinimized ? "w-20" : "w-64"
+      }`}
       style={{ backgroundColor: "#181824" }}
     >
       <div className="p-4 text-xl font-bold font-serif">Cinemax</div>
       <ul className="mt-5 text-xs">
-        <h1 className="text-gray-400 font-sans px-8 pt-1">Main</h1>
+        <h1
+          className={`text-gray-400 font-sans px-8 pt-1 ${
+            isMinimized ? "hidden" : "block"
+          } `}
+        >
+          Main
+        </h1>
         {/* Sidebar Items */}
         <li
           className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
@@ -160,7 +169,13 @@ const Sidebar = () => {
             Users
           </span>
         </li>
-        <h1 className="text-gray-400 font-sans px-8 pt-1 my-5">Services</h1>
+        <h1
+          className={`text-gray-400 font-sans px-8 pt-1 ${
+            isMinimized ? "hidden" : "block"
+          } `}
+        >
+          Services
+        </h1>
         <li
           className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
           onMouseOver={() => setHovered("foods")}
@@ -267,7 +282,13 @@ const Sidebar = () => {
             </li>
           </ul>
         )}
-        <h1 className="text-gray-400 font-sans px-8 pt-1 my-5">User</h1>
+        <h1
+          className={`text-gray-400 font-sans px-8 pt-1 ${
+            isMinimized ? "hidden" : "block"
+          } `}
+        >
+          User
+        </h1>
         <li
           className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
           onMouseOver={() => setHovered("profile")}
@@ -437,7 +458,7 @@ const Sidebar = () => {
           </span>
         </li>
       </ul>
-    </div>
+    </aside>
   );
 };
 

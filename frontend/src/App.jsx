@@ -10,7 +10,7 @@ import SigninPage from "./pages/SigninPage";
 import HomePage from "./pages/customer/index/index";
 import AdminIndexPage from "./pages/admin/index/AdminIndexPage";
 import AboutPage from "./pages/customer/About/AboutPage";
-import ContactPage from "./pages/customer/Contact/ContactPage";
+import ContactPage from "./pages/customer/ContactPage";
 import Email from "./pages/Emails/ContactUs";
 
 // Admin Pages
