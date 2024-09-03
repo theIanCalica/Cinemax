@@ -3,13 +3,29 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupIcon from "@mui/icons-material/Group";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
+import FastfoodIcon from "@mui/icons-material/Fastfood";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import TheatersIcon from "@mui/icons-material/Theaters";
+import PersonIcon from "@mui/icons-material/Person";
+import LogoutIcon from "@mui/icons-material/Logout";
+import EmailIcon from "@mui/icons-material/Email";
 const Sidebar = () => {
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState("dashboard");
+  const [expanded, setExpanded] = useState({
+    foods: false,
+    users: false,
+  });
 
   const handleItemClick = (item) => {
     setSelected(item);
+  };
+
+  const toggleExpansion = (item) => {
+    setExpanded((prevState) => ({
+      ...prevState,
+      [item]: !prevState[item],
+    }));
   };
 
   return (
@@ -103,27 +119,134 @@ const Sidebar = () => {
             Users
           </span>
         </li>
-        <h1 className="text-gray-400 font-sans px-8 pt-1">Services</h1>
+        <h1 className="text-gray-400 font-sans px-8 pt-1 my-5">Services</h1>
         <li
           className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
-          onMouseOver={() => setHovered("services")}
+          onMouseOver={() => setHovered("foods")}
           onMouseOut={() => setHovered(null)}
-          onClick={() => handleItemClick("services")}
-          style={{
-            backgroundColor:
-              hovered === "services" || selected === "users"
-                ? "#161621"
-                : "transparent",
-          }}
+          onClick={() => handleItemClick("foods")}
         >
-          {selected === "services" && (
+          {selected === "foods" && (
             <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
           )}
           <div
             className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
             style={{ backgroundColor: "#2B3138" }}
           >
-            <GroupIcon
+            <FastfoodIcon
+              style={{ color: "#33C92D", fontSize: "1.7rem", lineHeight: "1" }}
+              className="p-1"
+            />
+          </div>
+          <span
+            className="transition-all ease-in-out duration-500"
+            style={{
+              fontSize: "16px",
+              color:
+                hovered === "foods" || selected === "foods"
+                  ? "white"
+                  : "#9ca3af",
+            }}
+          >
+            Foods
+          </span>
+          <div
+            className="ml-auto cursor-pointer"
+            onClick={() => toggleExpansion("foods")}
+          >
+            {expanded.foods ? (
+              <KeyboardArrowDownIcon style={{ color: "#33C92D" }} />
+            ) : (
+              <KeyboardArrowLeftIcon style={{ color: "#33C92D" }} />
+            )}
+          </div>
+        </li>
+        {expanded.foods && (
+          <ul className="mt-2 text-gray-400 text-xs">
+            <li className="py-2 px-8 cursor-pointer hover:bg-gray-700 transition-colors duration-300 ease-in-out">
+              <KeyboardArrowRightIcon className="mr-5 ml-2" />
+              Food List
+            </li>
+            <li className="py-2 px-8 cursor-pointer hover:bg-gray-700 transition-colors duration-300 ease-in-out">
+              <KeyboardArrowRightIcon className="mr-5 ml-2" />
+              Category
+            </li>
+          </ul>
+        )}
+        <li
+          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
+          onMouseOver={() => setHovered("other")}
+          onMouseOut={() => setHovered(null)}
+          onClick={() => handleItemClick("other")}
+        >
+          {selected === "other" && (
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
+          )}
+          <div
+            className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
+            style={{ backgroundColor: "#2B3138" }}
+          >
+            <TheatersIcon
+              style={{ color: "#33C92D", fontSize: "1.7rem", lineHeight: "1" }}
+              className="p-1"
+            />
+          </div>
+          <span
+            className="transition-all ease-in-out duration-500"
+            style={{
+              fontSize: "16px",
+              color:
+                hovered === "other" || selected === "other"
+                  ? "white"
+                  : "#9ca3af",
+            }}
+          >
+            Movies
+          </span>
+          <div
+            className="ml-auto cursor-pointer"
+            onClick={() => toggleExpansion("other")}
+          >
+            {expanded.other ? (
+              <KeyboardArrowDownIcon style={{ color: "#33C92D" }} />
+            ) : (
+              <KeyboardArrowLeftIcon style={{ color: "#33C92D" }} />
+            )}
+          </div>
+        </li>
+        {expanded.other && (
+          <ul className="mt-2 text-gray-400 text-xs">
+            <li className="py-2 px-8 cursor-pointer hover:bg-gray-700 transition-colors duration-300 ease-in-out">
+              <KeyboardArrowRightIcon className="mr-5 ml-2" />
+              Movie List
+            </li>
+            <li className="py-2 px-8 cursor-pointer hover:bg-gray-700 transition-colors duration-300 ease-in-out">
+              <KeyboardArrowRightIcon className="mr-5 ml-2" />
+              Categories
+            </li>
+          </ul>
+        )}
+        <h1 className="text-gray-400 font-sans px-8 pt-1 my-5">User</h1>
+        <li
+          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
+          onMouseOver={() => setHovered("profile")}
+          onMouseOut={() => setHovered(null)}
+          onClick={() => handleItemClick("profile")}
+          style={{
+            backgroundColor:
+              hovered === "profile" || selected === "profile"
+                ? "#161621"
+                : "transparent",
+          }}
+        >
+          {selected === "profile" && (
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
+          )}
+          <div
+            className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
+            style={{ backgroundColor: "#2B3138" }}
+          >
+            <PersonIcon
               style={{
                 color: "#33C92D",
                 fontSize: "1.7rem",
@@ -137,12 +260,139 @@ const Sidebar = () => {
             style={{
               fontSize: "16px",
               color:
-                hovered === "services" || selected === "users"
+                hovered === "profile" || selected === "profile"
                   ? "white"
                   : "#9ca3af",
             }}
           >
-            Foods
+            Profile
+          </span>
+        </li>
+
+        {/* Email */}
+        <li
+          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
+          onMouseOver={() => setHovered("logout")}
+          onMouseOut={() => setHovered(null)}
+          onClick={() => handleItemClick("logout")}
+          style={{
+            backgroundColor:
+              hovered === "logout" || selected === "logout"
+                ? "#161621"
+                : "transparent",
+          }}
+        >
+          {selected === "logout" && (
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
+          )}
+          <div
+            className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
+            style={{ backgroundColor: "#2B3138" }}
+          >
+            <EmailIcon
+              style={{
+                color: "#33C92D",
+                fontSize: "1.7rem",
+                lineHeight: "1",
+              }}
+              className="p-1"
+            />
+          </div>
+          <span
+            className="transition-all ease-in-out duration-500"
+            style={{
+              fontSize: "16px",
+              color:
+                hovered === "logout" || selected === "logout"
+                  ? "white"
+                  : "#9ca3af",
+            }}
+          >
+            Email
+          </span>
+        </li>
+        {/* Message */}
+        <li
+          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
+          onMouseOver={() => setHovered("message")}
+          onMouseOut={() => setHovered(null)}
+          onClick={() => handleItemClick("message")}
+          style={{
+            backgroundColor:
+              hovered === "message" || selected === "message"
+                ? "#161621"
+                : "transparent",
+          }}
+        >
+          {selected === "message" && (
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
+          )}
+          <div
+            className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
+            style={{ backgroundColor: "#2B3138" }}
+          >
+            <EmailIcon
+              style={{
+                color: "#33C92D",
+                fontSize: "1.7rem",
+                lineHeight: "1",
+              }}
+              className="p-1"
+            />
+          </div>
+          <span
+            className="transition-all ease-in-out duration-500"
+            style={{
+              fontSize: "16px",
+              color:
+                hovered === "message" || selected === "message"
+                  ? "white"
+                  : "#9ca3af",
+            }}
+          >
+            Message
+          </span>
+        </li>
+        {/* Logout */}
+        <li
+          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
+          onMouseOver={() => setHovered("logout")}
+          onMouseOut={() => setHovered(null)}
+          onClick={() => handleItemClick("logout")}
+          style={{
+            backgroundColor:
+              hovered === "logout" || selected === "logout"
+                ? "#161621"
+                : "transparent",
+          }}
+        >
+          {selected === "logout" && (
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
+          )}
+          <div
+            className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
+            style={{ backgroundColor: "#2B3138" }}
+          >
+            <LogoutIcon
+              style={{
+                color: "#33C92D",
+                fontSize: "1.7rem",
+                lineHeight: "1",
+              }}
+              className="p-1"
+            />
+          </div>
+          <span
+            className="transition-all ease-in-out duration-500"
+            style={{
+              fontSize: "16px",
+              color:
+                hovered === "logout" || selected === "logout"
+                  ? "white"
+                  : "#9ca3af",
+            }}
+          >
+            Logout
           </span>
         </li>
       </ul>
