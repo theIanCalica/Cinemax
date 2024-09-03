@@ -6,8 +6,8 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "cinemax.inc.manila@gmail.com",
-    pass: "cinemax12345",
+    user: "iggc654@gmail.com",
+    pass: "lrwd plzs ktnd kcqs",
   },
 });
 
@@ -38,63 +38,65 @@ router.post("/", async (req, res) => {
 
     // Send email
     const mailOptions = {
-      from: "cinemax.inc.manila@gmail.com",
+      from: "iggc654@gmail.com",
       to: email,
       subject: "Thank you for contacting us!",
-      html: ` <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        color: "#333",
-        lineHeight: "1.6",
-        padding: "20px",
-        maxWidth: "600px",
-        margin: "20px auto",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        backgroundColor: "#fff",
-      }}
-    >
-      <img
-        src="https://images.pexels.com/photos/2072165/pexels-photo-2072165.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-        alt=""
-      />
-      <div style={{ padding: "20px" }}>
-        <p style={{ fontSize: "18px", fontWeight: "bold", color: "#ff5733" }}>
-          Hi <strong>{name}</strong>,
-        </p>
-        <p style={{ marginBottom: "16px" }}>
-          Thank you for reaching out to us. We have received your message
-          regarding "<strong>{subject}</strong>" and will get back to you as
-          soon as possible.
-        </p>
-        <p style={{ marginBottom: "16px", fontWeight: "bold" }}>
-          Below is a summary of your message:
-        </p>
-        <ul
-          style={{ listStyleType: "none", paddingLeft: "0", lineHeight: "1.8" }}
-        >
-          <li>
-            <strong>Name:</strong> {name}
-          </li>
-          <li>
-            <strong>Email:</strong> {email}
-          </li>
-          <li>
-            <strong>Phone:</strong> {phone}
-          </li>
-          <li>
-            <strong>Subject:</strong> {subject}
-          </li>
-          <li>
-            <strong>Message:</strong> {body}
-          </li>
-        </ul>
-        <p style={{ marginTop: "24px" }}>Best Regards,</p>
-        <p style={{ fontWeight: "bold", color: "#ff5733" }}>Cinemax</p>
-      </div>
-    </div>`,
+      html: ` 
+      <div
+        style="
+          font-family: Arial, sans-serif;
+          color: #333;
+          line-height: 1.6;
+          padding: 20px;
+          max-width: 600px;
+          margin: 20px auto;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          background-color: #fff;
+        "
+      >
+        <img
+          src="https://images.pexels.com/photos/2072165/pexels-photo-2072165.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+          alt="Banner"
+          style="width: 100%; border-radius: 8px 8px 0 0;"
+        />
+        <div style="padding: 20px">
+          <p style="font-size: 18px; font-weight: bold; color: #ff5733;">
+            Hi <strong>${name}</strong>,
+          </p>
+          <p style="margin-bottom: 16px;">
+            Thank you for reaching out to us. We have received your message
+            regarding "<strong>${subject}</strong>" and will get back to you as
+            soon as possible.
+          </p>
+          <p style="margin-bottom: 16px; font-weight: bold;">
+            Below is a summary of your message:
+          </p>
+          <ul
+            style="list-style-type: none; padding-left: 0; line-height: 1.8;"
+          >
+            <li><strong>Name:</strong> ${name}</li>
+            <li><strong>Email:</strong> ${email}</li>
+            <li><strong>Phone:</strong> ${phone}</li>
+            <li><strong>Subject:</strong> ${subject}</li>
+            <li><strong>Message:</strong> ${body}</li>
+          </ul>
+          <p style="margin-top: 24px;">Best Regards,</p>
+          <p style="font-weight: bold; color: #ff5733;">Cinemax</p>
+        </div>
+      </div>`,
     };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        res.status(500).send("Server error");
+      } else {
+        console.log("Email sent: " + info.response);
+        res.status(201).json(saveContact);
+      }
+    });
 
     res.status(201).json(saveContact);
   } catch (err) {

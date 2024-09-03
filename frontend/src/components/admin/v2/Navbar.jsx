@@ -145,7 +145,7 @@ const Navbar = ({ toggleSidebar }) => {
               <img
                 src="https://scontent.fmnl30-3.fna.fbcdn.net/v/t39.30808-1/449489364_3442005009435229_5169651470885319346_n.jpg?stp=c0.110.720.720a_dst-jpg_s160x160&_nc_cat=104&ccb=1-7&_nc_sid=0ecb9b&_nc_eui2=AeHYMCLIHQNyASo7bAaWwgCQg-zyKTd5D_SD7PIpN3kP9NpIaisNhLJZwuRBVqMfwsTTC5IxFzvJgQsKsJadgHiA&_nc_ohc=_6Bx7Fluu_4Q7kNvgFpr5gY&_nc_ht=scontent.fmnl30-3.fna&oh=00_AYDjdgvpmcx_Oulg6UOTBjZngp3L25vt1NMOISd0hBZarg&oe=66DCDAB4"
                 alt="User Profile Pic"
-                className="rounded-full w-8 h-8"
+                className="rounded-full w-1 h-1"
               />
               <span>Ian Gabriel G. Calica</span>
               <KeyboardArrowDownOutlinedIcon
