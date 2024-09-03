@@ -15,7 +15,7 @@ const Sidebar = () => {
         <h1 className="text-gray-400 font-sans px-8 pt-1">Main</h1>
         {/* Sidebar Items */}
         <li
-          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full "
+          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out "
           onMouseOver={() => setHovered("dashboard")}
           onMouseOut={() => setHovered(null)}
           style={{
@@ -24,7 +24,7 @@ const Sidebar = () => {
           }}
         >
           <div
-            className="mr-5 rounded-md"
+            className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
             style={{ backgroundColor: "#2B3138" }}
           >
             <DashboardIcon
@@ -37,6 +37,7 @@ const Sidebar = () => {
             />
           </div>
           <span
+            className="transition-all ease-in-out duration-500"
             style={{
               fontSize: "16px",
               color: hovered === "dashboard" ? "white" : "#9ca3af",
