@@ -9,6 +9,8 @@ import TheatersIcon from "@mui/icons-material/Theaters";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import EmailIcon from "@mui/icons-material/Email";
+import MessageIcon from "@mui/icons-material/Message";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 const Sidebar = () => {
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState("dashboard");
@@ -30,7 +32,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className="w-64 h-screen text-white"
+      className="w-64 h-screen text-white overflow-y-auto"
       style={{ backgroundColor: "#181824" }}
     >
       <div className="p-4 text-xl font-bold font-serif">Cinemax</div>
@@ -76,6 +78,45 @@ const Sidebar = () => {
             }}
           >
             Dashboard
+          </span>
+        </li>
+        <li
+          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
+          onMouseOver={() => setHovered("task")}
+          onMouseOut={() => setHovered(null)}
+          onClick={() => handleItemClick("task")}
+          style={{
+            backgroundColor:
+              hovered === "task" || selected === "task"
+                ? "#161621"
+                : "transparent",
+          }}
+        >
+          {selected === "task" && (
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
+          )}
+          <div
+            className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
+            style={{ backgroundColor: "#2B3138" }}
+          >
+            <AssignmentIcon
+              style={{
+                color: "#33C92D",
+                fontSize: "1.7rem",
+                lineHeight: "1",
+              }}
+              className="p-1"
+            />
+          </div>
+          <span
+            className="transition-all ease-in-out duration-500"
+            style={{
+              fontSize: "16px",
+              color:
+                hovered === "task" || selected === "task" ? "white" : "#9ca3af",
+            }}
+          >
+            Task
           </span>
         </li>
         <li
@@ -272,17 +313,17 @@ const Sidebar = () => {
         {/* Email */}
         <li
           className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
-          onMouseOver={() => setHovered("logout")}
+          onMouseOver={() => setHovered("email")}
           onMouseOut={() => setHovered(null)}
-          onClick={() => handleItemClick("logout")}
+          onClick={() => handleItemClick("email")}
           style={{
             backgroundColor:
-              hovered === "logout" || selected === "logout"
+              hovered === "email" || selected === "email"
                 ? "#161621"
                 : "transparent",
           }}
         >
-          {selected === "logout" && (
+          {selected === "email" && (
             <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
           )}
           <div
@@ -303,7 +344,7 @@ const Sidebar = () => {
             style={{
               fontSize: "16px",
               color:
-                hovered === "logout" || selected === "logout"
+                hovered === "email" || selected === "email"
                   ? "white"
                   : "#9ca3af",
             }}
@@ -331,7 +372,7 @@ const Sidebar = () => {
             className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
             style={{ backgroundColor: "#2B3138" }}
           >
-            <EmailIcon
+            <MessageIcon
               style={{
                 color: "#33C92D",
                 fontSize: "1.7rem",
