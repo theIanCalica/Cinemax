@@ -11,10 +11,11 @@ const Sidebar = () => {
       style={{ backgroundColor: "#181824" }}
     >
       <div className="p-4 text-xl font-bold font-serif">Cinemax</div>
-      <ul className="pl-10 pt-5 text-xs">
-        <h1 className="text-gray-400 font-sans">Main</h1>
+      <ul className="mt-5 text-xs">
+        <h1 className="text-gray-400 font-sans px-8 pt-1">Main</h1>
+        {/* Sidebar Items */}
         <li
-          className="py-5 text-gray-400  cursor-pointer flex items-center"
+          className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full "
           onMouseOver={() => setHovered("dashboard")}
           onMouseOut={() => setHovered(null)}
           style={{
@@ -22,7 +23,10 @@ const Sidebar = () => {
               hovered === "dashboard" ? "#161621" : "transparent",
           }}
         >
-          <div className="mr-5 rounded-md">
+          <div
+            className="mr-5 rounded-md"
+            style={{ backgroundColor: "#2B3138" }}
+          >
             <DashboardIcon
               style={{
                 color: "#33C92D",
@@ -42,14 +46,17 @@ const Sidebar = () => {
           </span>
         </li>
         <li
-          className="py-0 text-gray-400 cursor-pointer flex items-center"
+          className="py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full"
           onMouseOver={() => setHovered("users")}
           onMouseOut={() => setHovered(null)}
           style={{
             backgroundColor: hovered === "users" ? "#161621" : "transparent",
           }}
         >
-          <div className="mr-5 rounded-md">
+          <div
+            className="mr-5 rounded-md"
+            style={{ backgroundColor: "#2B3138" }}
+          >
             <GroupIcon
               style={{
                 color: "#33C92D",
@@ -59,7 +66,14 @@ const Sidebar = () => {
               className="p-1"
             />
           </div>
-          <span style={{ fontSize: "16px" }}>Users</span>
+          <span
+            style={{
+              fontSize: "16px",
+              color: hovered === "users" ? "white" : "#9ca3af",
+            }}
+          >
+            Users
+          </span>
         </li>
       </ul>
     </div>
