@@ -29,8 +29,12 @@ const Navbar = () => {
         <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden h-9">
           <button
             onClick={handleSearch}
-            className="bg-gray-100 text-gray-700 p-2 flex items-center justify-center"
-            style={{ width: "36px", height: "36px" }}
+            className=" text-gray-700 p-2 flex items-center justify-center"
+            style={{
+              width: "36px",
+              height: "36px",
+              backgroundColor: "#EEF0FA",
+            }}
           >
             <SearchIcon style={{ fontSize: "20px" }} />
           </button>
@@ -39,8 +43,9 @@ const Navbar = () => {
             name="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-gray-100 outline-none border-none px-4 py-2 flex-grow text-sm text-black"
+            className="outline-none border-none px-4 py-2 flex-grow text-sm text-black"
             placeholder="Search..."
+            style={{ backgroundColor: "#EEF0FA" }}
           />
         </div>
         <button onClick={() => alert("Account menu")} className="text-black">
