@@ -32,16 +32,16 @@ const FoodCategory = () => {
           </thead>
           <tbody>
             {categories.map((category) => (
-              <tr key={category.id}>
+              <tr key={category.id} className="hover:bg-slate-50">
                 <td className="py-2 px-4 border-b">{category.id}</td>
                 <td className="py-2 px-4 border-b">{category.name}</td>
                 <td className="py-2 px-4 border-b">{category.createdAt}</td>
                 <td className="py-2 px-4 border-b">{category.updatedAt}</td>
                 <td className="py-2 px-4 border-b">
-                  <button className="text-blue-500 hover:underline mr-2">
+                  <button className="text-blue-500 mr-2">
                     <EditOutlinedIcon />
                   </button>
-                  <button className="text-red-500 hover:underline">
+                  <button className="text-red-500">
                     <DeleteOutlineOutlinedIcon />
                   </button>
                 </td>
