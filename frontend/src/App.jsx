@@ -15,7 +15,7 @@ import Email from "./pages/Emails/ContactUs";
 // Admin Pages
 import Layout from "./components/admin/v2/Layout"; //Admin Layout
 import HomeAdmin from "./pages/admin/Home";
-import Category from "./pages/admin/Category";
+import Category from "./pages/admin/FoodCategory";
 import "./main.css";
 function App() {
   return (
