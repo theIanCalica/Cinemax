@@ -33,7 +33,7 @@ const Sidebar = ({ isMinimized }) => {
 
   return (
     <aside
-      className={` h-screen text-white overflow-hidden  ${
+      className={`  text-white overflow-hidden  ${
         isMinimized ? "w-20" : "w-80"
       }`}
       style={{ backgroundColor: "#181824" }}
