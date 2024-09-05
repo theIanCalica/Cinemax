@@ -34,6 +34,10 @@ function App() {
           <Route index element={<HomeAdmin />} />
           <Route path="task"></Route>
           <Route path="users"></Route>
+          <Route path="articles"></Route>
+          <Route path="user-profile"></Route>
+          <Route path="emails"></Route>
+          <Route path="messages"></Route>
           {/* Route for food related pages */}
           <Route path="food" element={null}>
             <Route path="category" element={<Category />} />

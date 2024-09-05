@@ -11,6 +11,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import EmailIcon from "@mui/icons-material/Email";
 import MessageIcon from "@mui/icons-material/Message";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import ArticleIcon from "@mui/icons-material/Article";
 import { Link } from "react-router-dom";
 
 const Sidebar = ({ isMinimized }) => {
@@ -139,6 +140,7 @@ const Sidebar = ({ isMinimized }) => {
             </span>
           </li>
         </Link>
+        {/* Users */}
         <Link to="/admin/users">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
@@ -181,6 +183,52 @@ const Sidebar = ({ isMinimized }) => {
               }}
             >
               Users
+            </span>
+          </li>
+        </Link>
+        {/* Article */}
+        <Link to="/admin/articles">
+          <li
+            className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
+            onMouseOver={() => setHovered("articles")}
+            onMouseOut={() => setHovered(null)}
+            onClick={() => handleItemClick("articles")}
+            style={{
+              backgroundColor:
+                hovered === "articles" || selected === "articles"
+                  ? "#161621"
+                  : "transparent",
+            }}
+          >
+            {selected === "articles" && (
+              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
+            )}
+            <div
+              className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
+              style={{ backgroundColor: "#2B3138" }}
+            >
+              <ArticleIcon
+                style={{
+                  color: "#33C92D",
+                  fontSize: "1.7rem",
+                  lineHeight: "1",
+                }}
+                className="p-1"
+              />
+            </div>
+            <span
+              className={`transition-all ease-in-out duration-500 ${
+                isMinimized ? "hidden" : "block"
+              }`}
+              style={{
+                fontSize: "16px",
+                color:
+                  hovered === "articles" || selected === "articles"
+                    ? "white"
+                    : "#9ca3af",
+              }}
+            >
+              Article
             </span>
           </li>
         </Link>
@@ -323,7 +371,7 @@ const Sidebar = ({ isMinimized }) => {
           User
         </h1>
         {/* User Profile */}
-        <Link to="admin/user-profile">
+        <Link to="user-profile">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
             onMouseOver={() => setHovered("profile")}
@@ -370,7 +418,7 @@ const Sidebar = ({ isMinimized }) => {
         </Link>
 
         {/* Email */}
-        <Link to="admin/emails">
+        <Link to="emails">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
             onMouseOver={() => setHovered("email")}
@@ -417,7 +465,7 @@ const Sidebar = ({ isMinimized }) => {
         </Link>
 
         {/* Message */}
-        <Link to="admin/messages">
+        <Link to="messages">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
             onMouseOver={() => setHovered("message")}
