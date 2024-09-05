@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import CreateCategory from "../../components/admin/Modal/CreateCategory";
+import CategoryModal from "../../components/admin/Modal/FoodCategory";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -68,6 +69,50 @@ const FoodCategory = () => {
     setCategories((prevCategories) => [...prevCategories, newCategory]);
   };
 
+  const handleDelete = async (categoryId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You will not be able to recover this category!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/api/categories/${categoryId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (response.ok) {
+          notifySuccess("Successfully Deleted!");
+          // Remove the deleted category from the state
+          setCategories((prevCategories) =>
+            prevCategories.filter((category) => category._id !== categoryId)
+          );
+        } else {
+          Swal.fire(
+            "Error!",
+            "There was an issue deleting the category.",
+            "error"
+          );
+        }
+      } catch (error) {
+        Swal.fire(
+          "Error!",
+          "An error occurred while deleting the category.",
+          "error"
+        );
+      }
+    }
+  };
+
   return (
     <div className="px-3 mt-8">
       <div className="flex justify-between">
@@ -86,7 +131,7 @@ const FoodCategory = () => {
 
       {/* Render the modal for creating a new category */}
       {isModalOpen && (
-        <CreateCategory
+        <CategoryModal
           onClose={closeModal}
           onCategoryCreated={addCategory} // Pass function to add category
           notifySuccess={notifySuccess} // Pass success notification
@@ -121,7 +166,12 @@ const FoodCategory = () => {
                   <button className="text-blue-500 mr-2">
                     <EditOutlinedIcon />
                   </button>
-                  <button className="text-red-500">
+                  <button
+                    className="text-red-500"
+                    onClick={() => {
+                      handleDelete(category._id);
+                    }}
+                  >
                     <DeleteOutlineOutlinedIcon />
                   </button>
                 </td>
