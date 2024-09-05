@@ -133,8 +133,8 @@ const Genre = () => {
       <div className="flex justify-between">
         <h1 className="font-bold font-serif text-2xl">Genres</h1>
         <p style={{ fontSize: "13.5px" }}>
-          <span className="text-blue-500 hover:underline">Foods</span> /
-          <span className="text-gray-500">Food Categories</span>
+          <span className="text-blue-500 hover:underline">Movie</span> /
+          <span className="text-gray-500">Genre</span>
         </p>
       </div>
       <button
@@ -156,6 +156,55 @@ const Genre = () => {
           refresh={fetchGenres} //Pass refresh function for the table
         />
       )}
+
+      {/* Display categories in a table */}
+      <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
+        <table className="min-w-full bg-white border-collapse">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 border-b text-left">ID</th>
+              <th className="py-2 px-4 border-b text-left">Name</th>
+              <th className="py-2 px-4 border-b text-left">Created</th>
+              <th className="py-2 px-4 border-b text-left">Updated</th>
+              <th className="py-2 px-4 border-b text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {genres.map((category) => (
+              <tr key={category._id} className="hover:bg-slate-50">
+                <td className="py-2 px-4 border-b">{genres._id}</td>
+                <td className="py-2 px-4 border-b">{genres.name}</td>
+                <td className="py-2 px-4 border-b">
+                  {formatDate(genres.createdAt)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {formatDate(genres.updatedAt)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  <button
+                    className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+                    onClick={() => openModal(genres)} // Pass the category to be edited
+                  >
+                    <EditOutlinedIcon />
+                  </button>
+
+                  <button
+                    className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
+                    onClick={() => {
+                      handleDelete(genres._id);
+                    }}
+                  >
+                    <DeleteOutlineOutlinedIcon />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Toastify container for notifications */}
+      <ToastContainer />
     </div>
   );
 };
