@@ -4,7 +4,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-
+import GenreModal from "../../components/admin/Modal/Genre";
 const Genre = () => {
   const [genres, setGenres] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -129,8 +129,33 @@ const Genre = () => {
     }
   };
   return (
-    <div>
-      <div></div>
+    <div className="px-3 mt-8">
+      <div className="flex justify-between">
+        <h1 className="font-bold font-serif text-2xl">Genres</h1>
+        <p style={{ fontSize: "13.5px" }}>
+          <span className="text-blue-500 hover:underline">Foods</span> /
+          <span className="text-gray-500">Food Categories</span>
+        </p>
+      </div>
+      <button
+        onClick={() => openModal()} // Open modal for adding new category
+        className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+      >
+        Add Genre
+      </button>
+
+      {/* Render the modal for creating or editing a category */}
+      {isModalOpen && (
+        <GenreModal
+          categoryToEdit={currentGenre} // Pass the current category to the modal
+          isEditing={isEditing} // Pass editing state to the modal
+          onClose={closeModal}
+          onCategoryCreated={handleGenreChange} // Pass function to add or update category
+          notifySuccess={notifySuccess} // Pass success notification
+          notifyError={notifyError} // Pass error notification
+          refresh={fetchGenres} //Pass refresh function for the table
+        />
+      )}
     </div>
   );
 };
