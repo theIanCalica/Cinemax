@@ -292,7 +292,7 @@ const Sidebar = ({ isMinimized }) => {
             </li>
             <li className="py-2 px-8 cursor-pointer hover:bg-gray-700 transition-colors duration-300 ease-in-out">
               <KeyboardArrowRightIcon className="mr-5 ml-2" />
-              Categories
+              Genres
             </li>
           </ul>
         )}
