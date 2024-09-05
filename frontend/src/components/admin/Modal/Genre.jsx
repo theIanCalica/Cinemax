@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const CreateCategory = ({
+const Genre = ({
   onClose,
   onGenreCreated,
   notifySuccess,
@@ -40,8 +40,8 @@ const CreateCategory = ({
         onGenreCreated(genre); // Add the new or updated genre to the list
         notifySuccess(
           isEditing
-            ? "Category updated successfully"
-            : "Category created successfully"
+            ? "Genre updated successfully"
+            : "Genre created successfully"
         ); // Notify success
         setGenre(""); // Clear the input
         onClose(); // Close the modal
@@ -104,4 +104,4 @@ const CreateCategory = ({
   );
 };
 
-export default CreateCategory;
+export default Genre;

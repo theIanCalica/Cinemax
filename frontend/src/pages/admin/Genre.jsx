@@ -191,7 +191,7 @@ const Genre = () => {
                   <button
                     className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
                     onClick={() => {
-                      handleDelete(genres._id);
+                      handleDelete(genre._id);
                     }}
                   >
                     <DeleteOutlineOutlinedIcon />
