@@ -1,14 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import CreateCategory from "../../components/admin/Modal/CreateCategory";
 
 const FoodCategory = () => {
-  // Sample data
-  const categories = [
-    { id: 1, name: "Pizza", createdAt: "2024-01-01", updatedAt: "2024-01-05" },
-    { id: 2, name: "Burger", createdAt: "2024-02-01", updatedAt: "2024-02-05" },
-    // Add more sample data as needed
-  ];
+  // Initialize categories as an empty array and modal state
+  const [categories, setCategories] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/categories/");
+        if (response.ok) {
+          const json = await response.json();
+          setCategories(json);
+        } else {
+          console.error("Failed to fetch categories:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="px-3 mt-8">
@@ -19,7 +42,16 @@ const FoodCategory = () => {
           <span className="text-gray-500">Food Categories</span>
         </p>
       </div>
-      <div className="mt-6 bg-white p-4 shadow-md rounded-lg">
+      <button
+        onClick={openModal}
+        className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+      >
+        Add Category
+      </button>
+
+      {isModalOpen && <CreateCategory onClose={closeModal} />}
+
+      <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
         <table className="min-w-full bg-white border-collapse">
           <thead>
             <tr>
@@ -32,11 +64,15 @@ const FoodCategory = () => {
           </thead>
           <tbody>
             {categories.map((category) => (
-              <tr key={category.id} className="hover:bg-slate-50">
-                <td className="py-2 px-4 border-b">{category.id}</td>
+              <tr key={category._id} className="hover:bg-slate-50">
+                <td className="py-2 px-4 border-b">{category._id}</td>
                 <td className="py-2 px-4 border-b">{category.name}</td>
-                <td className="py-2 px-4 border-b">{category.createdAt}</td>
-                <td className="py-2 px-4 border-b">{category.updatedAt}</td>
+                <td className="py-2 px-4 border-b">
+                  {formatDate(category.createdAt)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {formatDate(category.updatedAt)}
+                </td>
                 <td className="py-2 px-4 border-b">
                   <button className="text-blue-500 mr-2">
                     <EditOutlinedIcon />
