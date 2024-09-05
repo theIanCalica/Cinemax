@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import CreateCategory from "../../components/admin/Modal/CreateCategory";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FoodCategory = () => {
-  // Initialize categories as an empty array and modal state
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Fetch categories when the component mounts
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -25,13 +27,46 @@ const FoodCategory = () => {
     fetchCategories();
   }, []);
 
+  // Format the date
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  // Open and close modal
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  // Notify success message using Toastify
+  const notifySuccess = (message) => {
+    toast.success(message, {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+    });
+  };
+
+  // Notify error message using Toastify
+  const notifyError = (message) => {
+    toast.error(message, {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+    });
+  };
+
+  // Add new category to the state
+  const addCategory = (newCategory) => {
+    setCategories((prevCategories) => [...prevCategories, newCategory]);
+  };
 
   return (
     <div className="px-3 mt-8">
@@ -49,8 +84,17 @@ const FoodCategory = () => {
         Add Category
       </button>
 
-      {isModalOpen && <CreateCategory onClose={closeModal} />}
+      {/* Render the modal for creating a new category */}
+      {isModalOpen && (
+        <CreateCategory
+          onClose={closeModal}
+          onCategoryCreated={addCategory} // Pass function to add category
+          notifySuccess={notifySuccess} // Pass success notification
+          notifyError={notifyError} // Pass error notification
+        />
+      )}
 
+      {/* Display categories in a table */}
       <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
         <table className="min-w-full bg-white border-collapse">
           <thead>
@@ -86,6 +130,9 @@ const FoodCategory = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Toastify container for notifications */}
+      <ToastContainer />
     </div>
   );
 };

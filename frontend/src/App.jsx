@@ -16,6 +16,8 @@ import Email from "./pages/Emails/ContactUs";
 import Layout from "./components/admin/v2/Layout"; //Admin Layout
 import HomeAdmin from "./pages/admin/Home";
 import Category from "./pages/admin/FoodCategory";
+import FoodList from "./pages/admin/FoodList";
+
 import "./main.css";
 function App() {
   return (
@@ -30,7 +32,11 @@ function App() {
         {/* Route for admin */}
         <Route path="/admin" element={<Layout />}>
           <Route index element={<HomeAdmin />} />
-          <Route path="category" element={<Category />}></Route>
+          {/* Route for food related pages */}
+          <Route path="food" element={null}>
+            <Route path="category" element={<Category />} />
+            <Route path="food-list" element={<FoodList />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

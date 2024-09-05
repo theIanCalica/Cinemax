@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 
-const CreateCategory = ({ onClose }) => {
+const CreateCategory = ({
+  onClose,
+  onCategoryCreated,
+  notifySuccess,
+  notifyError,
+}) => {
   const [categoryName, setCategoryName] = useState("");
 
   const handleSubmit = async (e) => {
@@ -16,13 +21,17 @@ const CreateCategory = ({ onClose }) => {
       });
 
       if (response.ok) {
-        console.log("Category created successfully");
+        const newCategory = await response.json(); // Get the new category data
+        onCategoryCreated(newCategory); // Add the new category to the list
+        notifySuccess("Category created successfully");
         setCategoryName(""); // Clear the input
         onClose(); // Close the modal
       } else {
+        notifyError("Failed to create category");
         console.error("Failed to create category:", response.statusText);
       }
     } catch (error) {
+      notifyError("Error creating category");
       console.error("Error creating category:", error);
     }
   };
