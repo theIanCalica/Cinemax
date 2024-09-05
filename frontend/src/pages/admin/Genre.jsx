@@ -88,7 +88,7 @@ const Genre = () => {
   const handleDelete = async (genreID) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "You will not be able to recover this category!",
+      text: "You will not be able to recover this genre!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -100,7 +100,7 @@ const Genre = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:4000/api/categories/${genreID}`,
+          `http://localhost:4000/api/genres/${genreID}`,
           {
             method: "DELETE",
           }
@@ -108,21 +108,21 @@ const Genre = () => {
 
         if (response.ok) {
           notifySuccess("Successfully Deleted!");
-          // Remove the deleted category from the state
+          // Remove the deleted genre from the state
           setGenres((prevGenres) =>
             prevGenres.filter((genre) => genre._id !== genreID)
           );
         } else {
           Swal.fire(
             "Error!",
-            "There was an issue deleting the category.",
+            "There was an issue deleting the genre.",
             "error"
           );
         }
       } catch (error) {
         Swal.fire(
           "Error!",
-          "An error occurred while deleting the category.",
+          "An error occurred while deleting the genre.",
           "error"
         );
       }
@@ -138,19 +138,19 @@ const Genre = () => {
         </p>
       </div>
       <button
-        onClick={() => openModal()} // Open modal for adding new category
+        onClick={() => openModal()} // Open modal for adding new genre
         className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
       >
         Add Genre
       </button>
 
-      {/* Render the modal for creating or editing a category */}
+      {/* Render the modal for creating or editing a genre */}
       {isModalOpen && (
         <GenreModal
-          categoryToEdit={currentGenre} // Pass the current category to the modal
+          genreToEdit={currentGenre} // Pass the current genre to the modal
           isEditing={isEditing} // Pass editing state to the modal
           onClose={closeModal}
-          onCategoryCreated={handleGenreChange} // Pass function to add or update category
+          onGenreCreated={handleGenreChange} // Pass function to add or update genre
           notifySuccess={notifySuccess} // Pass success notification
           notifyError={notifyError} // Pass error notification
           refresh={fetchGenres} //Pass refresh function for the table
@@ -170,20 +170,20 @@ const Genre = () => {
             </tr>
           </thead>
           <tbody>
-            {genres.map((category) => (
-              <tr key={category._id} className="hover:bg-slate-50">
-                <td className="py-2 px-4 border-b">{genres._id}</td>
-                <td className="py-2 px-4 border-b">{genres.name}</td>
+            {genres.map((genre) => (
+              <tr key={genre._id} className="hover:bg-slate-50">
+                <td className="py-2 px-4 border-b">{genre._id}</td>
+                <td className="py-2 px-4 border-b">{genre.name}</td>
                 <td className="py-2 px-4 border-b">
-                  {formatDate(genres.createdAt)}
+                  {formatDate(genre.createdAt)}
                 </td>
                 <td className="py-2 px-4 border-b">
-                  {formatDate(genres.updatedAt)}
+                  {formatDate(genre.updatedAt)}
                 </td>
                 <td className="py-2 px-4 border-b">
                   <button
                     className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
-                    onClick={() => openModal(genres)} // Pass the category to be edited
+                    onClick={() => openModal(genre)} // Pass the genre to be edited
                   >
                     <EditOutlinedIcon />
                   </button>
