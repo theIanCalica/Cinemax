@@ -9,24 +9,22 @@ import Swal from "sweetalert2";
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Fetch categories when the component mounts
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/api/categories/");
-        if (response.ok) {
-          const json = await response.json();
-          setCategories(json);
-        } else {
-          console.error("Failed to fetch categories:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/api/categories/");
+      if (response.ok) {
+        const json = await response.json();
+        setCategories(json);
+      } else {
+        console.error("Failed to fetch categories:", response.statusText);
       }
-    };
-    fetchCategories();
-  }, []);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   // Format the date
   const formatDate = (dateString) => {
@@ -35,8 +33,17 @@ const FoodCategory = () => {
   };
 
   // Open and close modal
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = (category = null) => {
+    setCurrentCategory(category);
+    setIsEditing(!!category); // If a category is passed, set editing to true
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentCategory(null);
+    setIsEditing(false);
+  };
 
   // Notify success message using Toastify
   const notifySuccess = (message) => {
@@ -64,10 +71,22 @@ const FoodCategory = () => {
     });
   };
 
-  // Add new category to the state
-  const addCategory = (newCategory) => {
-    setCategories((prevCategories) => [...prevCategories, newCategory]);
+  // Add or update category in the state
+  const handleCategoryChange = (updatedCategory) => {
+    if (isEditing) {
+      setCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category._id === updatedCategory._id ? updatedCategory : category
+        )
+      );
+    } else {
+      setCategories((prevCategories) => [...prevCategories, updatedCategory]);
+    }
   };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleDelete = async (categoryId) => {
     const result = await Swal.fire({
@@ -123,19 +142,22 @@ const FoodCategory = () => {
         </p>
       </div>
       <button
-        onClick={openModal}
+        onClick={() => openModal()} // Open modal for adding new category
         className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
       >
         Add Category
       </button>
 
-      {/* Render the modal for creating a new category */}
+      {/* Render the modal for creating or editing a category */}
       {isModalOpen && (
         <CategoryModal
+          categoryToEdit={currentCategory} // Pass the current category to the modal
+          isEditing={isEditing} // Pass editing state to the modal
           onClose={closeModal}
-          onCategoryCreated={addCategory} // Pass function to add category
+          onCategoryCreated={handleCategoryChange} // Pass function to add or update category
           notifySuccess={notifySuccess} // Pass success notification
           notifyError={notifyError} // Pass error notification
+          refresh={fetchCategories} //Pass refresh function for the table
         />
       )}
 
@@ -163,11 +185,15 @@ const FoodCategory = () => {
                   {formatDate(category.updatedAt)}
                 </td>
                 <td className="py-2 px-4 border-b">
-                  <button className="text-blue-500 mr-2">
+                  <button
+                    className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+                    onClick={() => openModal(category)} // Pass the category to be edited
+                  >
                     <EditOutlinedIcon />
                   </button>
+
                   <button
-                    className="text-red-500"
+                    className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
                     onClick={() => {
                       handleDelete(category._id);
                     }}
