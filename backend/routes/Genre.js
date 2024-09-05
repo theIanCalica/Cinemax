@@ -6,7 +6,7 @@ const Contact = require("../Models/Contact");
 // Get all genres
 router.get("/", async (req, res) => {
   try {
-    const genres = await Genre.find();
+    const genres = await Genre.find().sort({ name: 1 });
     res.json(genres);
   } catch (err) {
     console.error(err.message);

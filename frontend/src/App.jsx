@@ -32,6 +32,8 @@ function App() {
         {/* Route for admin */}
         <Route path="/admin" element={<Layout />}>
           <Route index element={<HomeAdmin />} />
+          <Route path="task"></Route>
+          <Route path="users"></Route>
           {/* Route for food related pages */}
           <Route path="food" element={null}>
             <Route path="category" element={<Category />} />
@@ -39,6 +41,7 @@ function App() {
           </Route>
           <Route path="movie" element={null}>
             <Route path="genre" element={<Genre />}></Route>
+            <Route path="movie-list"></Route>
           </Route>
         </Route>
       </Routes>
