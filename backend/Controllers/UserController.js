@@ -36,6 +36,51 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+// Create a user
+exports.addUser = async (req, res) => {
+  const { fname, lname, dob, email, phoneNumber, profile, role } = req.body;
+
+  try {
+    const newUser = new User({
+      fname,
+      lname,
+      dob,
+      email,
+      phoneNumber,
+      profile,
+      role,
+    });
+
+    const saveUser = await newUser.save();
+    res.status(201).json(saveUser);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+// Update a user by ID
+exports.updateUserById = async (req, res) => {
+  const { fname, lname, dob, email, phoneNumber, profile, role } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { fname, lname, dob, email, phoneNumber, profile, role },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 // Delete a user
 exports.deleteUserById = async (req, res) => {
   try {

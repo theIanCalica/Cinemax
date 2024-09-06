@@ -31,6 +31,12 @@ const UserSchema = new Schema(
       type: String,
       required: "Profile is required!",
     },
+    role: {
+      type: String,
+      required: [true, "Role is required"],
+      default: "Admin",
+      enum: ["Admin", "User", "Moderator"],
+    },
   },
   {
     timestamps: true,

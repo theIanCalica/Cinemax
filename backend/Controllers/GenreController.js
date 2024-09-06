@@ -59,7 +59,7 @@ exports.updateGenreById = async (req, res) => {
       return res.status(404).json({ msg: "Genre not found" });
     }
 
-    res.json(genre);
+    res.status(200).json(genre);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
