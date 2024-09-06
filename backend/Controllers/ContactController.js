@@ -1,5 +1,4 @@
-const express = require("express");
-const router = express.Router();
+// controllers/contactController.js
 const Contact = require("../Models/Contact");
 const nodemailer = require("nodemailer");
 
@@ -12,7 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Get all contacts
-router.get("/", async (req, res) => {
+exports.getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.find();
     res.json(contacts);
@@ -20,19 +19,13 @@ router.get("/", async (req, res) => {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
-});
+};
 
 // Add Contact
-router.post("/", async (req, res) => {
+exports.addContact = async (req, res) => {
   const { name, email, phone, subject, body } = req.body;
   try {
-    const newContact = new Contact({
-      name,
-      email,
-      phone,
-      subject,
-      body,
-    });
+    const newContact = new Contact({ name, email, phone, subject, body });
 
     const saveContact = await newContact.save();
 
@@ -97,16 +90,14 @@ router.post("/", async (req, res) => {
         res.status(201).json(saveContact);
       }
     });
-
-    res.status(201).json(saveContact);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
   }
-});
+};
 
 // Get a single contact by ID
-router.get("/:id", async (req, res) => {
+exports.getContactById = async (req, res) => {
   try {
     const contact = await Contact.findById(req.params.id);
 
@@ -119,18 +110,17 @@ router.get("/:id", async (req, res) => {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
-});
+};
 
 // Update a contact by ID
-router.put("/:id", async (req, res) => {
+exports.updateContactById = async (req, res) => {
   const { name, email, phone, subject, body } = req.body;
 
   try {
-    // Find and update the contact
     const contact = await Contact.findByIdAndUpdate(
       req.params.id,
       { name, email, phone, subject, body },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (!contact) {
@@ -142,10 +132,10 @@ router.put("/:id", async (req, res) => {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
-});
+};
 
 // Delete a contact by ID
-router.delete("/:id", async (req, res) => {
+exports.deleteContactById = async (req, res) => {
   try {
     const contact = await Contact.findByIdAndDelete(req.params.id);
 
@@ -158,6 +148,4 @@ router.delete("/:id", async (req, res) => {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
-});
-
-module.exports = router;
+};

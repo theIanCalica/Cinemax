@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 
 // Include routes
 const articleRoutes = require("./routes/Article");
-const ContactRoutes = require("./routes/Contact");
+const ContactRoutes = require("./routes/ContactRoutes");
 const GenreRoutes = require("./routes/Genre");
 const CategoryRoutes = require("./routes/Category");
 
