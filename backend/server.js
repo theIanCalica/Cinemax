@@ -6,10 +6,10 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 
 // Include routes
-const articleRoutes = require("./routes/Article");
+const articleRoutes = require("./routes/ArticleRoutes");
 const ContactRoutes = require("./routes/ContactRoutes");
-const GenreRoutes = require("./routes/Genre");
-const CategoryRoutes = require("./routes/Category");
+const GenreRoutes = require("./routes/GenreRoutes");
+const CategoryRoutes = require("./routes/CategoryRoutes");
 
 // express app
 const app = express();
