@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 exports.getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.find();
-    res.json(contacts);
+    res.status(200).json(contacts);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
