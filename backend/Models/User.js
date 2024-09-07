@@ -28,8 +28,14 @@ const UserSchema = new Schema(
       unique: true,
     },
     profile: {
-      type: String,
-      required: "Profile is required!",
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
     },
     role: {
       type: String,
