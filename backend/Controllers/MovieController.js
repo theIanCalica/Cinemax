@@ -70,9 +70,43 @@ exports.createMovie = async (req, res) => {
 
 // Update a movie by ID
 exports.updateMovieById = async (req, res) => {
-  const { genre, title, description, release_date, duration, image } = req.body;
-
   try {
+    const currentMovie = await Movie.findById(req.params.id);
+
+    const data = {
+      genre: req.body.genre,
+      title: req.body.title,
+      description: req.body.description,
+      release_date: req.body.release_date,
+      duration: req.body.duration,
+    };
+
+    if (req.body.image !== "") {
+      const imgId = currentMovie.image.public_id;
+
+      if (imgId) {
+        await cloudinary.uploader.destroy(imgId);
+      }
+
+      const newImage = await cloudinary.uploader.upload(req.body.image, {
+        folder: "movies",
+      });
+
+      data.image = {
+        public_id: newImage.public_id,
+        url: newImage.secure_url,
+      };
+    }
+
+    const movie = await Movie.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+    });
+
+    if (!movie) {
+      return res.status(404).json({ msg: "Movie not found" });
+    }
+
+    res.status(200).json({ movie, success: true });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

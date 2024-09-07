@@ -82,13 +82,13 @@ exports.updateUserById = async (req, res) => {
       role: req.body.role,
     };
 
-    if (req.body.image !== "") {
+    if (req.body.profile !== "") {
       const imgId = currentUser.profile.public_id;
       if (ImgId) {
         await cloudinary.uploader.destroy(ImgId);
       }
 
-      const newProfile = await cloudinary.uploader.upload(req.body.imagem, {
+      const newProfile = await cloudinary.uploader.upload(req.body.profile, {
         folder: "users",
       });
 
