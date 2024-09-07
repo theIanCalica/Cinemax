@@ -20,7 +20,7 @@ exports.getCategoryById = async (req, res) => {
       return res.status(404).json({ msg: "Category not found!" });
     }
 
-    res.json(category);
+    res.status(200).json(category);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
