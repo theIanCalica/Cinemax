@@ -18,6 +18,7 @@ import HomeAdmin from "./pages/admin/Home";
 import Category from "./pages/admin/FoodCategory";
 import FoodList from "./pages/admin/FoodList";
 import Genre from "./pages/admin/Genre";
+import User from "./pages/admin/UsersPage";
 import "./main.css";
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
         <Route path="/admin" element={<Layout />}>
           <Route index element={<HomeAdmin />} />
           <Route path="task"></Route>
-          <Route path="users"></Route>
+          <Route path="users" element={<User />}></Route>
           <Route path="articles"></Route>
           <Route path="user-profile"></Route>
           <Route path="emails"></Route>

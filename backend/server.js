@@ -39,6 +39,7 @@ mongoose
   .catch((error) => {
     console.log(error);
   });
+
 // Middleware
 app.use(express.json());
 
