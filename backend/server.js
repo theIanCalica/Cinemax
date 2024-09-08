@@ -7,9 +7,12 @@ const nodemailer = require("nodemailer");
 
 // Include routes
 const articleRoutes = require("./routes/ArticleRoutes");
-const ContactRoutes = require("./routes/ContactRoutes");
-const GenreRoutes = require("./routes/GenreRoutes");
 const CategoryRoutes = require("./routes/CategoryRoutes");
+const ContactRoutes = require("./routes/ContactRoutes");
+const FoodRoutes = require("./routes/FoodRoutes");
+const GenreRoutes = require("./routes/GenreRoutes");
+const MovieRoutes = require("./routes/MovieRoutes");
+const UserRoutes = require("./routes/UserRoutes");
 
 // express app
 const app = express();
@@ -19,9 +22,12 @@ app.use(express.json());
 
 // Routes
 app.use("/api/articles", articleRoutes);
-app.use("/api/contacts", ContactRoutes);
-app.use("/api/genres", GenreRoutes);
 app.use("/api/categories", CategoryRoutes);
+app.use("/api/contacts", ContactRoutes);
+app.use("/api/foods", FoodRoutes);
+app.use("/api/genres", GenreRoutes);
+app.use("/api/movies", MovieRoutes);
+app.use("/api/users", UserRoutes);
 
 mongoose
   .connect(process.env.MONG_URL)
