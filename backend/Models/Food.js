@@ -22,7 +22,7 @@ const FoodSchema = new Schema(
       required: "Availability is required",
       default: true,
     },
-    image_url: {
+    image: {
       type: String,
       required: "Image is required",
       trim: true,
