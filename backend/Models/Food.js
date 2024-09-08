@@ -23,9 +23,14 @@ const FoodSchema = new Schema(
       default: true,
     },
     image: {
-      type: String,
-      required: "Image is required",
-      trim: true,
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
     },
   },
   {

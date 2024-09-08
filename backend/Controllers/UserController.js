@@ -92,7 +92,7 @@ exports.updateUserById = async (req, res) => {
         folder: "users",
       });
 
-      data.image = {
+      data.profile = {
         public_id: newProfile.public_id,
         url: newProfile.secure_url,
       };
