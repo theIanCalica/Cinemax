@@ -10,6 +10,7 @@ import FoodModal from "../../components/admin/Modal/Food";
 
 const FoodList = () => {
   const [foods, setFoods] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentFood, setCurrentFood] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -21,22 +22,14 @@ const FoodList = () => {
         const json = await response.json();
         setFoods(json);
       } else {
-        console.error("Failed to fetch categories:", response.statusText);
+        console.error("Failed to fetch foods:", response.statusText);
       }
     } catch (err) {
       console.error("Error fetching foods:", err);
     }
   };
 
-  const fetchFoodCategories = async () => {
-    try {
-    } catch (err) {
-      console.error("Error fetching food categories:", err);
-    }
-  };
-  useEffect(() => {
-    fetchFoods();
-  });
+  useEffect(() => {});
 
   // Open and close modal
   const openModal = (food = null) => {
