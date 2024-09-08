@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 const Genre = ({
   onClose,
@@ -7,21 +8,31 @@ const Genre = ({
   notifyError,
   genreToEdit,
   isEditing,
-  refresh,
 }) => {
-  const [genre, setGenre] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     if (isEditing && genreToEdit) {
-      setGenre(genreToEdit.name);
+      reset({ name: genreToEdit.name });
     } else {
-      setGenre("");
+      reset({ name: "" });
     }
-  }, [isEditing, genreToEdit]);
+  }, [isEditing, genreToEdit, reset]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Utility function to determine input border color
+  const getBorderColor = (fieldName) => {
+    if (errors[fieldName]) {
+      return "border-red-500";
+    }
+    return "border-gray-200";
+  };
 
+  const onSubmit = async (data) => {
     const url = isEditing
       ? `http://localhost:4000/api/genres/${genreToEdit._id}`
       : "http://localhost:4000/api/genres";
@@ -32,7 +43,7 @@ const Genre = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: genre }),
+        body: JSON.stringify({ name: data.name }),
       });
 
       if (response.ok) {
@@ -43,7 +54,6 @@ const Genre = ({
             ? "Genre updated successfully"
             : "Genre created successfully"
         ); // Notify success
-        setGenre(""); // Clear the input
         onClose(); // Close the modal
       } else {
         notifyError(
@@ -69,7 +79,7 @@ const Genre = ({
         <h2 className="text-xl font-bold mb-4">
           {isEditing ? "Edit Genre" : "Add Genre"}
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label htmlFor="genre" className="block text-gray-700 mb-2">
               Genre
@@ -77,11 +87,14 @@ const Genre = ({
             <input
               id="genre"
               type="text"
-              value={genre}
-              onChange={(e) => setGenre(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
+              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
+                "name"
+              )}`}
+              {...register("name", { required: "Genre is required" })}
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
           </div>
           <div className="flex justify-end">
             <button
