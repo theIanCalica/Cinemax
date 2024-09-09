@@ -36,15 +36,10 @@ const Contact = ({
             <input
               id="name"
               type="text"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "name",
-                errors
-              )}`}
-              {...register("name", { required: "Category name is required" })}
+              readOnly
+              className={`w-full px-3 py-2 border rounded-md`}
+              {...register("name")}
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-            )}
           </div>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 mb-2">
@@ -53,21 +48,10 @@ const Contact = ({
             <input
               id="email"
               type="email"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "email",
-                errors
-              )}`}
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Invalid email address",
-                },
-              })}
+              readOnly
+              className={`w-full px-3 py-2 border rounded-md`}
+              {...register("email")}
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-            )}
           </div>
           <div className="mb-4">
             <label htmlFor="phone" className="block text-gray-700 mb-2">
@@ -76,16 +60,35 @@ const Contact = ({
             <input
               id="phone"
               type="text"
+              readOnly
               maxLength={11}
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "phone",
-                errors
-              )}`}
-              {...register("phone", { required: "Phone Number is required" })}
+              className={`w-full px-3 py-2 border rounded-md`}
+              {...register("phone")}
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="subject" className="block text-gray-700 mb-2">
+              Subject
+            </label>
+            <input
+              id="subject"
+              type="text"
+              readOnly
+              className={`w-full px-3 py-2 border rounded-md`}
+              {...register("subject")}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="body" className="block text-gray-700 mb-2">
+              Message
+            </label>
+            <textarea
+              {...register("subject")}
+              name="body"
+              id="body"
+              readOnly
+              className={`w-full px-3 py-2 border rounded-md`}
+            ></textarea>
           </div>
           <div className="flex justify-end">
             <button
