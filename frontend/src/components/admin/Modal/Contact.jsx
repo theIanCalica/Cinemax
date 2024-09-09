@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { getBorderColor } from "../../../Utils/borderColor";
 
-const Contact = () => {
+const Contact = ({
+  onClose,
+  onCategoryCreated,
+  notifySuccess,
+  notifyError,
+  categoryToEdit,
+  isEditing,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
   return (
     <div>
       <div></div>

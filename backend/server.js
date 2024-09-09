@@ -13,6 +13,7 @@ const FoodRoutes = require("./routes/FoodRoutes");
 const GenreRoutes = require("./routes/GenreRoutes");
 const MovieRoutes = require("./routes/MovieRoutes");
 const UserRoutes = require("./routes/UserRoutes");
+const streamifier = require("streamifier");
 
 // express app
 const app = express();

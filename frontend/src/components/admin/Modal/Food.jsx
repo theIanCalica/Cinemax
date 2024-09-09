@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 // Import React FilePond
 import { FilePond, registerPlugin } from "react-filepond";
+
+// Import FilePond styles
+import "filepond/dist/filepond.min.css";
+
+// Import the Image EXIF Orientation and Image Preview plugins
+import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+
+// Register the plugins
+registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
+
 const Food = ({
   onClose,
   onFoodCreated,
@@ -20,6 +32,7 @@ const Food = ({
   } = useForm();
 
   const [categories, setCategories] = useState([]);
+  const [image, setImage] = useState([]);
 
   const fetchFoodCategories = async () => {
     try {
@@ -32,7 +45,6 @@ const Food = ({
       });
 
       const data = await response.json();
-      // Assuming data is an array of category objects with id and name
       setCategories(
         data.map((category) => ({
           value: category._id,
@@ -55,10 +67,13 @@ const Food = ({
         price: foodToEdit.price,
         category: categories.find(
           (category) => category.value === foodToEdit.categoryId
-        ), // Set initial category
+        ), // Set initial category option object
+        availability: options.find(
+          (option) => option.value === foodToEdit.availability
+        ), // Set initial availability option object
       });
     } else {
-      reset({ name: "", price: "", category: null });
+      reset({ name: "", price: "", category: null, availability: null });
     }
   }, [isEditing, foodToEdit, categories]);
 
@@ -78,16 +93,17 @@ const Food = ({
           name: data.name,
           price: data.price,
           categoryId: data.category.value,
+          availability: data.availability.value,
         }),
       });
 
       if (response.ok) {
         const food = await response.json();
-        onFoodCreated(food); // Add the new or updated food to the list
+        onFoodCreated(food);
         notifySuccess(
           isEditing ? "Food updated successfully" : "Food created successfully"
-        ); // Notify success
-        onClose(); // Close the modal
+        );
+        onClose();
       } else {
         notifyError(
           isEditing ? "Failed to update food" : "Failed to create food"
@@ -155,7 +171,6 @@ const Food = ({
               placeholder="Select Category"
               isClearable
               isSearchable
-              {...register("category", { required: "Category is required" })}
               onChange={(selectedOption) =>
                 setValue("category", selectedOption)
               }
@@ -169,7 +184,6 @@ const Food = ({
                 }),
               }}
             />
-
             {errors.category && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.category.message}
@@ -195,7 +209,7 @@ const Food = ({
             )}
           </div>
           <div className="mb-4">
-            <label htmlFor="category" className="block text-gray-700 mb-2">
+            <label htmlFor="availability" className="block text-gray-700 mb-2">
               Availability
             </label>
             <Select
@@ -207,9 +221,6 @@ const Food = ({
               onChange={(selectedOption) =>
                 setValue("availability", selectedOption)
               }
-              {...register("availability", {
-                required: "Availability is required",
-              })}
               styles={{
                 control: (base, state) => ({
                   ...base,
@@ -220,11 +231,26 @@ const Food = ({
                 }),
               }}
             />
-
             {errors.availability && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.availability.message}
               </p>
+            )}
+          </div>
+
+          {/* FilePond Integration */}
+          <div className="mb-4 col-span-2">
+            <label className="block text-gray-700 mb-2">Image</label>
+            <FilePond
+              name="image"
+              server="http://localhost:4000/api/foods/upload-pic"
+              allowMultiple={false}
+              acceptedFileTypes={["image/png", "image/jpeg", "image/jpg"]}
+              labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+            />
+            <input type="hidden" {...register("image", { required: true })} />
+            {errors.image && (
+              <p className="text-red-500 text-sm mt-1">Image is required</p>
             )}
           </div>
         </form>
@@ -239,9 +265,9 @@ const Food = ({
           <button
             type="submit"
             form="food-form"
-            className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+            className="px-4 py-2 rounded-md bg-blue-500 text-white"
           >
-            {isEditing ? "Update" : "Create"}
+            {isEditing ? "Save Changes" : "Add Food"}
           </button>
         </div>
       </div>

@@ -1,5 +1,20 @@
 const Food = require("../Models/Food");
+const multer = require("multer");
 const cloudinary = require("../utils/Cloudinary");
+const streamifier = require("streamifier");
+const fs = require("fs");
+const path = require("path");
+
+// Configure multer for temporary storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../temp")); // Save to temp folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname); // Use the original file name
+  },
+});
+const upload = multer({ storage });
 
 // Get all foods
 exports.getAllFoods = async (req, res) => {
@@ -53,6 +68,29 @@ exports.createFood = async (req, res) => {
     res.status(500).send("Server Error!");
   }
 };
+
+exports.uploadPic = [
+  upload.single("image"),
+  (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      // Respond with the path to the saved file
+      res.json({
+        filePath: path.join("temp", req.file.filename),
+        fileName: req.file.filename,
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Server Error!");
+    }
+  },
+];
+
+// Delete pic
+exports.deletePic = async (req, res) => {};
 
 // Update a food by ID
 exports.updateFoodById = async (req, res) => {

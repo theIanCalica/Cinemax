@@ -29,7 +29,7 @@ function App() {
         <Route path="/about" element={<AboutPage />}></Route>
         <Route path="/contact" element={<ContactPage />}></Route>
         <Route path="/email" element={<Email />} />
-
+        <Route path="/login" element={<SigninPage />}></Route>
         {/* Route for admin */}
         <Route path="/admin" element={<Layout />}>
           <Route index element={<HomeAdmin />} />
