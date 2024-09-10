@@ -475,53 +475,6 @@ const Sidebar = ({ isMinimized }) => {
           </li>
         </Link>
 
-        {/* Email */}
-        <Link to="emails">
-          <li
-            className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
-            onMouseOver={() => setHovered("email")}
-            onMouseOut={() => setHovered(null)}
-            onClick={() => handleItemClick("email")}
-            style={{
-              backgroundColor:
-                hovered === "email" || selected === "email"
-                  ? "#161621"
-                  : "transparent",
-            }}
-          >
-            {selected === "email" && (
-              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
-            )}
-            <div
-              className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
-              style={{ backgroundColor: "#2B3138" }}
-            >
-              <EmailIcon
-                style={{
-                  color: "#33C92D",
-                  fontSize: "1.7rem",
-                  lineHeight: "1",
-                }}
-                className="p-1"
-              />
-            </div>
-            <span
-              className={`transition-all ease-in-out duration-500 ${
-                isMinimized ? "hidden" : "block"
-              }`}
-              style={{
-                fontSize: "16px",
-                color:
-                  hovered === "email" || selected === "email"
-                    ? "white"
-                    : "#9ca3af",
-              }}
-            >
-              Email
-            </span>
-          </li>
-        </Link>
-
         {/* Message */}
         <Link to="messages">
           <li

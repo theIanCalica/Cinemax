@@ -22,6 +22,7 @@ import User from "./pages/admin/UsersPage";
 import Contacts from "./pages/admin/Contact";
 import Article from "./pages/admin/Article";
 import Task from "./pages/admin/Task";
+import Message from "./pages/admin/Message";
 
 import "./main.css";
 function App() {
@@ -37,12 +38,12 @@ function App() {
         {/* Route for admin */}
         <Route path="/admin" element={<Layout />}>
           <Route index element={<HomeAdmin />} />
-          <Route path="task"></Route>
+          <Route path="task" element={<Task />}></Route>
           <Route path="users" element={<User />}></Route>
           <Route path="articles" element={<Article />}></Route>
           <Route path="user-profile"></Route>
           <Route path="emails"></Route>
-          <Route path="messages"></Route>
+          <Route path="messages" element={<Message />}></Route>
           <Route path="contacts" element={<Contacts />}></Route>
           {/* Route for food related pages */}
           <Route path="food" element={null}>
