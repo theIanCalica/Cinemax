@@ -20,6 +20,7 @@ import FoodList from "./pages/admin/FoodList";
 import Genre from "./pages/admin/Genre";
 import User from "./pages/admin/UsersPage";
 import Contacts from "./pages/admin/Contact";
+import Article from "./pages/admin/Article";
 
 import "./main.css";
 function App() {
@@ -37,7 +38,7 @@ function App() {
           <Route index element={<HomeAdmin />} />
           <Route path="task"></Route>
           <Route path="users" element={<User />}></Route>
-          <Route path="articles"></Route>
+          <Route path="articles" element={<Article />}></Route>
           <Route path="user-profile"></Route>
           <Route path="emails"></Route>
           <Route path="messages"></Route>
