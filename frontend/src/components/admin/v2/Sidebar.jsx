@@ -429,7 +429,7 @@ const Sidebar = ({ isMinimized }) => {
           User
         </h1>
         {/* User Profile */}
-        <Link to="user-profile">
+        <Link to="profile">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
             onMouseOver={() => setHovered("profile")}

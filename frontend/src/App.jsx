@@ -23,6 +23,7 @@ import Contacts from "./pages/admin/Contact";
 import Article from "./pages/admin/Article";
 import Task from "./pages/admin/Task";
 import Message from "./pages/admin/Message";
+import Profile from "./pages/admin/Profile";
 
 import "./main.css";
 function App() {
@@ -41,7 +42,7 @@ function App() {
           <Route path="task" element={<Task />}></Route>
           <Route path="users" element={<User />}></Route>
           <Route path="articles" element={<Article />}></Route>
-          <Route path="user-profile"></Route>
+          <Route path="profile" element={<Profile />}></Route>
           <Route path="emails"></Route>
           <Route path="messages" element={<Message />}></Route>
           <Route path="contacts" element={<Contacts />}></Route>
