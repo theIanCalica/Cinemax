@@ -19,6 +19,8 @@ import Category from "./pages/admin/FoodCategory";
 import FoodList from "./pages/admin/FoodList";
 import Genre from "./pages/admin/Genre";
 import User from "./pages/admin/UsersPage";
+import Contacts from "./pages/admin/Contact";
+
 import "./main.css";
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
           <Route path="user-profile"></Route>
           <Route path="emails"></Route>
           <Route path="messages"></Route>
+          <Route path="contacts" element={<Contacts />}></Route>
           {/* Route for food related pages */}
           <Route path="food" element={null}>
             <Route path="category" element={<Category />} />

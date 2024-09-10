@@ -15,7 +15,10 @@ const Layout = () => {
       <Sidebar isMinimized={isSidebarMinimized} />
       <div className="flex flex-col w-full">
         <Navbar toggleSidebar={toggleSidebar} />
-        <main className="p-4 h-screen " style={{ backgroundColor: "#F0F1F6" }}>
+        <main
+          className="p-4 h-screen overflow-auto "
+          style={{ backgroundColor: "#F0F1F6" }}
+        >
           <Outlet />
         </main>
       </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { getBorderColor } from "../../../Utils/borderColor";
+import Select from "react-select";
 
 const Contact = ({
   onClose,
@@ -13,15 +14,52 @@ const Contact = ({
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm();
 
-  // useEffect(() => {
-  //   if(isEditing && contactToEdit){
-  //     reset({})
-  //   }
-  // });
-  const onSubmit = async (data) => {};
+  useEffect(() => {
+    if (isEditing && contactToEdit) {
+      reset({
+        name: contactToEdit.name,
+        email: contactToEdit.email,
+        phone: contactToEdit.phone,
+        subject: contactToEdit.subject,
+        body: contactToEdit.body,
+        status: contactToEdit.status, // Pre-fill status for edit mode
+      });
+      // Set value for react-select
+      setValue("status", contactToEdit.status);
+    }
+  }, [isEditing, contactToEdit, reset, setValue]);
+  const onSubmit = async (data) => {
+    console.log(data);
+    const url = isEditing
+      ? `http://localhost:4000/api/contacts/${contactToEdit._id}`
+      : "http://localhost:4000/api/contacts";
+    const method = isEditing ? "PUT" : "POST";
+    try {
+      const respones = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json1",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          subject: data.subject,
+        }),
+      });
+    } catch (err) {}
+  };
+
+  const options = [
+    { value: "pending", label: "Pending" },
+    { value: "in-progress", label: "In Progress" },
+    { value: "resolved", label: "Resolved" },
+  ];
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
@@ -89,6 +127,28 @@ const Contact = ({
               readOnly
               className={`w-full px-3 py-2 border rounded-md`}
             ></textarea>
+          </div>
+          <div className="mb-4">
+            <label htmlFor="status" className="block text-gray-700 mb-2">
+              Subject
+            </label>
+            <Select
+              options={options}
+              id="status"
+              placeholder="Select status"
+              onChange={(selectedOption) => setValue("status", selectedOption)}
+              isClearable
+              isSearchable
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  borderColor: errors.availability ? "red" : base.borderColor,
+                  "&:hover": {
+                    borderColor: errors.availability ? "red" : base.borderColor,
+                  },
+                }),
+              }}
+            />
           </div>
           <div className="flex justify-end">
             <button

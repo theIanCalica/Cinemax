@@ -36,6 +36,12 @@ const ContactSchema = new Schema(
       type: String,
       required: [true, "Body is required!"],
     },
+    status: {
+      type: String,
+      enum: ["pending", "in-progress", "resolved"], // List of allowed statuses
+      default: "pending", // Default value
+      required: true,
+    },
   },
   {
     timestamps: true,
