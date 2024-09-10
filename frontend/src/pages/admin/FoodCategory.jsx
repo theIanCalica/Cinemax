@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import CategoryModal from "../../components/admin/Modal/FoodCategory";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
+import CategoryModal from "../../components/admin/Modal/FoodCategory";
+
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,18 +91,10 @@ const FoodCategory = () => {
             prevCategories.filter((category) => category._id !== categoryId)
           );
         } else {
-          Swal.fire(
-            "Error!",
-            "There was an issue deleting the category.",
-            "error"
-          );
+          notifyError("Deletion Unsuccessful");
         }
       } catch (error) {
-        Swal.fire(
-          "Error!",
-          "An error occurred while deleting the category.",
-          "error"
-        );
+        notifyError("Error occured");
       }
     }
   };

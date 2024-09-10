@@ -21,6 +21,7 @@ import Genre from "./pages/admin/Genre";
 import User from "./pages/admin/UsersPage";
 import Contacts from "./pages/admin/Contact";
 import Article from "./pages/admin/Article";
+import Task from "./pages/admin/Task";
 
 import "./main.css";
 function App() {
