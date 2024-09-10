@@ -4,7 +4,7 @@ import BarChart from "../../components/admin/Chart/BarChart";
 import LineChart from "../../components/admin/Chart/LineChart";
 import PieChart from "../../components/admin/Chart/PieChart";
 import Map from "../../components/admin/Map";
-import TopFoods from "../../components/admin/TopFoods";
+import ContactWidget from "../../components/admin/ContactWidget";
 import TopMovies from "../../components/admin/TopMovies";
 
 const Home = () => {
@@ -37,10 +37,10 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="flex gap-4 mt-5">
+      <div className="flex justify-between gap-4 mt-5">
         <PieChart />
-
         <TopMovies />
+        <ContactWidget />
       </div>
 
       <div className="container mt-5 bg-white p-4 shadow-md rounded-lg">

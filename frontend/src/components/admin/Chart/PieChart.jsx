@@ -46,7 +46,7 @@ const PieChart = () => {
   };
 
   return (
-    <div className="bg-white p-4 shadow-md rounded-lg">
+    <div className="bg-white p-4 shadow-md rounded-lg w-full max-w-sm">
       <h2 className="text-xl font-semibold mb-4">Top 5 Foods</h2>
       <Pie data={data} options={options} />
       <div className="flex justify-between items-center mt-6">
