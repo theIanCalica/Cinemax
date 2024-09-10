@@ -119,7 +119,14 @@ exports.updateContactById = async (req, res) => {
   try {
     const contact = await Contact.findByIdAndUpdate(
       req.params.id,
-      { name, email, phone, subject, body, status },
+      {
+        name,
+        email,
+        phone,
+        subject,
+        body,
+        status: status?.value, // Extract the value from the status object
+      },
       { new: true }
     );
 

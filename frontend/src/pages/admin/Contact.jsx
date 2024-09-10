@@ -41,15 +41,12 @@ const Contact = () => {
   };
 
   // Add or update contact in the state
-  const handleContactChange = (updatedContact) => {
-    if (isEditing) {
-      setContacts((prevContacts) =>
-        prevContacts.map((contact) =>
-          contact._id === updatedContact._id ? updatedContact : contact
-        )
-      );
-    } else {
-      setContacts((prevContacts) => [...prevContacts, updatedContact]);
+  const handleContactChange = async (updatedContact) => {
+    try {
+      // Re-fetch contacts after a successful update
+      await fetchContacts(); // This will refresh the table data
+    } catch (err) {
+      console.error("Error updating contact:", err);
     }
   };
 
@@ -109,11 +106,27 @@ const Contact = () => {
                 <td className="py-2 px-4 border-b">
                   {formatDate(contact.updatedAt)}
                 </td>
-                <td className="py-2 px-4 border-b">{contact.status}</td>
+                <td className="py-2 px-4 border-b">
+                  {contact.status
+                    .split("-") // Split the status by hyphen if it has one (e.g., in-progress)
+                    .map(
+                      (word) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
+                    ) // Capitalize the first letter of each part
+                    .join("-")}{" "}
+                  {/* Join the words back together */}
+                </td>
+
                 <td className="py-2 px-4 border-b">
                   <button
-                    className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+                    className={`p-1 mr-2 rounded-full bg-transparent ${
+                      contact.status.toLowerCase() === "resolved"
+                        ? "text-gray-500 cursor-not-allowed"
+                        : "text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+                    }`}
                     onClick={() => openModal(contact)} // Pass the contact to be edited
+                    disabled={contact.status.toLowerCase() === "resolved"} // Disable if status is Resolved
                   >
                     <EditOutlinedIcon />
                   </button>

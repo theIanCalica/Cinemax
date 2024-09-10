@@ -156,9 +156,7 @@ const Contact = ({
               id="status"
               placeholder="Select status"
               value={selectedStatus} // Set current value
-              onChange={(selectedOption) =>
-                setValue("status", selectedOption?.value)
-              } // Update form value on change
+              onChange={(selectedOption) => setValue("status", selectedOption)} // Update form value on change
               isClearable
               isSearchable
               styles={{
