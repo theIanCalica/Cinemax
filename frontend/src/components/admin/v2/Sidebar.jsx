@@ -40,7 +40,20 @@ const Sidebar = ({ isMinimized }) => {
       }`}
       style={{ backgroundColor: "#181824" }}
     >
-      <div className="p-4 text-xl font-bold font-serif">Cinemax</div>
+      {!isMinimized && (
+        <div className="p-4 text-xl font-bold font-serif">Cinemax</div>
+      )}
+
+      {/* Image displayed when minimized */}
+      {isMinimized && (
+        <div className="p-4">
+          <img
+            src="/images/logoTransparent.png"
+            alt="Cinemax"
+            className="w-32 h-auto"
+          />
+        </div>
+      )}
       <ul className="mt-5 text-xs">
         <h1
           className={`text-gray-400 font-sans px-8 pt-1 ${
