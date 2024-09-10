@@ -4,6 +4,8 @@ import BarChart from "../../components/admin/Chart/BarChart";
 import LineChart from "../../components/admin/Chart/LineChart";
 import PieChart from "../../components/admin/Chart/PieChart";
 import Map from "../../components/admin/Map";
+import TopFoods from "../../components/admin/TopFoods";
+import TopMovies from "../../components/admin/TopMovies";
 
 const Home = () => {
   return (
@@ -22,7 +24,6 @@ const Home = () => {
       <div className="container mt-5 bg-white p-4 shadow-md rounded-lg ">
         <BarChart />
 
-        {/* Flex container for 'View More' and 'Download Report' */}
         <div className="flex justify-between items-center mt-4">
           {/* Left side: View More */}
           <div className="text-blue-500 cursor-pointer hover:underline">
@@ -30,12 +31,18 @@ const Home = () => {
           </div>
 
           {/* Right side: Download Report */}
-          <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          <button className="bg-transparent border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">
             Download Report
           </button>
         </div>
       </div>
-      <div></div>
+
+      <div className="flex gap-4 mt-5">
+        <PieChart />
+
+        <TopMovies />
+      </div>
+
       <div className="container mt-5 bg-white p-4 shadow-md rounded-lg">
         <Map />
       </div>
