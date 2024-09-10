@@ -114,12 +114,12 @@ exports.getContactById = async (req, res) => {
 
 // Update a contact by ID
 exports.updateContactById = async (req, res) => {
-  const { name, email, phone, subject, body } = req.body;
+  const { name, email, phone, subject, body, status } = req.body;
 
   try {
     const contact = await Contact.findByIdAndUpdate(
       req.params.id,
-      { name, email, phone, subject, body },
+      { name, email, phone, subject, body, status },
       { new: true }
     );
 
@@ -127,7 +127,8 @@ exports.updateContactById = async (req, res) => {
       return res.status(404).json({ msg: "Contact not found" });
     }
 
-    res.json(contact);
+    res.status(201).json({ success: true, contact });
+    console.log(req);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

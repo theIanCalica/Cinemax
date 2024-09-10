@@ -72,7 +72,7 @@ const Contact = () => {
           contactToEdit={currentContact} // Pass the current category to the modal
           isEditing={isEditing} // Pass editing state to the modal
           onClose={closeModal}
-          onCategoryCreated={handleContactChange} // Pass function to add or update category
+          onContactCreated={handleContactChange} // Pass function to add or update category
           notifySuccess={notifySuccess} // Pass success notification
           notifyError={notifyError} // Pass error notification
           refresh={fetchContacts} //Pass refresh function for the table
@@ -91,6 +91,7 @@ const Contact = () => {
               <th className="py-2 px-4 border-b text-left">Subject</th>
               <th className="py-2 px-4 border-b text-left">Sent</th>
               <th className="py-2 px-4 border-b text-left">Updated</th>
+              <th className="py-2 px-4 border-b text-left">Status</th>
               <th className="py-2 px-4 border-b text-left">Edit</th>
             </tr>
           </thead>
@@ -108,6 +109,7 @@ const Contact = () => {
                 <td className="py-2 px-4 border-b">
                   {formatDate(contact.updatedAt)}
                 </td>
+                <td className="py-2 px-4 border-b">{contact.status}</td>
                 <td className="py-2 px-4 border-b">
                   <button
                     className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
