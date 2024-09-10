@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@amcharts/amcharts5": "^5.10.5",
+    "@amcharts/amcharts5-fonts": "^5.0.1",
+    "@amcharts/amcharts5-geodata": "^5.1.4",
     "@date-io/dayjs": "^3.0.0",
     "@editorjs/editorjs": "^2.30.5",
     "@emotion/react": "^11.13.3",
