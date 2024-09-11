@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { formatDate } from "../../Utils/FormatDate";
 import { notifySuccess, notifyError } from "../../Utils/notification";
+import ArticleModal from "../../components/admin/Modal/Article";
+
 const Article = () => {
   const [articles, setArticles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,7 +94,81 @@ const Article = () => {
     <div className="px-3 mt-8">
       <div className="flex justify-between">
         <h1 className="font-bold font-serif text-2xl">Articles</h1>
+        <p style={{ fontSize: "13.5px" }}>
+          <span className="text-blue-500 hover:underline">Home</span> /
+          <span className="text-gray-500">Article</span>
+        </p>
       </div>
+      <button
+        onClick={() => openModal()} // Open modal for adding new category
+        className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+      >
+        Add Article
+      </button>
+
+      {isModalOpen && (
+        <ArticleModal
+          ArticleToEdit={currentArticle}
+          isEditing={isEditing}
+          onClose={closeModal}
+          onArticleCreated={handleArticleChange}
+          notifySuccess={notifySuccess}
+          notifyError={notifyError}
+          refresh={fetchArticles}
+        />
+      )}
+      {/* Display articles in a table */}
+      <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
+        <table className="min-w-full bg-white border-collapse">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 border-b text-left">ID</th>
+              <th className="py-2 px-4 border-b text-left">Title</th>
+              <th className="py-2 px-4 border-b text-left">Status</th>
+              <th className="py-2 px-4 border-b text-left">Date Published</th>
+              <th className="py-2 px-4 border-b text-left">Date Updated</th>
+              <th className="py-2 px-4 border-b text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {articles.map((article) => (
+              <tr key={article._id} className="hover:bg-slate-50">
+                <td className="py-2 px-4 border-b">{article._id}</td>
+                <td className="py-2 px-4 border-b">{article.title}</td>
+                <td className="py-2 px-4 border-b">
+                  {article.hidden ? "Active" : "Inactive"}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {formatDate(article.date)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {formatDate(article.updatedAt)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  <button
+                    className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+                    onClick={() => openModal(article)} // Pass the category to be edited
+                  >
+                    <EditOutlinedIcon />
+                  </button>
+
+                  <button
+                    className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
+                    onClick={() => {
+                      handleDelete(article._id);
+                    }}
+                  >
+                    <DeleteOutlineOutlinedIcon />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Toastify container for notifications */}
+      <ToastContainer />
     </div>
   );
 };

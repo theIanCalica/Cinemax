@@ -281,7 +281,7 @@ const Sidebar = ({ isMinimized }) => {
               style={{
                 fontSize: "16px",
                 color:
-                  hovered === "articles" || selected === "articles"
+                  hovered === "contacts" || selected === "contacts"
                     ? "white"
                     : "#9ca3af",
               }}

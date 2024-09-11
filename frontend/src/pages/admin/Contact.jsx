@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
 import ContactModal from "../../components/admin/Modal/Contact";
 import { formatDate } from "../../Utils/FormatDate";
+import axios from "axios";
 
 const Contact = () => {
   const [contacts, setContacts] = useState([]);
@@ -15,13 +16,16 @@ const Contact = () => {
 
   const fetchContacts = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/contacts");
-      if (response.ok) {
-        const json = await response.json();
-        setContacts(json);
-      } else {
-        console.error("Failed to fetch contacts:", response.statusText);
-      }
+      axios.get(`${process.env.API_LINK}/contacts`).then((response) => {
+        setContacts(response.data);
+      });
+      // const response = await fetch("http://localhost:4000/api/contacts");
+      // if (response.ok) {
+      //   const json = await response.json();
+      //   setContacts(json);
+      // } else {
+      //   console.error("Failed to fetch contacts:", response.statusText);
+      // }
     } catch (err) {
       console.error("Error fetching categories:", err);
     }

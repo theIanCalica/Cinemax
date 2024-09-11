@@ -13,7 +13,7 @@ const FoodRoutes = require("./routes/FoodRoutes");
 const GenreRoutes = require("./routes/GenreRoutes");
 const MovieRoutes = require("./routes/MovieRoutes");
 const UserRoutes = require("./routes/UserRoutes");
-const streamifier = require("streamifier");
+const TaskRoutes = require("./routes/TaskRoutes");
 
 // express app
 const app = express();
@@ -29,6 +29,7 @@ app.use("/api/foods", FoodRoutes);
 app.use("/api/genres", GenreRoutes);
 app.use("/api/movies", MovieRoutes);
 app.use("/api/users", UserRoutes);
+app.use("/api/tasks", TaskRoutes);
 
 mongoose
   .connect(process.env.MONG_URL)

@@ -1,6 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { getBorderColor } from "../../../Utils/borderColor";
+import Select from "react-select";
+import axios from "axios";
 
-const Article = () => {
+const Article = ({
+  ArticleToEdit,
+  isEditing,
+  onClose,
+  onArticleCreated,
+  notifySuccess,
+  notifyError,
+  refersh,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    const url = isEditing
+      ? `http://localhost:4000/api/articles/${ArticleToEdit._id}`
+      : "http://localhost:4000/api/articles";
+    const method = isEditing ? "PUT" : "POST";
+    try {
+      if (isEditing) {
+        axios.put(``);
+      }
+    } catch (err) {}
+  };
+
   return (
     <div>
       <div></div>

@@ -6,7 +6,7 @@ exports.getAllTasks = async (req, res) => {
     const tasks = await Task.find().sort({ deadline: 1 });
     res.status(201).json(tasks);
   } catch (err) {
-    console.error(err.message);
+    console.log(err.message);
     res.status(500).send("Server Error");
   }
 };
