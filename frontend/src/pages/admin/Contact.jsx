@@ -14,7 +14,16 @@ const Contact = () => {
   const [currentContact, setCurrentContact] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const fetchContacts = () => {};
+  const fetchContacts = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/contacts`)
+      .then((response) => {
+        setContacts(response.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching contacts:", err);
+      });
+  };
 
   // Open and close modal
   const openModal = (contact = null) => {
@@ -40,14 +49,7 @@ const Contact = () => {
   };
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/contacts`)
-      .then((response) => {
-        setContacts(response.data);
-      })
-      .catch((err) => {
-        console.error("Error fetching contacts:", err);
-      });
+    fetchContacts();
   }, []);
 
   return (

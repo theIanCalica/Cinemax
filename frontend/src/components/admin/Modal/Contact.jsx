@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
+import axios from "axios";
 
 const Contact = ({
   onContactCreated,
@@ -8,7 +9,6 @@ const Contact = ({
   notifySuccess,
   notifyError,
   contactToEdit,
-  isEditing,
 }) => {
   const {
     register,
@@ -20,7 +20,7 @@ const Contact = ({
   } = useForm();
 
   useEffect(() => {
-    if (isEditing && contactToEdit) {
+    if (contactToEdit) {
       reset({
         name: contactToEdit.name,
         email: contactToEdit.email,
@@ -36,32 +36,35 @@ const Contact = ({
       );
       setValue("status", selectedStatus); // Set initial value for status
     }
-  }, [isEditing, contactToEdit, reset, setValue]);
+  }, [contactToEdit, reset, setValue]);
 
   const onSubmit = async (data) => {
-    const url = isEditing
-      ? `http://localhost:4000/api/contacts/${contactToEdit._id}`
-      : "http://localhost:4000/api/contacts";
-    const method = isEditing ? "PUT" : "POST";
+    const url = `${process.env.REACT_APP_API_LINK}/contacts/${contactToEdit._id}`;
+    const method = "PUT";
+
     try {
-      const response = await fetch(url, {
+      // Make the axios request
+      const response = await axios({
         method,
+        url,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        data, // Pass the form data here
       });
 
-      if (response.ok) {
-        const contact = await response.json();
-        onContactCreated(contact);
+      // Handle success
+      if (response.status === 200 || response.status === 201) {
+        onContactCreated(response.data); // Pass the updated contact data to the callback
         notifySuccess("Contact updated successfully");
         onClose();
       } else {
+        // Handle unexpected status codes
         notifyError("Failed to update contact");
         console.error("Failed to update contact", response.statusText);
       }
     } catch (err) {
+      // Handle errors from axios
       notifyError("Error updating contact");
       console.error("Error updating contact", err);
     }
@@ -79,9 +82,7 @@ const Contact = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-xl font-bold mb-4">
-          {isEditing ? "Edit Contact" : "Add Contact"}
-        </h2>
+        <h2 className="text-xl font-bold mb-4">Edit Contact</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -182,7 +183,7 @@ const Contact = ({
               type="submit"
               className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
             >
-              {isEditing ? "Update" : "Create"}
+              Update
             </button>
           </div>
         </form>
