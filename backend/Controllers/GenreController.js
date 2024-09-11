@@ -1,4 +1,3 @@
-// controllers/genreController.js
 const Genre = require("../Models/Genre");
 
 // Get all genres
