@@ -8,7 +8,9 @@ import { notifySuccess, notifyError } from "../../Utils/notification";
 import { formatDate0 } from "../../Utils/FormatDate";
 const Task = () => {
   const [tasks, setTasks] = useState([]);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const fetchTasks = async () => {
     try {
       const response = await fetch("http://localhost:4000/api/tasks/");
@@ -21,6 +23,19 @@ const Task = () => {
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
+  };
+
+  // Open and close modal
+  const openModal = (category = null) => {
+    setCurrentCategory(category);
+    setIsEditing(!!category); // If a category is passed, set editing to true
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentCategory(null);
+    setIsEditing(false);
   };
 
   useEffect(() => {
@@ -71,6 +86,12 @@ const Task = () => {
           <span className="text-gray-500">Tasks</span>
         </p>
       </div>
+      <button
+        onClick={() => openModal()} // Open modal for adding new category
+        className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+      >
+        Add Task
+      </button>
     </div>
   );
 };

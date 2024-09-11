@@ -26,6 +26,7 @@ import Message from "./pages/admin/Message";
 import Profile from "./pages/admin/Profile";
 
 import "./main.css";
+
 function App() {
   return (
     <Router>

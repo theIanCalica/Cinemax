@@ -14,22 +14,7 @@ const Contact = () => {
   const [currentContact, setCurrentContact] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const fetchContacts = async () => {
-    try {
-      axios.get(`${process.env.API_LINK}/contacts`).then((response) => {
-        setContacts(response.data);
-      });
-      // const response = await fetch("http://localhost:4000/api/contacts");
-      // if (response.ok) {
-      //   const json = await response.json();
-      //   setContacts(json);
-      // } else {
-      //   console.error("Failed to fetch contacts:", response.statusText);
-      // }
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-    }
-  };
+  const fetchContacts = () => {};
 
   // Open and close modal
   const openModal = (contact = null) => {
@@ -55,7 +40,14 @@ const Contact = () => {
   };
 
   useEffect(() => {
-    fetchContacts();
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/contacts`)
+      .then((response) => {
+        setContacts(response.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching contacts:", err);
+      });
   }, []);
 
   return (
@@ -91,7 +83,6 @@ const Contact = () => {
               <th className="py-2 px-4 border-b text-left">Phone</th>
               <th className="py-2 px-4 border-b text-left">Subject</th>
               <th className="py-2 px-4 border-b text-left">Sent</th>
-              <th className="py-2 px-4 border-b text-left">Updated</th>
               <th className="py-2 px-4 border-b text-left">Status</th>
               <th className="py-2 px-4 border-b text-left">Edit</th>
             </tr>
@@ -106,9 +97,6 @@ const Contact = () => {
                 <td className="py-2 px-4 border-b">{contact.subject}</td>
                 <td className="py-2 px-4 border-b">
                   {formatDate(contact.createdAt)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  {formatDate(contact.updatedAt)}
                 </td>
                 <td className="py-2 px-4 border-b">
                   {contact.status
