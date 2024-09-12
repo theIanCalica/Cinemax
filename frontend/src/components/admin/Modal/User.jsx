@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import TextField from "@mui/material/TextField";
-
+import { getBorderColor } from "../../../Utils/borderColor";
 const User = ({
   onClose,
   onUserCreated,
@@ -42,7 +42,7 @@ const User = ({
   } = useForm();
 
   const onSubmit = (data) => {
-    // Handle form submission logic here
+    console.log(data);
   };
 
   return (
@@ -62,7 +62,7 @@ const User = ({
             <input
               id="fname"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md h-14"
               {...register("fname", { required: "First Name is required" })}
             />
             {errors.fname && (
@@ -78,7 +78,7 @@ const User = ({
             <input
               id="lname"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md h-14"
               {...register("lname", { required: "Last Name is required" })}
             />
             {errors.lname && (
@@ -122,7 +122,7 @@ const User = ({
               id="email"
               type="text"
               {...register("email", { required: "Email is required" })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md h-14"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
@@ -137,7 +137,7 @@ const User = ({
             <input
               id="phoneNumber"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md h-14"
               {...register("phoneNumber", {
                 required: "Phone Number is required",
               })}
@@ -161,7 +161,59 @@ const User = ({
                   {...field}
                   options={options}
                   className="w-full rounded-md"
+                  classNamePrefix="react-select" // Prefix for easier targeting with styles
                   isClearable
+                  styles={{
+                    control: (provided, state) => ({
+                      ...provided,
+                      height: "3.5rem", // Adjust height here
+                      minHeight: "3.5rem", // Ensure minimum height
+                      borderColor: state.isFocused ? "#4ade80" : "#d1d5db", // Tailwind border colors
+                      boxShadow: state.isFocused
+                        ? "0 0 0 1px #4ade80"
+                        : provided.boxShadow,
+                    }),
+                    valueContainer: (provided) => ({
+                      ...provided,
+                      height: "100%", // Align container height
+                      padding: "0 0.75rem", // Adjust padding
+                    }),
+                    singleValue: (provided) => ({
+                      ...provided,
+                      height: "100%", // Align single value height
+                      lineHeight: "3.5rem", // Center text vertically
+                    }),
+                    indicator: (provided) => ({
+                      ...provided,
+                      height: "100%", // Align indicator height
+                      padding: "0", // Remove extra padding
+                    }),
+                    indicatorsContainer: (provided) => ({
+                      ...provided,
+                      height: "100%", // Align indicators container height
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      zIndex: 9999, // Ensure the dropdown is on top of other elements
+                    }),
+                    option: (provided, state) => ({
+                      ...provided,
+                      textAlign: "left", // Align text to the left
+                      display: "flex",
+                      alignItems: "center", // Center text vertically
+                      backgroundColor: state.isSelected
+                        ? "#4ade80"
+                        : provided.backgroundColor, // Tailwind color
+                      color: state.isSelected ? "#fff" : provided.color,
+                      "&:hover": {
+                        backgroundColor: "#d1d5db", // Tailwind color on hover
+                      },
+                    }),
+                    placeholder: (provided) => ({
+                      ...provided,
+                      color: "#9ca3af", // Tailwind text-gray-400 color
+                    }),
+                  }}
                 />
               )}
             />

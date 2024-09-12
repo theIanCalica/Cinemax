@@ -5,24 +5,24 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { formatDate } from "../../Utils/FormatDate";
+import { notifyError, notifySuccess } from "../../Utils/notification";
 import UserModal from "../../components/admin/Modal/User";
-
+import axios from "axios";
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/api/users");
-      if (response.ok) {
-        const json = await response.json();
-        setUsers(json);
-      }
-    } catch (err) {
-      console.log("Error fetching users", err);
-    }
+  const fetchUsers = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/users`)
+      .then((response) => {
+        setUsers(response.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching contacts:", err);
+      });
   };
 
   // Open and close modal
@@ -38,41 +38,11 @@ const UsersPage = () => {
     setIsEditing(false);
   };
 
-  // Notify success message using Toastify
-  const notifySuccess = (message) => {
-    toast.success(message, {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-    });
-  };
-
-  // Notify error message using Toastify
-  const notifyError = (message) => {
-    toast.error(message, {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-    });
-  };
-
-  const handleUserChange = (updatedUser) => {
-    if (isEditing) {
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user._id === updatedUser._id ? updatedUser : user
-        )
-      );
-    } else {
-      setUsers((prevUsers) => [...prevUsers, updatedUser]);
+  const handleUserChange = async () => {
+    try {
+      fetchUsers();
+    } catch (err) {
+      console.error("Error updating contact:", err);
     }
   };
 
@@ -139,6 +109,51 @@ const UsersPage = () => {
           refresh={fetchUsers} //Pass refresh function for the table
         />
       )}
+
+      {/* Displays users in a table */}
+      <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
+        <table className="min-w-full bg-white border-collapse">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 border-b text-left">ID</th>
+              <th className="py-2 px-4 border-b text-left">First Name</th>
+              <th className="py-2 px-4 border-b text-left">Last Name</th>
+              <th className="py-2 px-4 border-b text-left">Date of Birth</th>
+              <th className="py-2 px-4 border-b text-left">Email</th>
+              <th className="py-2 px-4 border-b text-left">Phone</th>
+              <th className="py-2 px-4 border-b text-left">Role</th>
+              <th className="py-2 px-4 border-b text-left">Profile</th>
+              <th className="py-2 px-4 border-b text-left">Edit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user._id} className="hover:bg-slate-50">
+                <td className="py-2 px-4 border-b">{user._id}</td>
+                <td className="py-2 px-4 border-b">{user.fname}</td>
+                <td className="py-2 px-4 border-b">{user.lname}</td>
+                <td className="py-2 px-4 border-b">{formatDate(user.dob)}</td>
+                <td className="py-2 px-4 border-b">{user.email}</td>
+                <td className="py-2 px-4 border-b">{user.phoneNumber}</td>
+                <td className="py-2 px-4 border-b">{user.role}</td>
+                {user.profile ? (
+                  <img
+                    src={user.profile.url}
+                    alt="User Profile"
+                    className="w-16 h-16 object-cover"
+                  />
+                ) : (
+                  <img
+                    src="/images/default"
+                    alt="Default Profile"
+                    className="w-16 h-16 object-cover"
+                  />
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

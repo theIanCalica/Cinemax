@@ -39,7 +39,7 @@ const Contact = () => {
   };
 
   // Add or update contact in the state
-  const handleContactChange = async (updatedContact) => {
+  const handleContactChange = async () => {
     try {
       // Re-fetch contacts after a successful update
       await fetchContacts(); // This will refresh the table data
