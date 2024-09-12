@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { getBorderColor } from "../../../Utils/borderColor";
+import axios from "axios";
 
 const CreateCategory = ({
   onClose,
@@ -25,22 +26,24 @@ const CreateCategory = ({
     }
   }, [isEditing, categoryToEdit]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     const url = isEditing
       ? `http://localhost:4000/api/categories/${categoryToEdit._id}`
       : "http://localhost:4000/api/categories";
-    const method = isEditing ? "PUT" : "POST";
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: data.name }),
-      });
+    const method = isEditing ? "put" : "post";
 
-      if (response.ok) {
-        const category = await response.json();
+    axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        name: data.name,
+      },
+    })
+      .then((response) => {
+        const category = response.data;
         onCategoryCreated(category); // Add the new or updated category to the list
         notifySuccess(
           isEditing
@@ -48,28 +51,17 @@ const CreateCategory = ({
             : "Category created successfully"
         ); // Notify success
         onClose(); // Close the modal
-      } else {
+      })
+      .catch((error) => {
         notifyError(
-          isEditing ? "Failed to update category" : "Failed to create category"
+          isEditing ? "Error updating category" : "Error creating category"
         );
         console.error(
-          isEditing
-            ? "Failed to update category:"
-            : "Failed to create category:",
-          response.statusText
+          isEditing ? "Error updating category:" : "Error creating category:",
+          error.response ? error.response.data : error.message
         );
-      }
-    } catch (error) {
-      notifyError(
-        isEditing ? "Error updating category" : "Error creating category"
-      );
-      console.error(
-        isEditing ? "Error updating category:" : "Error creating category:",
-        error
-      );
-    }
+      });
   };
-
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">

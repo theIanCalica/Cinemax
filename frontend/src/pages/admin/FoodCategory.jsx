@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
 import CategoryModal from "../../components/admin/Modal/FoodCategory";
+import axios from "axios";
 
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -63,8 +64,8 @@ const FoodCategory = () => {
     fetchCategories();
   }, []);
 
-  const handleDelete = async (categoryId) => {
-    const result = await Swal.fire({
+  const handleDelete = (categoryId) => {
+    Swal.fire({
       title: "Are you sure?",
       text: "You will not be able to recover this category!",
       icon: "warning",
@@ -73,30 +74,27 @@ const FoodCategory = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(
-          `http://localhost:4000/api/categories/${categoryId}`,
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (response.ok) {
-          notifySuccess("Successfully Deleted!");
-          // Remove the deleted category from the state
-          setCategories((prevCategories) =>
-            prevCategories.filter((category) => category._id !== categoryId)
-          );
-        } else {
-          notifyError("Deletion Unsuccessful");
-        }
-      } catch (error) {
-        notifyError("Error occured");
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`${process.env.REACT_APP_API_LINK}/categories/${categoryId}`)
+          .then((response) => {
+            if (response.status === 201) {
+              notifySuccess("Successfully Deleted!");
+              // Remove the deleted category from the state
+              setCategories((prevCategories) =>
+                prevCategories.filter((category) => category._id !== categoryId)
+              );
+            } else {
+              notifyError("Deletion Unsuccessful");
+              console.error(response.statusText);
+            }
+          })
+          .catch((error) => {
+            notifyError("Error occurred");
+          });
       }
-    }
+    });
   };
 
   return (
