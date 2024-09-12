@@ -4,7 +4,7 @@ const Genre = require("../Models/Genre");
 exports.getAllGenres = async (req, res) => {
   try {
     const genres = await Genre.find().sort({ name: 1 });
-    res.json(genres);
+    res.status(201).json(genres);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -20,7 +20,7 @@ exports.getGenreById = async (req, res) => {
       return res.status(404).json({ msg: "Genre not found" });
     }
 
-    res.json(genre);
+    res.status(201).json(genre);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error!");
@@ -58,7 +58,7 @@ exports.updateGenreById = async (req, res) => {
       return res.status(404).json({ msg: "Genre not found" });
     }
 
-    res.status(200).json(genre);
+    res.status(201).json(genre);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -73,7 +73,7 @@ exports.deleteGenreById = async (req, res) => {
     if (!genre) {
       return res.status(404).json({ msg: "Genre not found" });
     }
-    res.json({ msg: "Genre Deleted" });
+    res.status(201).json({ msg: "Genre Deleted" });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

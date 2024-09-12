@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 const Genre = ({
   onClose,
@@ -32,45 +33,41 @@ const Genre = ({
     return "border-gray-200";
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     const url = isEditing
-      ? `http://localhost:4000/api/genres/${genreToEdit._id}`
-      : "http://localhost:4000/api/genres";
+      ? `${process.env.REACT_APP_API_LINK}/genres/${genreToEdit._id}`
+      : `${process.env.REACT_APP_API_LINK}/genres`;
     const method = isEditing ? "PUT" : "POST";
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: data.name }),
-      });
 
-      if (response.ok) {
-        const genre = await response.json();
-        onGenreCreated(genre); // Add the new or updated genre to the list
+    axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        name: data.name,
+      },
+    })
+      .then((response) => {
+        const genre = response.data;
+        onGenreCreated(genre);
         notifySuccess(
           isEditing
             ? "Genre updated successfully"
             : "Genre created successfully"
-        ); // Notify success
-        onClose(); // Close the modal
-      } else {
+        );
+        onClose();
+      })
+      .catch((error) => {
         notifyError(
-          isEditing ? "Failed to update genre" : "Failed to create genre"
+          isEditing ? "Error updating genre" : "Error creating genre"
         );
         console.error(
-          isEditing ? "Failed to update genre:" : "Failed to create genre:",
-          response.statusText
+          isEditing ? "Error updating genre:" : "Error creating genre:",
+          error.response ? error.response.data : error.message
         );
-      }
-    } catch (error) {
-      notifyError(isEditing ? "Error updating genre" : "Error creating genre");
-      console.error(
-        isEditing ? "Error updating genre:" : "Error creating genre:",
-        error
-      );
-    }
+      });
   };
 
   return (

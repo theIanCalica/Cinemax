@@ -76,7 +76,7 @@ const Genre = () => {
               notifySuccess("Successfully Deleted!");
               // Remove the deleted category from the state
               setGenres((prevGenres) =>
-                prevGenres.filter((genre) => genre._id !== genre)
+                prevGenres.filter((genre) => genre._id !== genreID)
               );
             } else {
               notifyError("Deletion Unsuccessful");
