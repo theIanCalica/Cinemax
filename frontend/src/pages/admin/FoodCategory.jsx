@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
 import CategoryModal from "../../components/admin/Modal/FoodCategory";
 import axios from "axios";
+import { formatDate } from "../../Utils/FormatDate.js";
 
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -15,23 +16,15 @@ const FoodCategory = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchCategories = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/api/categories/");
-      if (response.ok) {
-        const json = await response.json();
-        setCategories(json);
-      } else {
-        console.error("Failed to fetch categories:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  // Format the date
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/categories`)
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((error) => {
+        notifyError("Error Fetching Categories");
+        console.error("Error fetching categories:", error);
+      });
   };
 
   // Open and close modal
@@ -92,6 +85,7 @@ const FoodCategory = () => {
           })
           .catch((error) => {
             notifyError("Error occurred");
+            console.error(error.message);
           });
       }
     });

@@ -5,6 +5,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import GenreModal from "../../components/admin/Modal/Genre";
+import { formatDate } from "../../Utils/FormatDate";
+import { notifyError, notifySuccess } from "../../Utils/notification";
+import axios from "axios";
+
 const Genre = () => {
   const [genres, setGenres] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,21 +16,15 @@ const Genre = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchGenres = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/api/genres");
-      if (response.ok) {
-        const json = await response.json();
-        setGenres(json);
-      }
-    } catch (error) {
-      console.log("Error fetching genres:", error);
-    }
-  };
-
-  // Format the date
-  const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/genres`)
+      .then((response) => {
+        setGenres(response.data);
+      })
+      .catch((error) => {
+        notifyError("Error Fetching genres");
+        console.error("Error fetching genres:", error);
+      });
   };
 
   // Open and close modal
@@ -40,32 +38,6 @@ const Genre = () => {
     setIsModalOpen(false);
     setCurrentGenre(null);
     setIsEditing(false);
-  };
-
-  // Notify success message using Toastify
-  const notifySuccess = (message) => {
-    toast.success(message, {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-    });
-  };
-
-  // Notify error message using Toastify
-  const notifyError = (message) => {
-    toast.error(message, {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-    });
   };
 
   // Add or update category in the state
@@ -85,8 +57,8 @@ const Genre = () => {
     fetchGenres();
   }, []);
 
-  const handleDelete = async (genreID) => {
-    const result = await Swal.fire({
+  const handleDelete = (genreID) => {
+    Swal.fire({
       title: "Are you sure?",
       text: "You will not be able to recover this genre!",
       icon: "warning",
@@ -95,38 +67,28 @@ const Genre = () => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(
-          `http://localhost:4000/api/genres/${genreID}`,
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (response.ok) {
-          notifySuccess("Successfully Deleted!");
-          // Remove the deleted genre from the state
-          setGenres((prevGenres) =>
-            prevGenres.filter((genre) => genre._id !== genreID)
-          );
-        } else {
-          Swal.fire(
-            "Error!",
-            "There was an issue deleting the genre.",
-            "error"
-          );
-        }
-      } catch (error) {
-        Swal.fire(
-          "Error!",
-          "An error occurred while deleting the genre.",
-          "error"
-        );
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`${process.env.REACT_APP_API_LINK}/genres/${genreID}`)
+          .then((response) => {
+            if (response.status === 201) {
+              notifySuccess("Successfully Deleted!");
+              // Remove the deleted category from the state
+              setGenres((prevGenres) =>
+                prevGenres.filter((genre) => genre._id !== genre)
+              );
+            } else {
+              notifyError("Deletion Unsuccessful");
+              console.error(response.statusText);
+            }
+          })
+          .catch((error) => {
+            notifyError("Deletion Unsuccessful");
+            console.error(error.message);
+          });
       }
-    }
+    });
   };
   return (
     <div className="px-3 mt-8">
