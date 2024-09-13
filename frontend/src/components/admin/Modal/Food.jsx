@@ -70,37 +70,38 @@ const Food = ({
     }
   }, [isEditing, foodToEdit, categories]);
 
-  const onSubmit = async (data) => {
-    const url = isEditing
-      ? `${process.env.REACT_APP_API_LINK}/foods/${foodToEdit._id}`
-      : `${process.env.REACT_APP_API_LINK}/foods`;
-    const method = isEditing ? "PUT" : "POST";
+  const onSubmit = (data) => {
+    console.log(data);
+    // const url = isEditing
+    //   ? `${process.env.REACT_APP_API_LINK}/foods/${foodToEdit._id}`
+    //   : `${process.env.REACT_APP_API_LINK}/foods`;
+    // const method = isEditing ? "PUT" : "POST";
 
-    axios({
-      method,
-      url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: {
-        name: data.name,
-      },
-    })
-      .then((response) => {
-        const food = response.data;
-        onFoodCreated(food);
-        notifySuccess(
-          isEditing ? "Food updated successfully" : "Food created successfully"
-        );
-        onClose();
-      })
-      .catch((error) => {
-        notifyError(isEditing ? "Error updating food" : "Error creating food");
-        console.error(
-          isEditing ? "Error updating food:" : "Error creating food:",
-          error.response ? error.response.data : error.message
-        );
-      });
+    // axios({
+    //   method,
+    //   url,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   data: {
+    //     name: data.name,
+    //   },
+    // })
+    //   .then((response) => {
+    //     const food = response.data;
+    //     onFoodCreated(food);
+    //     notifySuccess(
+    //       isEditing ? "Food updated successfully" : "Food created successfully"
+    //     );
+    //     onClose();
+    //   })
+    //   .catch((error) => {
+    //     notifyError(isEditing ? "Error updating food" : "Error creating food");
+    //     console.error(
+    //       isEditing ? "Error updating food:" : "Error creating food:",
+    //       error.response ? error.response.data : error.message
+    //     );
+    //   });
   };
 
   const options = [

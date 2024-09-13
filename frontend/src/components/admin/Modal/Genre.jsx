@@ -38,9 +38,7 @@ const Genre = ({
       headers: {
         "Content-Type": "application/json",
       },
-      data: {
-        name: data.name,
-      },
+      data: {},
     })
       .then((response) => {
         const genre = response.data;

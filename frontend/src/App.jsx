@@ -24,6 +24,7 @@ import Article from "./pages/admin/Article";
 import Task from "./pages/admin/Task";
 import Message from "./pages/admin/Message";
 import Profile from "./pages/admin/Profile";
+import Movie from "./pages/admin/Movie";
 
 import "./main.css";
 
@@ -54,7 +55,7 @@ function App() {
           </Route>
           <Route path="movie" element={null}>
             <Route path="genre" element={<Genre />}></Route>
-            <Route path="movie-list"></Route>
+            <Route path="movie-list" element={<Movie />}></Route>
           </Route>
         </Route>
       </Routes>

@@ -15,7 +15,7 @@ const Genre = () => {
   const [currentGenre, setCurrentGenre] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const fetchGenres = async () => {
+  const fetchGenres = () => {
     axios
       .get(`${process.env.REACT_APP_API_LINK}/genres`)
       .then((response) => {
