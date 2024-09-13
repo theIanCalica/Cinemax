@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
+import axios from "axios";
+import { getBorderColor } from "../../../Utils/borderColor";
+
 // Import React FilePond
 import { FilePond, registerPlugin } from "react-filepond";
 
@@ -34,26 +37,16 @@ const Food = ({
   const [categories, setCategories] = useState([]);
   const [image, setImage] = useState([]);
 
-  const fetchFoodCategories = async () => {
-    try {
-      const url = "http://localhost:4000/api/categories";
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+  const fetchFoodCategories = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/foods`)
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((error) => {
+        notifyError("Error Fetching Categories");
+        console.error("Error fetching Categories: ", error);
       });
-
-      const data = await response.json();
-      setCategories(
-        data.map((category) => ({
-          value: category._id,
-          label: category.name,
-        }))
-      );
-    } catch (err) {
-      console.error(err.message);
-    }
   };
 
   useEffect(() => {
@@ -120,13 +113,6 @@ const Food = ({
         err
       );
     }
-  };
-
-  const getBorderColor = (fieldName) => {
-    if (errors[fieldName]) {
-      return "border-red-500";
-    }
-    return "border-gray-200";
   };
 
   const options = [
@@ -267,7 +253,7 @@ const Food = ({
             form="food-form"
             className="px-4 py-2 rounded-md bg-blue-500 text-white"
           >
-            {isEditing ? "Save Changes" : "Add Food"}
+            {isEditing ? "Update" : "Add Food"}
           </button>
         </div>
       </div>

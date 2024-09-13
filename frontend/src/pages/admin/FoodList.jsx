@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
 import { formatDate } from "../../Utils/FormatDate";
 import FoodModal from "../../components/admin/Modal/Food";
+import axios from "axios";
 
 const FoodList = () => {
   const [foods, setFoods] = useState([]);
@@ -15,18 +16,16 @@ const FoodList = () => {
   const [currentFood, setCurrentFood] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const fetchFoods = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/api/foods");
-      if (response.ok) {
-        const json = await response.json();
-        setFoods(json);
-      } else {
-        console.error("Failed to fetch foods:", response.statusText);
-      }
-    } catch (err) {
-      console.error("Error fetching foods:", err);
-    }
+  const fetchFoods = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/foods`)
+      .then((response) => {
+        setFoods(response.data);
+      })
+      .catch((error) => {
+        notifyError("Error Fetching Foods");
+        console.error(error.message);
+      });
   };
 
   useEffect(() => {});
@@ -56,49 +55,39 @@ const FoodList = () => {
     }
   };
 
-  const handleDelete = async (foodID) => {
-    const result = await Swal.fire({
+  const handleDelete = (foodID) => {
+    Swal.fire({
       title: "Are you sure?",
-      text: "You will not be able to recover this category!",
+      text: "You will not be able to recover this food!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(
-          `http://localhost:4000/api/foods/${foodID}`,
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (response.ok) {
-          notifySuccess("Successfully Deleted!");
-          // Remove the deleted category from the state
-          setFoods((prevFoods) =>
-            prevFoods.filter((food) => food._id !== foodID)
-          );
-        } else {
-          Swal.fire(
-            "Error!",
-            "There was an issue deleting the category.",
-            "error"
-          );
-        }
-      } catch (error) {
-        Swal.fire(
-          "Error!",
-          "An error occurred while deleting the category.",
-          "error"
-        );
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`${process.env.REACT_APP_API_LINK}/foods/${foodID}`)
+          .then((response) => {
+            if (response.status === 201) {
+              notifySuccess("Successfully Deleted");
+              setFoods((prevFoods) =>
+                prevFoods.filter((food) => food._id !== foodID)
+              );
+            } else {
+              notifyError("Deletion Unsuccessful");
+              console.error(response.statusText);
+            }
+          })
+          .catch((error) => {
+            notifyError("Error occurred");
+            console.error(error.message);
+          });
       }
-    }
+    });
   };
+
   return (
     <div className="px-3 mt-8">
       <div className="flex justify-between">
