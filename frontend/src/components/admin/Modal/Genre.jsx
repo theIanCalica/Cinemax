@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { getBorderColor } from "../../../Utils/borderColor";
 
 const Genre = ({
   onClose,
@@ -24,14 +25,6 @@ const Genre = ({
       reset({ name: "" });
     }
   }, [isEditing, genreToEdit, reset]);
-
-  // Utility function to determine input border color
-  const getBorderColor = (fieldName) => {
-    if (errors[fieldName]) {
-      return "border-red-500";
-    }
-    return "border-gray-200";
-  };
 
   const onSubmit = (data) => {
     const url = isEditing

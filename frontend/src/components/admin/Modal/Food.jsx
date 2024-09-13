@@ -72,47 +72,35 @@ const Food = ({
 
   const onSubmit = async (data) => {
     const url = isEditing
-      ? `http://localhost:4000/api/foods/${foodToEdit._id}`
-      : "http://localhost:4000/api/foods";
+      ? `${process.env.REACT_APP_API_LINK}/foods/${foodToEdit._id}`
+      : `${process.env.REACT_APP_API_LINK}/foods`;
     const method = isEditing ? "PUT" : "POST";
 
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: data.name,
-          price: data.price,
-          categoryId: data.category.value,
-          availability: data.availability.value,
-        }),
-      });
-
-      if (response.ok) {
-        const food = await response.json();
+    axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        name: data.name,
+      },
+    })
+      .then((response) => {
+        const food = response.data;
         onFoodCreated(food);
         notifySuccess(
           isEditing ? "Food updated successfully" : "Food created successfully"
         );
         onClose();
-      } else {
-        notifyError(
-          isEditing ? "Failed to update food" : "Failed to create food"
-        );
+      })
+      .catch((error) => {
+        notifyError(isEditing ? "Error updating food" : "Error creating food");
         console.error(
-          isEditing ? "Failed to update food:" : "Failed to create food:",
-          response.statusText
+          isEditing ? "Error updating food:" : "Error creating food:",
+          error.response ? error.response.data : error.message
         );
-      }
-    } catch (err) {
-      notifyError(isEditing ? "Error updating food" : "Error creating food");
-      console.error(
-        isEditing ? "Error updating food:" : "Error creating food:",
-        err
-      );
-    }
+      });
   };
 
   const options = [
