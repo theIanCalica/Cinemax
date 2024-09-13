@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { getBorderColor } from "../../../Utils/borderColor";
+import Select from "react-select";
 import axios from "axios";
 
 const CreateCategory = ({
@@ -22,9 +23,7 @@ const CreateCategory = ({
   const fetchGenres = () => {
     axios
       .get(`${process.env.REACT_APP_API_LINK}/genres`)
-      .then((response) => {
-        setGenres(response.data);
-      })
+      .then((response) => {})
       .catch((error) => {
         notifyError("Error Fetching genres");
         console.error("Error fetching genres:", error);
@@ -77,11 +76,14 @@ const CreateCategory = ({
   };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
         <h2 className="text-xl font-bold mb-4">
           {isEditing ? "Edit Category" : "Add Category"}
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
           <div className="mb-4">
             <label htmlFor="name" className="block text-gray-700 mb-2">
               Title
@@ -103,20 +105,51 @@ const CreateCategory = ({
             <label htmlFor="name" className="block text-gray-700 mb-2">
               Description
             </label>
-            <input
-              id="name"
-              type="text"
+            <textarea
+              name="description"
+              id="description"
+              rows={1}
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
                 "name",
                 errors
               )}`}
-              {...register("name", { required: "Category name is required" })}
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+              {...register("description", {
+                required: "Description is required",
+              })}
+            ></textarea>
+
+            {errors.description && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.description.message}
+              </p>
             )}
           </div>
-          <div className="flex justify-end">
+          <div className="mb-4">
+            <label htmlFor="duration" className="block text-gray-700 mb-2">
+              Duration
+            </label>
+            <input
+              id="duration"
+              type="text"
+              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
+                "duration",
+                errors
+              )}`}
+              {...register("duration", { required: "Duration is required" })}
+            />
+            {errors.duration && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.duration.message}
+              </p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="genre" className="block text-gray-700 mb-2">
+              Genre
+            </label>
+            <Select></Select>
+          </div>
+          <div className="flex justify-end col-span-1 md:col-span-2">
             <button
               type="button"
               onClick={onClose}
