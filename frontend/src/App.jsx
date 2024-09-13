@@ -32,7 +32,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-
+        <Route path="articles" element={<Article />}></Route>
         <Route path="/about" element={<AboutPage />}></Route>
         <Route path="/contact" element={<ContactPage />}></Route>
         <Route path="/email" element={<Email />} />
@@ -42,7 +42,7 @@ function App() {
           <Route index element={<HomeAdmin />} />
           <Route path="task" element={<Task />}></Route>
           <Route path="users" element={<User />}></Route>
-          <Route path="articles" element={<Article />}></Route>
+
           <Route path="profile" element={<Profile />}></Route>
           <Route path="emails"></Route>
           <Route path="messages" element={<Message />}></Route>
