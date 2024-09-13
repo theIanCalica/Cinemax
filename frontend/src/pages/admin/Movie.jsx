@@ -4,7 +4,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-import GenreModal from "../../components/admin/Modal/Genre";
+import MovieModal from "../../components/admin/Modal/Movie";
 import { formatDate } from "../../Utils/FormatDate";
 import { notifyError, notifySuccess } from "../../Utils/notification";
 import axios from "axios";
@@ -86,6 +86,66 @@ const Movie = () => {
       >
         Add Movie
       </button>
+      {/* Render the modal for creating or editing a genre */}
+      {isModalOpen && (
+        <MovieModal
+          movieToEdit={currentMovie} // Pass the current genre to the modal
+          isEditing={isEditing} // Pass editing state to the modal
+          onClose={closeModal}
+          notifySuccess={notifySuccess} // Pass success notification
+          notifyError={notifyError} // Pass error notification
+          refresh={fetchMovies} //Pass refresh function for the table
+        />
+      )}
+
+      {/* Display categories in a table */}
+      <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
+        <table className="min-w-full bg-white border-collapse">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 border-b text-left">ID</th>
+              <th className="py-2 px-4 border-b text-left">Name</th>
+              <th className="py-2 px-4 border-b text-left">Created</th>
+              <th className="py-2 px-4 border-b text-left">Updated</th>
+              <th className="py-2 px-4 border-b text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {movies.map((movie) => (
+              <tr key={movie._id} className="hover:bg-slate-50">
+                <td className="py-2 px-4 border-b">{movie._id}</td>
+                <td className="py-2 px-4 border-b">{movie.name}</td>
+                <td className="py-2 px-4 border-b">
+                  {formatDate(movie.createdAt)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  {formatDate(movie.updatedAt)}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  <button
+                    className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+                    onClick={() => openModal(movie)} // Pass the genre to be edited
+                  >
+                    <EditOutlinedIcon />
+                  </button>
+
+                  <button
+                    className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
+                    onClick={() => {
+                      handleDelete(movie._id);
+                    }}
+                  >
+                    <DeleteOutlineOutlinedIcon />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Toastify container for notifications */}
+      <ToastContainer />
     </div>
   );
 };
