@@ -25,6 +25,7 @@ import Task from "./pages/admin/Task";
 import Message from "./pages/admin/Message";
 import Profile from "./pages/admin/Profile";
 import Movie from "./pages/admin/Movie";
+import Calendar from "./pages/admin/Calendar";
 
 import "./main.css";
 
@@ -43,7 +44,7 @@ function App() {
           <Route index element={<HomeAdmin />} />
           <Route path="task" element={<Task />}></Route>
           <Route path="users" element={<User />}></Route>
-
+          <Route path="calendar" element={<Calendar />}></Route>
           <Route path="profile" element={<Profile />}></Route>
           <Route path="emails"></Route>
           <Route path="messages" element={<Message />}></Route>
