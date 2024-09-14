@@ -21,6 +21,7 @@ const Contact = () => {
         setContacts(response.data);
       })
       .catch((err) => {
+        notifyError("Error fetching contacts");
         console.error("Error fetching contacts:", err);
       });
   };
