@@ -7,9 +7,10 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import TextField from "@mui/material/TextField";
 import { getBorderColor } from "../../../Utils/borderColor";
+import { Box } from "@mui/material";
+
 const User = ({
   onClose,
-  onUserCreated,
   notifySuccess,
   notifyError,
   userToEdit,
@@ -38,11 +39,21 @@ const User = ({
     handleSubmit,
     control,
     reset,
-    formState: { errors },
-  } = useForm();
+    formState: { errors, touchedFields },
+  } = useForm({ mode: "onChange" });
 
   const onSubmit = (data) => {
     console.log(data);
+
+    const user = {
+      fname: data.fname,
+      lname: data.lname,
+    };
+
+    const url = isEditing
+      ? `${process.env.REACT_APP_API_LINK}/users/${userToEdit._id}`
+      : `${process.env.REACT_APP_API_LINK}/users`;
+    const method = isEditing ? "PUT" : "POST";
   };
 
   return (
@@ -62,7 +73,11 @@ const User = ({
             <input
               id="fname"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md h-14"
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(
+                "fname",
+                errors,
+                touchedFields
+              )}`}
               {...register("fname", { required: "First Name is required" })}
             />
             {errors.fname && (
@@ -78,7 +93,11 @@ const User = ({
             <input
               id="lname"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md h-14"
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(
+                "lname",
+                errors,
+                touchedFields
+              )}`}
               {...register("lname", { required: "Last Name is required" })}
             />
             {errors.lname && (
@@ -91,24 +110,43 @@ const User = ({
             <label htmlFor="dob" className="block text-gray-700 mb-2">
               Date of Birth
             </label>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                className="w-full "
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    sx={{
-                      "& input": {
-                        height: "1.5rem", // Adjust input height here
-                      },
-                      "& .MuiInputBase-root": {
-                        height: "2rem", // Adjust container height here
-                      },
-                    }}
-                  />
-                )}
-              />
-            </LocalizationProvider>
+            <Controller
+              name="dob"
+              rules={{ required: "Date of Birth is required" }}
+              control={control}
+              render={({ field }) => (
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <div className="w-full max-w-xl">
+                    <Box
+                      sx={{
+                        width: "100%", // Ensure Box takes full width of its container
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "8px", // Custom border radius
+                          width: "100%",
+                          "& fieldset": {
+                            borderColor: errors.dob ? "#f87171" : "#e5e7eb", // Conditional border color
+                          },
+                          "&:hover fieldset": {
+                            borderColor: errors.dob ? "#f87171" : "#0056b3", // Conditional border color on hover
+                          },
+                        },
+                      }}
+                    >
+                      <DatePicker
+                        {...field}
+                        className="MuiDayCalendar-header MuiDayCalendar-weekContainer"
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            sx={{ gridColumn: "span 10" }}
+                          />
+                        )}
+                      />
+                    </Box>
+                  </div>
+                </LocalizationProvider>
+              )}
+            />
             {errors.dob && (
               <p className="text-red-500 text-sm mt-1">{errors.dob.message}</p>
             )}
@@ -121,8 +159,18 @@ const User = ({
             <input
               id="email"
               type="text"
-              {...register("email", { required: "Email is required" })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md h-14"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value:
+                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                  message: "Please enter a valid email",
+                },
+              })}
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(
+                "email",
+                errors
+              )}`}
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
@@ -137,7 +185,10 @@ const User = ({
             <input
               id="phoneNumber"
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md h-14"
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(
+                "phoneNumber",
+                errors
+              )}`}
               {...register("phoneNumber", {
                 required: "Phone Number is required",
               })}
@@ -156,8 +207,10 @@ const User = ({
             <Controller
               name="role"
               control={control}
+              rules={{ required: "Role is required" }}
               render={({ field }) => (
                 <Select
+                  placeholder={"Select a Role"}
                   {...field}
                   options={options}
                   className="w-full rounded-md"
@@ -168,7 +221,9 @@ const User = ({
                       ...provided,
                       height: "3.5rem", // Adjust height here
                       minHeight: "3.5rem", // Ensure minimum height
-                      borderColor: state.isFocused ? "#4ade80" : "#d1d5db", // Tailwind border colors
+                      borderColor: errors.role
+                        ? "#f87171"
+                        : provided.borderColor,
                       boxShadow: state.isFocused
                         ? "0 0 0 1px #4ade80"
                         : provided.boxShadow,
