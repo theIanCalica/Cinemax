@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -17,6 +17,7 @@ const Task = ({
   isEditing,
   refresh,
 }) => {
+  const [users, setUsers] = useState([]);
   const {
     register,
     handleSubmit,
@@ -32,6 +33,18 @@ const Task = ({
     },
   });
 
+  const fetchUsers = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/users`)
+      .then((response) => {
+        setUsers(response.data);
+      })
+      .catch((error) => {
+        notifyError("Error Fetching genres");
+        console.error("Error fetching genres:", error);
+      });
+  };
+
   const options = [
     { value: "low", label: "Low" },
     { value: "medium", label: "Medium" },
@@ -39,32 +52,40 @@ const Task = ({
   ];
 
   const onSubmit = (data) => {
+    const task = {
+      title: data.title,
+      description: data.description,
+      priority: data.priority.value,
+      dueDate: data.dueDate.toISOString(),
+    };
+    console.log(task);
+
     const url = isEditing
       ? `${process.env.REACT_APP_API_LINK}/tasks/${taskToEdit._id}`
       : `${process.env.REACT_APP_API_LINK}/tasks`;
     const method = isEditing ? "PUT" : "POST";
 
-    axios({
-      method,
-      url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data,
-    })
-      .then((response) => {
-        notifySuccess(
-          isEditing ? "Task updated successfully" : "Task created successfully"
-        );
-        refresh();
-      })
-      .catch((error) => {
-        notifyError(isEditing ? "Error updating task" : "Error creating task");
-        console.error(
-          isEditing ? "Error updating task:" : "Error creating task:",
-          error.response ? error.response.data : error.message
-        );
-      });
+    // axios({
+    //   method,
+    //   url,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   data,
+    // })
+    //   .then((response) => {
+    //     notifySuccess(
+    //       isEditing ? "Task updated successfully" : "Task created successfully"
+    //     );
+    //     refresh();
+    //   })
+    //   .catch((error) => {
+    //     notifyError(isEditing ? "Error updating task" : "Error creating task");
+    //     console.error(
+    //       isEditing ? "Error updating task:" : "Error creating task:",
+    //       error.response ? error.response.data : error.message
+    //     );
+    //   });
   };
 
   return (
