@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
-import { formatDate0 } from "../../Utils/FormatDate";
+import { formatDate } from "../../Utils/FormatDate";
 import axios from "axios";
 import TaskModal from "../../components/admin/Modal/Task";
 const Task = () => {
@@ -15,7 +15,7 @@ const Task = () => {
   const [isEditing, setIsEditing] = useState(false);
   const fetchTasks = () => {
     axios
-      .get(`${process.env.REACT_APP_API_LINK}/v1/tasks`)
+      .get(`${process.env.REACT_APP_API_LINK}/tasks`)
       .then((response) => {
         setTasks(response.data);
       })

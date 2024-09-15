@@ -13,14 +13,14 @@ const TaskSchema = new Schema(
       type: String,
       required: true,
     },
-    deadline: {
+    dueDate: {
       type: Date,
       required: true,
       validate: {
         validator: function (value) {
           return value > Date.now();
         },
-        message: "Deadline must be a future date",
+        message: "Due Date must be a future date",
       },
       index: true,
     },

@@ -14,7 +14,7 @@ const GenreRoutes = require("./routes/GenreRoutes");
 const MovieRoutes = require("./routes/MovieRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const TaskRoutes = require("./routes/TaskRoutes");
-const OrderRoutes = require("./routes/OrderRoutes");
+// const OrderRoutes = require("./routes/OrderRoutes");
 
 // express app
 const app = express();
@@ -31,7 +31,7 @@ app.use("/api/v1/genres", GenreRoutes);
 app.use("/api/v1/movies", MovieRoutes);
 app.use("/api/v1/users", UserRoutes);
 app.use("/api/v1/tasks", TaskRoutes);
-app.use("/api/v1/orders", OrderRoutes);
+// app.use("/api/v1/orders", OrderRoutes);
 
 mongoose
   .connect(process.env.MONG_URL)

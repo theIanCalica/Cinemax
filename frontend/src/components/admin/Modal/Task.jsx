@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useForm, Controller } from "react-hook-form";
-import { getBorderColor } from "../../../Utils/borderColor";
 import Select from "react-select";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"; // Updated import
+import { TextField } from "@mui/material";
 import axios from "axios";
+import { getBorderColor } from "../../../Utils/borderColor";
+import { Box } from "@mui/material";
 
 const Task = ({
   onClose,
   notifySuccess,
   notifyError,
-  taskToEdit,
+  taskToEdit = {},
   isEditing,
   refresh,
 }) => {
@@ -18,7 +23,14 @@ const Task = ({
     control,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      title: taskToEdit?.title || "",
+      description: taskToEdit?.description || "",
+      priority: taskToEdit?.priority || null,
+      dueDate: taskToEdit?.dueDate || null,
+    },
+  });
 
   const options = [
     { value: "low", label: "Low" },
@@ -38,13 +50,13 @@ const Task = ({
       headers: {
         "Content-Type": "application/json",
       },
-      data: {},
+      data,
     })
       .then((response) => {
-        const task = response.data;
         notifySuccess(
           isEditing ? "Task updated successfully" : "Task created successfully"
         );
+        refresh();
       })
       .catch((error) => {
         notifyError(isEditing ? "Error updating task" : "Error creating task");
@@ -117,7 +129,7 @@ const Task = ({
                 <Select
                   {...field}
                   options={options}
-                  classNamePrefix="react-select" // Prefix for easier targeting with styles
+                  classNamePrefix="react-select"
                   isClearable
                   styles={{
                     control: (provided, state) => ({
@@ -129,7 +141,7 @@ const Task = ({
                         : provided.boxShadow,
                       borderColor: errors.priority
                         ? "#f87171"
-                        : provided.borderColor, // Tailwind red-400
+                        : provided.borderColor,
                       borderWidth: "1px",
                     }),
                     valueContainer: (provided) => ({
@@ -176,13 +188,74 @@ const Task = ({
                 />
               )}
             />
-
             {errors.priority && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.priority.message}
               </p>
             )}
           </div>
+          <div className="mb-4">
+            <label htmlFor="dueDate" className="block text-gray-700 mb-2">
+              Due Date
+            </label>
+            <Controller
+              name="dueDate"
+              rules={{ required: "Due Date is required" }}
+              control={control}
+              render={({ field }) => (
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <Box
+                    sx={{
+                      width: 300,
+
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "8px", // Custom border radius
+                        "& fieldset": {
+                          borderColor: errors.dueDate ? "#f87171" : "#e5e7eb", // Conditional border color
+                        },
+                        "&:hover fieldset": {
+                          borderColor: errors.dueDate ? "#f87171" : "#0056b3", // Conditional border color on hover
+                        },
+                      },
+                      "& .MuiPickersDay-root": {
+                        backgroundColor: "#fff", // Custom day background color
+                        "&:hover": {
+                          backgroundColor: "#e0e0e0", // Custom day hover background color
+                        },
+                      },
+                    }}
+                  >
+                    <DateTimePicker
+                      {...field}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          id="dueDate"
+                          sx={{
+                            "& .MuiInputBase-root": {
+                              border: `1px solid ${
+                                errors.dueDate ? "#f87171" : "#e5e7eb"
+                              }`, // Apply border color
+                            },
+                            "& .MuiFormLabel-root": {
+                              color: errors.dueDate ? "#f87171" : "#6b7280", // Optional: Change label color based on error
+                            },
+                          }}
+                        />
+                      )}
+                    />
+                  </Box>
+                </LocalizationProvider>
+              )}
+            />
+
+            {errors.dueDate && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.dueDate.message}
+              </p>
+            )}
+          </div>
+
           <div className="flex justify-end col-span-1 md:col-span-2">
             <button
               type="button"
