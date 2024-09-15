@@ -29,13 +29,15 @@ exports.getTaskById = async (req, res) => {
 // Add task
 exports.taskCreate = async (req, res) => {
   try {
-    const { title, description, deadline, user } = req.body;
+    const { title, description, deadline, user, status, priority } = req.body;
 
     const newTask = new Task({
       title,
       description,
       deadline,
       user,
+      status,
+      priority,
     });
 
     const saveTask = await newTask.save();
@@ -49,10 +51,10 @@ exports.taskCreate = async (req, res) => {
 // Update task by ID
 exports.taskUpdateById = async (req, res) => {
   try {
-    const { title, description, deadline, user } = req.body;
+    const { title, description, deadline, user, status, priority } = req.body;
     const task = await Task.findByAndUpdate(
       req.params.id,
-      { title, description, deadline, user },
+      { title, description, deadline, user, status, priority },
       { new: true }
     );
 

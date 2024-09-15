@@ -6,35 +6,35 @@ import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
 import { formatDate0 } from "../../Utils/FormatDate";
+import axios from "axios";
+import TaskModal from "../../components/admin/Modal/Task";
 const Task = () => {
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState(null);
+  const [currentTask, setCurrentTask] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const fetchTasks = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/api/tasks/");
-      if (response.ok) {
-        const json = await response.json();
-        setTasks(json);
-      } else {
-        console.error("Failed to fetch categories:", response.statusText);
-      }
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-    }
+  const fetchTasks = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/v1/tasks`)
+      .then((response) => {
+        setTasks(response.data);
+      })
+      .catch((error) => {
+        notifyError("Error Fetching tasks");
+        console.error("Error fetching tasks:", error);
+      });
   };
 
   // Open and close modal
-  const openModal = (category = null) => {
-    setCurrentCategory(category);
-    setIsEditing(!!category); // If a category is passed, set editing to true
+  const openModal = (task = null) => {
+    setCurrentTask(task);
+    setIsEditing(!!task); // If a category is passed, set editing to true
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setCurrentCategory(null);
+    setCurrentTask(null);
     setIsEditing(false);
   };
 
@@ -77,6 +77,7 @@ const Task = () => {
       }
     }
   };
+
   return (
     <div className="px-3 mt-8">
       <div className="flex justify-between">
@@ -92,6 +93,17 @@ const Task = () => {
       >
         Add Task
       </button>
+      {/* Render the modal for creating or editing a genre */}
+      {isModalOpen && (
+        <TaskModal
+          taskToEdit={currentTask} // Pass the current genre to the modal
+          isEditing={isEditing} // Pass editing state to the modal
+          onClose={closeModal}
+          notifySuccess={notifySuccess} // Pass success notification
+          notifyError={notifyError} // Pass error notification
+          refresh={fetchTasks} //Pass refresh function for the table
+        />
+      )}
     </div>
   );
 };
