@@ -40,17 +40,8 @@ const Genre = () => {
     setIsEditing(false);
   };
 
-  // Add or update category in the state
-  const handleGenreChange = (updatedGenre) => {
-    if (isEditing) {
-      setGenres((prevGenres) =>
-        prevGenres.map((genre) =>
-          genre._id === updatedGenre._id ? updatedGenre : genre
-        )
-      );
-    } else {
-      setGenres((prevGenres) => [...prevGenres, updatedGenre]);
-    }
+  const refresh = () => {
+    fetchGenres();
   };
 
   useEffect(() => {
@@ -112,7 +103,6 @@ const Genre = () => {
           genreToEdit={currentGenre} // Pass the current genre to the modal
           isEditing={isEditing} // Pass editing state to the modal
           onClose={closeModal}
-          onGenreCreated={handleGenreChange} // Pass function to add or update genre
           notifySuccess={notifySuccess} // Pass success notification
           notifyError={notifyError} // Pass error notification
           refresh={fetchGenres} //Pass refresh function for the table

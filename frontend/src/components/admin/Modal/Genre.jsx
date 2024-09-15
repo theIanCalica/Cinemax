@@ -5,7 +5,7 @@ import { getBorderColor } from "../../../Utils/borderColor";
 
 const Genre = ({
   onClose,
-  onGenreCreated,
+  refresh,
   notifySuccess,
   notifyError,
   genreToEdit,
@@ -15,7 +15,7 @@ const Genre = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm();
 
   useEffect(() => {
@@ -27,6 +27,7 @@ const Genre = ({
   }, [isEditing, genreToEdit, reset]);
 
   const onSubmit = (data) => {
+    console.log(data);
     const url = isEditing
       ? `${process.env.REACT_APP_API_LINK}/genres/${genreToEdit._id}`
       : `${process.env.REACT_APP_API_LINK}/genres`;
@@ -38,11 +39,11 @@ const Genre = ({
       headers: {
         "Content-Type": "application/json",
       },
-      data: {},
+      data: { name: data.name },
     })
       .then((response) => {
         const genre = response.data;
-        onGenreCreated(genre);
+        refresh();
         notifySuccess(
           isEditing
             ? "Genre updated successfully"
@@ -69,14 +70,16 @@ const Genre = ({
         </h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
-            <label htmlFor="genre" className="block text-gray-700 mb-2">
+            <label htmlFor="name" className="block text-gray-700 mb-2">
               Genre
             </label>
             <input
-              id="genre"
+              id="name"
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "name"
+                "name",
+                errors,
+                touchedFields
               )}`}
               {...register("name", { required: "Genre is required" })}
             />

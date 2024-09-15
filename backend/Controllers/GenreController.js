@@ -34,12 +34,11 @@ exports.addGenre = async (req, res) => {
     const newGenre = new Genre({
       name,
     });
-
     const saveGenre = await newGenre.save();
     res.status(201).json(saveGenre);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error!");
+    res.status(500).send({ msg: "Server Error", err });
   }
 };
 
