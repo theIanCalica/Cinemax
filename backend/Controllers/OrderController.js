@@ -28,29 +28,6 @@ exports.getSingleOrder = async (req, res) => {
   }
 };
 
-// Create a new order
-exports.createOrder = async (req, res) => {
-  const { user, order_date, status } = req.body;
-
-  if (!user || !order_date || !status) {
-    res.status(400).json({ msg: "All fields are required!" });
-  }
-
-  try {
-    const newOrder = new Order({
-      user,
-      order_date,
-      status,
-    });
-
-    const saveOrder = await newOrder.save();
-    res.status(201).json(saveOrder);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
-};
-
 // Update an order
 exports.updateOrderById = async (req, res) => {
   const { status } = req.body;
@@ -75,22 +52,6 @@ exports.updateOrderById = async (req, res) => {
     if (!updatedOrder) {
       return res.status(404).json({ msg: "Order not found" });
     }
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
-  }
-};
-
-// Delete an order
-exports.deleteOrderById = async (req, res) => {
-  try {
-    const order = await Order.findByIdAndDelete(req.params.id);
-
-    if (!order) {
-      res.status(500).json({ msg: "Order not found" });
-    }
-
-    res.status(200).json({ msg: "Order successfully deleted" });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
