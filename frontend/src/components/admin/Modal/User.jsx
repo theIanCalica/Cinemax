@@ -8,6 +8,7 @@ import Select from "react-select";
 import TextField from "@mui/material/TextField";
 import { getBorderColor } from "../../../Utils/borderColor";
 import { Box } from "@mui/material";
+import axios from "axios";
 
 const User = ({
   onClose,
@@ -30,8 +31,8 @@ const User = ({
   }, [isEditing, userToEdit]);
 
   const options = [
-    { value: "Customer", label: "Customer" },
-    { value: "ServiceCrew", label: "Service Crew" },
+    { value: "customer", label: "Customer" },
+    { value: "serviceCrew", label: "Service Crew" },
   ];
 
   const {
@@ -43,17 +44,28 @@ const User = ({
   } = useForm({ mode: "onChange" });
 
   const onSubmit = (data) => {
-    console.log(data);
-
     const user = {
       fname: data.fname,
       lname: data.lname,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      role: data.role.value,
+      dob: data.dob.toISOString(),
     };
 
+    console.log(user);
     const url = isEditing
       ? `${process.env.REACT_APP_API_LINK}/users/${userToEdit._id}`
       : `${process.env.REACT_APP_API_LINK}/users`;
     const method = isEditing ? "PUT" : "POST";
+    axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: user,
+    });
   };
 
   return (
@@ -139,6 +151,7 @@ const User = ({
                           <TextField
                             {...params}
                             sx={{ gridColumn: "span 10" }}
+                            onBlur={() => field.onBlur()}
                           />
                         )}
                       />
@@ -169,7 +182,8 @@ const User = ({
               })}
               className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(
                 "email",
-                errors
+                errors,
+                touchedFields
               )}`}
             />
             {errors.email && (
@@ -187,10 +201,15 @@ const User = ({
               type="text"
               className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(
                 "phoneNumber",
-                errors
+                errors,
+                touchedFields
               )}`}
               {...register("phoneNumber", {
                 required: "Phone Number is required",
+                pattern: {
+                  value: /^((09)|(\+639))\d{9}$/,
+                  message: "Invalid phone number format",
+                },
               })}
               maxLength={11}
             />
@@ -213,8 +232,16 @@ const User = ({
                   placeholder={"Select a Role"}
                   {...field}
                   options={options}
-                  className="w-full rounded-md"
-                  classNamePrefix="react-select" // Prefix for easier targeting with styles
+                  onChange={(selectedOption) => {
+                    field.onChange(selectedOption); // Trigger react-hook-form's onChange
+                    field.onBlur(); // Mark field as touched
+                  }}
+                  onBlur={() => field.onBlur()} // Mark field as touched
+                  className={`w-full ${getBorderColor(
+                    "select",
+                    errors,
+                    touchedFields
+                  )}`}
                   isClearable
                   styles={{
                     control: (provided, state) => ({

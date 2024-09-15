@@ -31,10 +31,12 @@ const UserSchema = new Schema(
       public_id: {
         type: String,
         required: true,
+        default: "",
       },
       url: {
         type: String,
         required: true,
+        default: "",
       },
     },
     role: {

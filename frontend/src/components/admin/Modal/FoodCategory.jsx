@@ -5,17 +5,17 @@ import axios from "axios";
 
 const CreateCategory = ({
   onClose,
-  onCategoryCreated,
   notifySuccess,
   notifyError,
   categoryToEdit,
   isEditing,
+  refresh,
 }) => {
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm();
 
   useEffect(() => {
@@ -28,8 +28,8 @@ const CreateCategory = ({
 
   const onSubmit = (data) => {
     const url = isEditing
-      ? `http://localhost:4000/api/categories/${categoryToEdit._id}`
-      : "http://localhost:4000/api/categories";
+      ? `${process.env.REACT_APP_API_LINK}/categories/${categoryToEdit._id}`
+      : `${process.env.REACT_APP_API_LINK}/categories`;
     const method = isEditing ? "PUT" : "POST";
 
     axios({
@@ -44,7 +44,7 @@ const CreateCategory = ({
     })
       .then((response) => {
         const category = response.data;
-        onCategoryCreated(category); // Add the new or updated category to the list
+        refresh();
         notifySuccess(
           isEditing
             ? "Category updated successfully"
@@ -79,7 +79,8 @@ const CreateCategory = ({
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
                 "name",
-                errors
+                errors,
+                touchedFields
               )}`}
               {...register("name", { required: "Category name is required" })}
             />

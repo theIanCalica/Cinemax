@@ -40,17 +40,8 @@ const FoodCategory = () => {
     setIsEditing(false);
   };
 
-  // Add or update category in the state
-  const handleCategoryChange = (updatedCategory) => {
-    if (isEditing) {
-      setCategories((prevCategories) =>
-        prevCategories.map((category) =>
-          category._id === updatedCategory._id ? updatedCategory : category
-        )
-      );
-    } else {
-      setCategories((prevCategories) => [...prevCategories, updatedCategory]);
-    }
+  const refresh = () => {
+    fetchCategories();
   };
 
   useEffect(() => {
@@ -113,10 +104,9 @@ const FoodCategory = () => {
           categoryToEdit={currentCategory} // Pass the current category to the modal
           isEditing={isEditing} // Pass editing state to the modal
           onClose={closeModal}
-          onCategoryCreated={handleCategoryChange} // Pass function to add or update category
           notifySuccess={notifySuccess} // Pass success notification
           notifyError={notifyError} // Pass error notification
-          refresh={fetchCategories} //Pass refresh function for the table
+          refresh={refresh} //Pass refresh function for the table
         />
       )}
 
