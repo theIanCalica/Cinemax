@@ -22,14 +22,14 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 // Routes
-app.use("/api/articles", articleRoutes);
-app.use("/api/categories", CategoryRoutes);
-app.use("/api/contacts", ContactRoutes);
-app.use("/api/foods", FoodRoutes);
-app.use("/api/genres", GenreRoutes);
-app.use("/api/movies", MovieRoutes);
-app.use("/api/users", UserRoutes);
-app.use("/api/tasks", TaskRoutes);
+app.use("/api/v1/articles", articleRoutes);
+app.use("/api/v1/categories", CategoryRoutes);
+app.use("/api/v1/contacts", ContactRoutes);
+app.use("/api/v1/foods", FoodRoutes);
+app.use("/api/v1/genres", GenreRoutes);
+app.use("/api/v1/movies", MovieRoutes);
+app.use("/api/v1/users", UserRoutes);
+app.use("/api/v1/tasks", TaskRoutes);
 
 mongoose
   .connect(process.env.MONG_URL)

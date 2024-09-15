@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { getBorderColor } from "../../../Utils/borderColor";
 import Select from "react-select";
 import axios from "axios";
@@ -15,9 +15,16 @@ const Task = ({
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors },
   } = useForm();
+
+  const options = [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+  ];
 
   const onSubmit = (data) => {
     const url = isEditing
@@ -50,11 +57,14 @@ const Task = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
         <h2 className="text-xl font-bold mb-4">
           {isEditing ? "Edit Task" : "Add Task"}
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
           <div className="mb-4">
             <label htmlFor="title" className="block text-gray-700 mb-2">
               Title
@@ -66,7 +76,7 @@ const Task = ({
                 "title",
                 errors
               )}`}
-              {...register("title", { required: "Category name is required" })}
+              {...register("title", { required: "Title is required" })}
             />
             {errors.title && (
               <p className="text-red-500 text-sm mt-1">
@@ -95,7 +105,85 @@ const Task = ({
               </p>
             )}
           </div>
-          <div className="flex justify-end">
+          <div className="mb-4">
+            <label htmlFor="priority" className="block text-gray-700 mb-2">
+              Priority
+            </label>
+            <Controller
+              name="priority"
+              control={control}
+              rules={{ required: "Priority is required" }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={options}
+                  classNamePrefix="react-select" // Prefix for easier targeting with styles
+                  isClearable
+                  styles={{
+                    control: (provided, state) => ({
+                      ...provided,
+                      height: "3.5rem",
+                      minHeight: "3.5rem",
+                      boxShadow: state.isFocused
+                        ? "0 0 0 1px #4ade80"
+                        : provided.boxShadow,
+                      borderColor: errors.priority
+                        ? "#f87171"
+                        : provided.borderColor, // Tailwind red-400
+                      borderWidth: "1px",
+                    }),
+                    valueContainer: (provided) => ({
+                      ...provided,
+                      height: "100%",
+                      padding: "0 0.75rem",
+                    }),
+                    singleValue: (provided) => ({
+                      ...provided,
+                      height: "100%",
+                      lineHeight: "3.5rem",
+                    }),
+                    indicator: (provided) => ({
+                      ...provided,
+                      height: "100%",
+                      padding: "0",
+                    }),
+                    indicatorsContainer: (provided) => ({
+                      ...provided,
+                      height: "100%",
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      zIndex: 9999,
+                    }),
+                    option: (provided, state) => ({
+                      ...provided,
+                      textAlign: "left",
+                      display: "flex",
+                      alignItems: "center",
+                      backgroundColor: state.isSelected
+                        ? "#4ade80"
+                        : provided.backgroundColor,
+                      color: state.isSelected ? "#fff" : provided.color,
+                      "&:hover": {
+                        backgroundColor: "#d1d5db",
+                      },
+                    }),
+                    placeholder: (provided) => ({
+                      ...provided,
+                      color: "#9ca3af",
+                    }),
+                  }}
+                />
+              )}
+            />
+
+            {errors.priority && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.priority.message}
+              </p>
+            )}
+          </div>
+          <div className="flex justify-end col-span-1 md:col-span-2">
             <button
               type="button"
               onClick={onClose}
