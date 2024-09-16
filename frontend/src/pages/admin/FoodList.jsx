@@ -43,18 +43,6 @@ const FoodList = () => {
     setIsEditing(false);
   };
 
-  const handleFoodChange = (updatedFood) => {
-    if (isEditing) {
-      setFoods((prevFoods) =>
-        prevFoods.map((food) =>
-          food._id === updatedFood._id ? updatedFood : food
-        )
-      );
-    } else {
-      setFoods((prevFoods) => [...prevFoods, updatedFood]);
-    }
-  };
-
   const handleDelete = (foodID) => {
     Swal.fire({
       title: "Are you sure?",
@@ -109,7 +97,6 @@ const FoodList = () => {
           foodToEdit={currentFood} // Pass the current food to the modal
           isEditing={isEditing} // Pass editing state to the modal
           onClose={closeModal}
-          onFoodCreated={handleFoodChange} // Pass function to add or update genre
           notifySuccess={notifySuccess} // Pass success notification
           notifyError={notifyError} // Pass error notification
           refresh={fetchFoods} //Pass refresh function for the table

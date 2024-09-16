@@ -20,18 +20,18 @@ registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const Food = ({
   onClose,
-  onFoodCreated,
   notifySuccess,
   notifyError,
   foodToEdit,
   isEditing,
 }) => {
   const {
+    control,
     register,
     handleSubmit,
     reset,
     setValue,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm();
 
   const [categories, setCategories] = useState([]);
@@ -64,44 +64,22 @@ const Food = ({
         availability: options.find(
           (option) => option.value === foodToEdit.availability
         ), // Set initial availability option object
+        image: foodToEdit.image || [], // Set initial image if any
       });
     } else {
-      reset({ name: "", price: "", category: null, availability: null });
+      reset({
+        name: "",
+        price: "",
+        category: null,
+        availability: null,
+        image: [],
+      });
     }
   }, [isEditing, foodToEdit, categories]);
 
   const onSubmit = (data) => {
     console.log(data);
-    // const url = isEditing
-    //   ? `${process.env.REACT_APP_API_LINK}/foods/${foodToEdit._id}`
-    //   : `${process.env.REACT_APP_API_LINK}/foods`;
-    // const method = isEditing ? "PUT" : "POST";
-
-    // axios({
-    //   method,
-    //   url,
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   data: {
-    //     name: data.name,
-    //   },
-    // })
-    //   .then((response) => {
-    //     const food = response.data;
-    //     onFoodCreated(food);
-    //     notifySuccess(
-    //       isEditing ? "Food updated successfully" : "Food created successfully"
-    //     );
-    //     onClose();
-    //   })
-    //   .catch((error) => {
-    //     notifyError(isEditing ? "Error updating food" : "Error creating food");
-    //     console.error(
-    //       isEditing ? "Error updating food:" : "Error creating food:",
-    //       error.response ? error.response.data : error.message
-    //     );
-    //   });
+    // Add your submit logic here
   };
 
   const options = [
@@ -128,7 +106,9 @@ const Food = ({
               id="name"
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "name"
+                "name",
+                errors,
+                touchedFields
               )}`}
               {...register("name", { required: "Name is required" })}
             />
@@ -140,24 +120,29 @@ const Food = ({
             <label htmlFor="category" className="block text-gray-700 mb-2">
               Category
             </label>
-            <Select
-              id="category"
-              options={categories}
-              placeholder="Select Category"
-              isClearable
-              isSearchable
-              onChange={(selectedOption) =>
-                setValue("category", selectedOption)
-              }
-              styles={{
-                control: (base, state) => ({
-                  ...base,
-                  borderColor: errors.category ? "red" : base.borderColor,
-                  "&:hover": {
-                    borderColor: errors.category ? "red" : base.borderColor,
-                  },
-                }),
-              }}
+            <Controller
+              name="category"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  id="category"
+                  options={categories}
+                  placeholder="Select Category"
+                  isClearable
+                  isSearchable
+                  {...field}
+                  onChange={(selectedOption) => field.onChange(selectedOption)}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      borderColor: errors.category ? "red" : base.borderColor,
+                      "&:hover": {
+                        borderColor: errors.category ? "red" : base.borderColor,
+                      },
+                    }),
+                  }}
+                />
+              )}
             />
             {errors.category && (
               <p className="text-red-500 text-sm mt-1">
@@ -173,7 +158,9 @@ const Food = ({
               id="price"
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "price"
+                "price",
+                errors,
+                touchedFields
               )}`}
               {...register("price", { required: "Price is required" })}
             />
@@ -187,24 +174,33 @@ const Food = ({
             <label htmlFor="availability" className="block text-gray-700 mb-2">
               Availability
             </label>
-            <Select
-              id="availability"
-              options={options}
-              placeholder="Select availability"
-              isClearable
-              isSearchable
-              onChange={(selectedOption) =>
-                setValue("availability", selectedOption)
-              }
-              styles={{
-                control: (base, state) => ({
-                  ...base,
-                  borderColor: errors.availability ? "red" : base.borderColor,
-                  "&:hover": {
-                    borderColor: errors.availability ? "red" : base.borderColor,
-                  },
-                }),
-              }}
+            <Controller
+              name="availability"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  id="availability"
+                  options={options}
+                  placeholder="Select availability"
+                  isClearable
+                  isSearchable
+                  {...field}
+                  onChange={(selectedOption) => field.onChange(selectedOption)}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      borderColor: errors.availability
+                        ? "red"
+                        : base.borderColor,
+                      "&:hover": {
+                        borderColor: errors.availability
+                          ? "red"
+                          : base.borderColor,
+                      },
+                    }),
+                  }}
+                />
+              )}
             />
             {errors.availability && (
               <p className="text-red-500 text-sm mt-1">
@@ -216,14 +212,24 @@ const Food = ({
           {/* FilePond Integration */}
           <div className="mb-4 col-span-2">
             <label className="block text-gray-700 mb-2">Image</label>
-            <FilePond
+            <Controller
               name="image"
-              server="http://localhost:4000/api/foods/upload-pic"
-              allowMultiple={false}
-              acceptedFileTypes={["image/png", "image/jpeg", "image/jpg"]}
-              labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+              control={control}
+              render={({ field }) => (
+                <FilePond
+                  {...field}
+                  files={field.value}
+                  onupdatefiles={(fileItems) => {
+                    // Update the field value
+                    field.onChange(fileItems.map((fileItem) => fileItem.file));
+                  }}
+                  server={`${process.env.REACT_APP_API_LINK}/foods/upload-pic`}
+                  allowMultiple={false}
+                  acceptedFileTypes={["image/png", "image/jpeg", "image/jpg"]}
+                  labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+                />
+              )}
             />
-            <input type="hidden" {...register("image", { required: true })} />
             {errors.image && (
               <p className="text-red-500 text-sm mt-1">Image is required</p>
             )}
