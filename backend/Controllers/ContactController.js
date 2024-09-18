@@ -1,4 +1,3 @@
-// controllers/contactController.js
 const Contact = require("../Models/Contact");
 const nodemailer = require("nodemailer");
 
