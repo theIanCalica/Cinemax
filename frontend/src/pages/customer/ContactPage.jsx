@@ -6,6 +6,7 @@ import { DevTool } from "@hookform/devtools";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getBorderColor } from "../../Utils/borderColor";
 
 const ContactPage = () => {
   const {
@@ -20,95 +21,56 @@ const ContactPage = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/contacts",
+        `${process.env.REACT_APP_API_LINK}/contacts`,
         data
       );
       if (response.status === 201) {
         reset();
-        console.log("Form Data Submitted Successfully:", response.data);
         toast.success("Message sent successfully!", {
           position: "top-right",
-          autoClose: 5000, // Time in milliseconds for the toast to auto-close
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+          autoClose: 5000,
           theme: "light",
         });
       } else {
-        console.error("Form submission error:", response);
         toast.error("There was an error submitting the form.", {
           position: "top-right",
-          autoClose: 5000, // Time in milliseconds for the toast to auto-close
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
+          autoClose: 5000,
           theme: "light",
         });
       }
     } catch (error) {
-      console.error("Form submission error:", error);
       toast.error("There was an error submitting the form.", {
         position: "top-right",
-        autoClose: 5000, // Time in milliseconds for the toast to auto-close
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+        autoClose: 5000,
         theme: "light",
       });
     }
   };
 
-  // Utility function to determine input border color
-  const getBorderColor = (fieldName) => {
-    if (errors[fieldName]) {
-      return "border-red-500";
-    } else if (touchedFields[fieldName]) {
-      return "border-green-500";
-    }
-    return "border-gray-200";
-  };
-
   return (
-    <div className="container">
+    <div className="container mx-auto px-4">
       <Navbar />
       <Hero type="Contact" />
-      <hr
-        className="broken-hr"
-        style={{
-          border: "none",
-          height: "10px",
-          background:
-            "repeating-linear-gradient(to right, transparent, transparent 10px, black 10px, black 30px)",
-          margin: "20px 0",
-          width: "100%",
-        }}
-      />
-      <div className="flex justify-center items-center flex-col mt-40">
+      <hr className="broken-hr" />
+      <div className="text-center mt-10">
         <p className="text-gray-500 font-serif">Contact With Us</p>
-        <h1 className="text-4xl font-bold font-sans">
-          Feel Free to Write us Anytime
-        </h1>
+        <h1 className="text-4xl font-bold">Feel Free to Write Us Anytime</h1>
       </div>
 
-      {/* End of hero  */}
-      {/* Contact us form */}
       <DevTool control={control} />
       <div className="flex justify-center my-10">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl w-full"
         >
-          <div className="w-full mb-3">
+          <div className="mb-3">
             <input
               className={`w-full bg-gray-200 text-black border rounded py-3 px-4 ${getBorderColor(
-                "name"
+                "name",
+                errors,
+                touchedFields
               )}`}
               id="name"
-              name="name"
-              type="text"
               placeholder="Name"
               {...register("name", { required: "Name is required" })}
             />
@@ -117,13 +79,14 @@ const ContactPage = () => {
             )}
           </div>
 
-          <div className="w-full mb-3">
+          <div className="mb-3">
             <input
               className={`w-full bg-gray-200 text-black border rounded py-3 px-4 ${getBorderColor(
-                "email"
+                "email",
+                errors,
+                touchedFields
               )}`}
               id="email"
-              name="email"
               type="email"
               placeholder="Email"
               {...register("email", {
@@ -141,13 +104,14 @@ const ContactPage = () => {
             )}
           </div>
 
-          <div className="w-full mb-3">
+          <div className="mb-3">
             <input
               className={`w-full bg-gray-200 text-black border rounded py-3 px-4 ${getBorderColor(
-                "phone"
+                "phone",
+                errors,
+                touchedFields
               )}`}
               id="phone"
-              name="phone"
               type="text"
               maxLength={11}
               placeholder="Phone Number"
@@ -167,14 +131,14 @@ const ContactPage = () => {
             )}
           </div>
 
-          <div className="w-full mb-3">
+          <div className="mb-3">
             <input
               className={`w-full bg-gray-200 text-black border rounded py-3 px-4 ${getBorderColor(
-                "subject"
+                "subject",
+                errors,
+                touchedFields
               )}`}
               id="subject"
-              name="subject"
-              type="text"
               placeholder="Subject"
               {...register("subject", { required: "Subject is required" })}
             />
@@ -185,13 +149,15 @@ const ContactPage = () => {
             )}
           </div>
 
-          <div className="w-full mb-3 col-span-2">
+          <div className="mb-3 col-span-2">
             <textarea
               name="body"
               id="body"
               rows={5}
               className={`w-full bg-gray-200 text-black border rounded py-3 px-4 ${getBorderColor(
-                "body"
+                "body",
+                errors,
+                touchedFields
               )}`}
               placeholder="Comment"
               {...register("body", { required: "Comment is required" })}
@@ -204,29 +170,27 @@ const ContactPage = () => {
           <div className="col-span-2 flex justify-center">
             <button
               type="submit"
-              className="w-60 h-14 bg-themeYellow text-white border border-transparent hover:bg-white hover:text-themeYellow hover:border-themeYellow transition-colors duration-300 ease-in-out"
+              className="w-full md:w-60 h-14 bg-themeYellow text-white border border-transparent hover:bg-white hover:text-themeYellow hover:border-themeYellow transition-colors duration-300 ease-in-out"
             >
               Send a Message
             </button>
           </div>
         </form>
       </div>
-      <div className="h-80 ">
+
+      <div className="relative h-80">
         <img
           src="/images/upuan.jpg"
-          className="w-screen 0bject-cover "
-          style={{ opacity: "0.2", height: "60vh" }}
+          className="w-full h-full object-cover opacity-20"
           alt=""
         />
       </div>
+
       <ToastContainer
         position="top-right"
         autoClose={5000}
         hideProgressBar={false}
-        newestOnTop={false}
         closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
         draggable
         theme="light"
       />
