@@ -9,19 +9,27 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdowns, setDropdowns] = useState({
+    movies: false,
+    announcements: false,
+  });
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen); // Only toggle dropdown state
+  const toggleDropdown = (dropdown) => {
+    setDropdowns((prev) => ({
+      ...prev,
+      [dropdown]: !prev[dropdown],
+      // Close other dropdown when opening one
+      ...(dropdown === "movies" ? { announcements: false } : { movies: false }),
+    }));
   };
 
   return (
     <nav
-      className="bg-transparent absolute top-0 left-0 w-full z-10 border-b  p-3"
+      className="bg-transparent absolute top-0 left-0 w-full z-10 border-b  p-3 font-mono"
       style={{ borderColor: "#FFFFFF26", borderBottomWidth: "1px" }}
     >
       <div className="flex container items-center justify-between mx-auto p-4">
@@ -131,54 +139,93 @@ const Navbar = () => {
             About
           </NavLink>
 
-          <div className="w-full">
+          <div className="w-full m-0 p-0">
             <button
-              className="flex w-full justify-between items-center pb-2 font-bold border-b mb-2 text-left border-themeBorderBottom hover:text-slate-400 text-white"
-              onClick={toggleDropdown}
+              className="flex w-full justify-between items-center pb-2 font-bold border-b  text-left border-themeBorderBottom hover:text-slate-400 text-white"
+              onClick={() => toggleDropdown("movies")}
             >
               <div>Movies</div>
-              {isDropdownOpen ? (
+              {dropdowns.movies ? (
                 <KeyboardArrowUpIcon />
               ) : (
                 <KeyboardArrowDownIcon />
               )}
             </button>
 
-            {isDropdownOpen && ( // Use the dropdown state to control visibility
+            {dropdowns.movies && ( // Use the dropdown state to control visibility
               <div className="dropdown-content mt-2">
                 <ul className=" text-white p-2 rounded">
                   <li>
                     <NavLink
                       to="/movies/action"
-                      className="block p-2 hover:bg-gray-700"
+                      className="block p-2 hover:text-slate-400 pb-2 font-bold border-b mb-2 text-left border-themeBorderBottom"
                       onClick={toggleSidebar}
                     >
-                      Action
+                      Now Showing
                     </NavLink>
                   </li>
                   <li>
                     <NavLink
                       to="/movies/comedy"
-                      className="block p-2 hover:bg-gray-700"
+                      className="block p-2 hover:text-slate-400 pb-2 font-bold border-b mb-2 text-left border-themeBorderBottom"
                       onClick={toggleSidebar}
                     >
-                      Comedy
+                      Coming Soon
                     </NavLink>
                   </li>
                   <li>
                     <NavLink
                       to="/movies/drama"
-                      className="block p-2 hover:bg-gray-700"
+                      className="block p-2 hover:text-slate-400 pb-2 font-bold border-b mb-2 text-left border-themeBorderBottom"
                       onClick={toggleSidebar}
                     >
-                      Drama
+                      All Movies
                     </NavLink>
                   </li>
-                  {/* Add more movie genres here */}
                 </ul>
               </div>
             )}
           </div>
+
+          <div className="w-full m-0 p-0">
+            <button
+              className="flex w-full justify-between items-center pb-2 font-bold border-b text-left border-themeBorderBottom hover:text-slate-400 text-white"
+              onClick={() => toggleDropdown("announcements")}
+            >
+              <div>Announcements</div>
+              {dropdowns.announcements ? (
+                <KeyboardArrowUpIcon />
+              ) : (
+                <KeyboardArrowDownIcon />
+              )}
+            </button>
+
+            {dropdowns.announcements && (
+              <div className="dropdown-content mt-2">
+                <ul className=" text-white p-2 rounded">
+                  <li>
+                    <NavLink
+                      to="/movies/action"
+                      className="block p-2 hover:text-slate-400 pb-2 font-bold border-b mb-2 text-left border-themeBorderBottom"
+                      onClick={toggleSidebar}
+                    >
+                      Events
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/movies/comedy"
+                      className="block p-2 hover:text-slate-400 pb-2 font-bold border-b mb-2 text-left border-themeBorderBottom"
+                      onClick={toggleSidebar}
+                    >
+                      Articles
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+
           <NavLink
             to="/news"
             className={({ isActive }) =>
