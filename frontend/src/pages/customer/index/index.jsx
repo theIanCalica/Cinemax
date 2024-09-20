@@ -14,6 +14,7 @@ import { Navigation, Scrollbar, A11y, Autoplay } from "swiper/modules";
 import Navbar from "../../../components/customer/Navbar/Navbar";
 import Widget from "../../../components/customer/Widgets/Widgets";
 import Footer from "../../../components/customer/Footer/Footer";
+
 import "./Index.scss";
 const Index = () => {
   return (
