@@ -31,7 +31,7 @@
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "@mui/icons-material": "^5.16.7",
-    "@mui/material": "^6.1.0",
+    "@mui/material": "^5.15.14",
     "@mui/x-date-pickers": "^7.17.0",
     "@sentry/react": "^8.30.0",
     "@sentry/tracing": "^7.114.0",
