@@ -3,13 +3,25 @@ import { Button, Stack, TextField, Typography, colors } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"; // You can use 'AdapterDateFns' or other adapters based on preference
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Select from "react-select";
+import { FilePond, registerPlugin } from "react-filepond";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import FilePondPluginImageEdit from "filepond-plugin-image-edit";
+import FilePondPluginImageCrop from "filepond-plugin-image-crop";
+import FilePondPluginImageTransform from "filepond-plugin-image-transform";
+
+// Register FilePond plugins
+registerPlugin(
+  FilePondPluginImagePreview,
+  FilePondPluginImageEdit,
+  FilePondPluginImageCrop,
+  FilePondPluginImageTransform
+);
 
 const options = [
   { value: "admin", label: "Admin" },
   { value: "user", label: "User" },
-  // Add other options as needed
 ];
 
 export const ScreenMode = {
@@ -18,21 +30,23 @@ export const ScreenMode = {
 };
 
 const SignupForm = ({ onSwitchMode }) => {
-  const [step, setStep] = useState(1); // Manage form steps
+  const [step, setStep] = useState(1);
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    mode: "onBlur", // Trigger validation on blur
+    mode: "onBlur",
   });
 
+  const [files, setFiles] = useState([]); // State for file upload
+
   const handleNextStep = () => {
-    setStep(2); // Move to the second part of the form
+    setStep(2);
   };
 
   const handlePreviousStep = () => {
-    setStep(1); // Move back to the first part of the form
+    setStep(1);
   };
 
   const onSubmitStep1 = (data) => {
@@ -42,6 +56,7 @@ const SignupForm = ({ onSwitchMode }) => {
 
   const onSubmitStep2 = (data) => {
     console.log("Step 2 Data:", data);
+    console.log("Uploaded Files:", files); // Include uploaded files
     console.log("Form submitted");
   };
 
@@ -168,78 +183,91 @@ const SignupForm = ({ onSwitchMode }) => {
         ) : (
           <form onSubmit={handleSubmit(onSubmitStep2)}>
             <Stack spacing={4}>
-              <Stack spacing={2}>
-                <Stack spacing={1}>
-                  <Typography color={colors.grey[800]}>
-                    Date of Birth
-                  </Typography>
-                  <Controller
-                    name="dob"
-                    control={control}
-                    rules={{ required: "Date of Birth is required" }}
-                    render={({ field }) => (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          {...field}
-                          renderInput={(params) => (
-                            <TextField
-                              fullWidth
-                              {...params}
-                              error={!!errors.dob}
-                              helperText={errors.dob?.message}
-                            />
-                          )}
-                          onChange={(date) => field.onChange(date)}
-                        />
-                      </LocalizationProvider>
-                    )}
-                  />
-                </Stack>
-                <Stack spacing={1}>
-                  <Typography color={colors.grey[800]}>Phone Number</Typography>
-                  <Controller
-                    name="phoneNumber"
-                    control={control}
-                    rules={{ required: "Phone Number is required" }}
-                    render={({ field }) => (
-                      <TextField
-                        fullWidth
+              <Stack spacing={1}>
+                <Typography color={colors.grey[800]}>
+                  Profile Picture
+                </Typography>
+                <FilePond
+                  files={files}
+                  onupdatefiles={setFiles}
+                  allowMultiple={false}
+                  maxFiles={1}
+                  name="files"
+                  labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+                  imagePreviewHeight={170}
+                  imageCropAspectRatio="1:1"
+                  imageResizeTargetWidth={200}
+                  imageResizeTargetHeight={200}
+                />
+              </Stack>
+              <Stack spacing={1}>
+                <Typography color={colors.grey[800]}>Date of Birth</Typography>
+                <Controller
+                  name="dob"
+                  control={control}
+                  rules={{ required: "Date of Birth is required" }}
+                  render={({ field }) => (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
                         {...field}
-                        error={!!errors.phoneNumber}
-                        helperText={errors.phoneNumber?.message}
-                      />
-                    )}
-                  />
-                </Stack>
-                <Stack spacing={1}>
-                  <Typography color={colors.grey[800]}>Role</Typography>
-                  <Controller
-                    name="role"
-                    control={control}
-                    rules={{ required: "Role is required" }}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        options={options}
-                        isClearable
-                        onChange={(selectedOption) => {
-                          field.onChange(
-                            selectedOption ? selectedOption.value : null
-                          );
-                        }}
-                        onBlur={() => field.onBlur()}
-                        value={options.find(
-                          (option) => option.value === field.value
+                        renderInput={(params) => (
+                          <TextField
+                            fullWidth
+                            {...params}
+                            error={!!errors.dob}
+                            helperText={errors.dob?.message}
+                          />
                         )}
+                        onChange={(date) => field.onChange(date)}
                       />
-                    )}
-                  />
-                  {errors.role && (
-                    <Typography color="error" variant="caption">
-                      {errors.role.message}
-                    </Typography>
+                    </LocalizationProvider>
                   )}
-                </Stack>
+                />
+              </Stack>
+              <Stack spacing={1}>
+                <Typography color={colors.grey[800]}>Phone Number</Typography>
+                <Controller
+                  name="phoneNumber"
+                  control={control}
+                  rules={{ required: "Phone Number is required" }}
+                  render={({ field }) => (
+                    <TextField
+                      fullWidth
+                      {...field}
+                      error={!!errors.phoneNumber}
+                      helperText={errors.phoneNumber?.message}
+                    />
+                  )}
+                />
+              </Stack>
+              <Stack spacing={1}>
+                <Typography color={colors.grey[800]}>Role</Typography>
+                <Controller
+                  name="role"
+                  control={control}
+                  rules={{ required: "Role is required" }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      options={options}
+                      isClearable
+                      onChange={(selectedOption) => {
+                        field.onChange(
+                          selectedOption ? selectedOption.value : null
+                        );
+                      }}
+                      onBlur={() => field.onBlur()}
+                      value={options.find(
+                        (option) => option.value === field.value
+                      )}
+                    />
+                  )}
+                />
+                {errors.role && (
+                  <Typography color="error" variant="caption">
+                    {errors.role.message}
+                  </Typography>
+                )}
               </Stack>
               <Stack direction="row" spacing={2}>
                 <Button
