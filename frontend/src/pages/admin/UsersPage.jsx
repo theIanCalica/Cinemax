@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
@@ -8,11 +9,15 @@ import { formatDate } from "../../Utils/FormatDate";
 import { notifyError, notifySuccess } from "../../Utils/notification";
 import UserModal from "../../components/admin/Modal/User";
 import axios from "axios";
+import { Menu, MenuItem, IconButton } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const fetchUsers = () => {
     axios
@@ -38,6 +43,30 @@ const UsersPage = () => {
     setIsEditing(false);
   };
 
+  const handleMenuClick = (event, user) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedUser(user);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedUser(null);
+  };
+
+  const handleEdit = () => {
+    openModal(selectedUser); // Your function to open the modal
+    handleMenuClose();
+  };
+
+  const handleArchive = () => {
+    console.log("Archiving:", selectedUser);
+    handleMenuClose();
+  };
+
+  const handleDeleteAction = () => {
+    handleDelete(selectedUser._id);
+    handleMenuClose();
+  };
   const handleUserChange = async () => {
     try {
       fetchUsers();
@@ -47,8 +76,8 @@ const UsersPage = () => {
   };
 
   useEffect(() => {
-    // fetchUsers();
-  });
+    fetchUsers();
+  }, []);
 
   const handleDelete = async (userID) => {
     const result = await Swal.fire({
@@ -82,6 +111,13 @@ const UsersPage = () => {
         console.log(err.message);
       }
     }
+  };
+
+  const formatRole = (role) => {
+    if (role === "serviceCrew") {
+      return "Service Crew"; // Separate and capitalize
+    }
+    return role.charAt(0).toUpperCase() + role.slice(1); // Capitalize the first letter for other roles
   };
 
   return (
@@ -125,7 +161,7 @@ const UsersPage = () => {
               <th className="py-2 px-4 border-b text-left">Phone</th>
               <th className="py-2 px-4 border-b text-left">Role</th>
               <th className="py-2 px-4 border-b text-left">Profile</th>
-              <th className="py-2 px-4 border-b text-left">Edit</th>
+              <th className="py-2 px-4 border-b text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -137,20 +173,46 @@ const UsersPage = () => {
                 <td className="py-2 px-4 border-b">{formatDate(user.dob)}</td>
                 <td className="py-2 px-4 border-b">{user.email}</td>
                 <td className="py-2 px-4 border-b">{user.phoneNumber}</td>
-                <td className="py-2 px-4 border-b">{user.role}</td>
-                {user.profile ? (
-                  <img
-                    src={user.profile.url}
-                    alt="User Profile"
-                    className="w-16 h-16 object-cover"
-                  />
-                ) : (
-                  <img
-                    src="/images/default"
-                    alt="Default Profile"
-                    className="w-16 h-16 object-cover"
-                  />
-                )}
+                <td className="py-2 px-4 border-b">{formatRole(user.role)}</td>
+                <td>
+                  {user.profile ? (
+                    <img
+                      src={user.profile.url}
+                      alt="User Profile"
+                      className="w-16 h-16 object-cover"
+                    />
+                  ) : (
+                    <img
+                      src="/images/default"
+                      alt="Default Profile"
+                      className="w-16 h-16 object-cover"
+                    />
+                  )}
+                </td>
+                <td className="py-2 px-4 border-b">
+                  <IconButton
+                    onClick={(event) => handleMenuClick(event, user)}
+                    className="p-1 rounded-full bg-transparent text-gray-500 hover:text-black transition duration-200 ease-in-out"
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                  >
+                    <MenuItem onClick={handleEdit}>
+                      <EditOutlinedIcon className="mr-2" /> Edit
+                    </MenuItem>
+                    <MenuItem onClick={handleArchive}>
+                      <ArchiveOutlinedIcon className="mr-2" /> Archive
+                    </MenuItem>
+                    <MenuItem onClick={handleDeleteAction}>
+                      <DeleteOutlineOutlinedIcon className="mr-2" /> Delete
+                    </MenuItem>
+                  </Menu>
+                </td>
               </tr>
             ))}
           </tbody>
