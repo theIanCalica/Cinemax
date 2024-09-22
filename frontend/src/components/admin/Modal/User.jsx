@@ -40,7 +40,17 @@ const User = ({
     control,
     reset,
     formState: { errors, touchedFields },
-  } = useForm({ mode: "onChange" });
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      fname: "",
+      lname: "",
+      email: "",
+      phoneNumber: "",
+      dob: null,
+      role: null,
+    },
+  });
 
   const onSubmit = (data) => {
     const user = {
@@ -64,7 +74,22 @@ const User = ({
         "Content-Type": "application/json",
       },
       data: user,
-    });
+    })
+      .then((response) => {
+        const user = response.data;
+        refresh();
+        notifySuccess(
+          isEditing ? "User updated successfully" : "User created successfully"
+        );
+        onClose();
+      })
+      .catch((error) => {
+        notifyError(isEditing ? "Error updating user" : "Error creating user");
+        console.error(
+          isEditing ? "Error updating user:" : "Error creating user:",
+          error.response ? error.response.data : error.message
+        );
+      });
   };
 
   return (
@@ -127,7 +152,7 @@ const User = ({
               control={control}
               render={({ field }) => (
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <div className="w-full max-w-xl">
+                  <div className="w-full">
                     <Box
                       sx={{
                         width: "100%", // Ensure Box takes full width of its container
@@ -149,7 +174,7 @@ const User = ({
                         renderInput={(params) => (
                           <TextField
                             {...params}
-                            sx={{ gridColumn: "span 10" }}
+                            fullWidth // Make the TextField take up all available space
                             onBlur={() => field.onBlur()}
                           />
                         )}
@@ -159,6 +184,7 @@ const User = ({
                 </LocalizationProvider>
               )}
             />
+
             {errors.dob && (
               <p className="text-red-500 text-sm mt-1">{errors.dob.message}</p>
             )}

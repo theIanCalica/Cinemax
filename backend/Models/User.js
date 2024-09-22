@@ -31,19 +31,20 @@ const UserSchema = new Schema(
       public_id: {
         type: String,
         required: true,
-        default: "",
+        default: "r9fgjtxvl5p5p1iaui43",
       },
       url: {
         type: String,
         required: true,
-        default: "",
+        default:
+          "https://res.cloudinary.com/dwmw3iig6/image/upload/v1726394807/users/r9fgjtxvl5p5p1iaui43.jpg",
       },
     },
     role: {
       type: String,
       required: [true, "Role is required"],
-      default: "Admin",
-      enum: ["Admin", "User", "Moderator"],
+      default: "Customer",
+      enum: ["customer", "serviceCrew"],
     },
   },
   {

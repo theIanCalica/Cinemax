@@ -19,6 +19,11 @@ const SigninForm = ({ onSwitchMode }) => {
     formState: { errors },
   } = useForm({
     mode: "onBlur", // Trigger validation on blur
+    defaultValues: {
+      // Set default values for controlled inputs
+      email: "",
+      password: "",
+    },
   });
 
   // Handle form submission
@@ -68,6 +73,7 @@ const SigninForm = ({ onSwitchMode }) => {
                   <TextField
                     size="large"
                     {...field}
+                    value={field.value || ""} // Ensure the value is never undefined
                     error={!!errors.email}
                     helperText={errors.email?.message} // Display the error message
                     fullWidth
@@ -87,6 +93,7 @@ const SigninForm = ({ onSwitchMode }) => {
                     type="password"
                     size="large"
                     {...field}
+                    value={field.value || ""} // Ensure the value is never undefined
                     error={!!errors.password}
                     helperText={errors.password?.message} // Display the error message
                     fullWidth

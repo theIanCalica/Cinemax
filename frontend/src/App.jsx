@@ -26,13 +26,14 @@ import Message from "./pages/admin/Message";
 import Profile from "./pages/admin/Profile";
 import Movie from "./pages/admin/Movie";
 import Calendar from "./pages/admin/Calendar";
-
+import Try from "./pages/Filepond";
 import "./main.css";
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/try" element={<Try />}></Route>
         <Route path="/" element={<HomePage />} />
         <Route path="articles" element={<Article />}></Route>
         <Route path="/about" element={<AboutPage />}></Route>

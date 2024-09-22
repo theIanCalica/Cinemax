@@ -41,31 +41,23 @@ exports.getUserById = async (req, res) => {
 
 // Create a user
 exports.addUser = async (req, res, next) => {
-  const { fname, lname, dob, email, phoneNumber, profile, role } = req.body;
+  const { fname, lname, dob, email, phoneNumber, role } = req.body;
 
   try {
-    const result = await cloudinary.uploader.upload(profile, {
-      folder: "users",
-    });
-
     const newUser = new User({
       fname,
       lname,
       dob,
       email,
       phoneNumber,
-      profile: {
-        public_id: result.public_id,
-        url: result.secure_url,
-      },
-
       role,
     });
 
     const saveUser = await newUser.save();
     res.status(201).json(saveUser);
   } catch (err) {
-    console.error(err.message);
+    console.log(err.message);
+
     res.status(500).send("Server Error");
   }
 };

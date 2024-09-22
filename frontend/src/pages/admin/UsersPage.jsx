@@ -46,7 +46,9 @@ const UsersPage = () => {
     }
   };
 
-  useEffect(() => {});
+  useEffect(() => {
+    // fetchUsers();
+  });
 
   const handleDelete = async (userID) => {
     const result = await Swal.fire({

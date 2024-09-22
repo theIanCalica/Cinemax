@@ -4,19 +4,24 @@ import { useForm, Controller } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import Select from "react-select";
 import { FilePond, registerPlugin } from "react-filepond";
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-import FilePondPluginImageEdit from "filepond-plugin-image-edit";
 import FilePondPluginImageCrop from "filepond-plugin-image-crop";
+import FilePondPluginImageResize from "filepond-plugin-image-resize";
 import FilePondPluginImageTransform from "filepond-plugin-image-transform";
+import FilePondPluginImageEdit from "filepond-plugin-image-edit";
 
 // Register FilePond plugins
 registerPlugin(
+  FilePondPluginFileValidateType,
+  FilePondPluginImageExifOrientation,
   FilePondPluginImagePreview,
-  FilePondPluginImageEdit,
   FilePondPluginImageCrop,
-  FilePondPluginImageTransform
+  FilePondPluginImageResize,
+  FilePondPluginImageTransform,
+  FilePondPluginImageEdit
 );
 
 const options = [
@@ -37,16 +42,24 @@ const SignupForm = ({ onSwitchMode }) => {
     formState: { errors },
   } = useForm({
     mode: "onBlur",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      dob: null,
+      phoneNumber: "",
+    },
   });
 
-  const [files, setFiles] = useState([]); // State for file upload
+  const [file, setFile] = useState([]); // State for file upload
 
   const handleNextStep = () => {
-    setStep(2);
+    setStep((prevStep) => prevStep + 1);
   };
 
   const handlePreviousStep = () => {
-    setStep(1);
+    setStep((prevStep) => prevStep - 1);
   };
 
   const onSubmitStep1 = (data) => {
@@ -56,7 +69,11 @@ const SignupForm = ({ onSwitchMode }) => {
 
   const onSubmitStep2 = (data) => {
     console.log("Step 2 Data:", data);
-    console.log("Uploaded Files:", files); // Include uploaded files
+    handleNextStep();
+  };
+
+  const onSubmitStep3 = (data) => {
+    console.log("Uploaded Files:", file); // Include uploaded files
     console.log("Form submitted");
   };
 
@@ -78,6 +95,7 @@ const SignupForm = ({ onSwitchMode }) => {
       >
         {step === 1 ? (
           <form onSubmit={handleSubmit(onSubmitStep1)}>
+            {/* Step 1 - Basic Information */}
             <Stack>
               <Typography
                 variant="h4"
@@ -102,6 +120,7 @@ const SignupForm = ({ onSwitchMode }) => {
                     render={({ field }) => (
                       <TextField
                         fullWidth
+                        value={field.value || ""}
                         {...field}
                         error={!!errors.firstName}
                         helperText={errors.firstName?.message}
@@ -118,6 +137,7 @@ const SignupForm = ({ onSwitchMode }) => {
                     render={({ field }) => (
                       <TextField
                         fullWidth
+                        value={field.value || ""}
                         {...field}
                         error={!!errors.lastName}
                         helperText={errors.lastName?.message}
@@ -140,6 +160,7 @@ const SignupForm = ({ onSwitchMode }) => {
                     render={({ field }) => (
                       <TextField
                         fullWidth
+                        value={field.value || ""}
                         {...field}
                         error={!!errors.email}
                         helperText={errors.email?.message}
@@ -157,6 +178,7 @@ const SignupForm = ({ onSwitchMode }) => {
                       <TextField
                         type="password"
                         fullWidth
+                        value={field.value || ""}
                         {...field}
                         error={!!errors.password}
                         helperText={errors.password?.message}
@@ -180,26 +202,10 @@ const SignupForm = ({ onSwitchMode }) => {
               </Button>
             </Stack>
           </form>
-        ) : (
+        ) : step === 2 ? (
           <form onSubmit={handleSubmit(onSubmitStep2)}>
+            {/* Step 2 - Additional Information */}
             <Stack spacing={4}>
-              <Stack spacing={1}>
-                <Typography color={colors.grey[800]}>
-                  Profile Picture
-                </Typography>
-                <FilePond
-                  files={files}
-                  onupdatefiles={setFiles}
-                  allowMultiple={false}
-                  maxFiles={1}
-                  name="files"
-                  labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
-                  imagePreviewHeight={170}
-                  imageCropAspectRatio="1:1"
-                  imageResizeTargetWidth={200}
-                  imageResizeTargetHeight={200}
-                />
-              </Stack>
               <Stack spacing={1}>
                 <Typography color={colors.grey[800]}>Date of Birth</Typography>
                 <Controller
@@ -240,35 +246,62 @@ const SignupForm = ({ onSwitchMode }) => {
                   )}
                 />
               </Stack>
-              <Stack spacing={1}>
-                <Typography color={colors.grey[800]}>Role</Typography>
-                <Controller
-                  name="role"
-                  control={control}
-                  rules={{ required: "Role is required" }}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      options={options}
-                      isClearable
-                      onChange={(selectedOption) => {
-                        field.onChange(
-                          selectedOption ? selectedOption.value : null
-                        );
-                      }}
-                      onBlur={() => field.onBlur()}
-                      value={options.find(
-                        (option) => option.value === field.value
-                      )}
-                    />
-                  )}
-                />
-                {errors.role && (
-                  <Typography color="error" variant="caption">
-                    {errors.role.message}
-                  </Typography>
-                )}
+
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    bgcolor: colors.grey[800],
+                    "&:hover": {
+                      bgcolor: colors.grey[600],
+                    },
+                  }}
+                  onClick={handlePreviousStep}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    bgcolor: colors.grey[800],
+                    "&:hover": {
+                      bgcolor: colors.grey[600],
+                    },
+                  }}
+                  type="submit"
+                >
+                  Next
+                </Button>
               </Stack>
+            </Stack>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmitStep3)}>
+            {/* Step 3 - File Upload */}
+            <Stack spacing={4}>
+              <Stack spacing={1}>
+                <Typography color={colors.grey[800]}>Upload Files</Typography>
+                <FilePond
+                  acceptedFileTypes={["image/*"]}
+                  file={file}
+                  onupdatefiles={setFile}
+                  allowMultiple={false}
+                  maxFiles={1}
+                  name="files"
+                  labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+                  imagePreviewHeight={170}
+                  imageCropAspectRatio="1:1"
+                  imageResizeTargetWidth={200}
+                  allowImageEdit={true} // Enable Image Edit
+                  imageResizeTargetHeight={200}
+                  stylePanelLayout="compact circle"
+                  styleLoadIndicatorPosition="center bottom"
+                  styleButtonRemoveItemPosition="center bottom"
+                />
+              </Stack>
+
               <Stack direction="row" spacing={2}>
                 <Button
                   variant="contained"
