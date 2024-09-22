@@ -11,6 +11,7 @@ import UserModal from "../../components/admin/Modal/User";
 import axios from "axios";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,10 +64,6 @@ const UsersPage = () => {
     handleMenuClose();
   };
 
-  const handleDeleteAction = () => {
-    handleDelete(selectedUser._id);
-    handleMenuClose();
-  };
   const handleUserChange = async () => {
     try {
       fetchUsers();
@@ -82,7 +79,7 @@ const UsersPage = () => {
   const handleDelete = async (userID) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "You will not be able to recover this genre!",
+      text: "You will not be able to recover this user!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -94,15 +91,15 @@ const UsersPage = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:4000/api/users/${userID}`,
+          `${process.env.REACT_APP_API_LINK}/users/${userID}`,
           { method: "DELETE" }
         );
 
         if (response.ok) {
           notifySuccess("Successfully Deleted!");
-          setUsers((prevUsers) => {
-            prevUsers.filter((user) => user._id !== userID);
-          });
+          setUsers((prevUsers) =>
+            prevUsers.filter((user) => user._id !== userID)
+          );
         } else {
           notifyError("Deletion Unsuccessful!");
         }
@@ -115,9 +112,9 @@ const UsersPage = () => {
 
   const formatRole = (role) => {
     if (role === "serviceCrew") {
-      return "Service Crew"; // Separate and capitalize
+      return "Service Crew";
     }
-    return role.charAt(0).toUpperCase() + role.slice(1); // Capitalize the first letter for other roles
+    return role.charAt(0).toUpperCase() + role.slice(1);
   };
 
   return (
@@ -138,7 +135,7 @@ const UsersPage = () => {
       {/* Render the modal for creating or editing a user */}
       {isModalOpen && (
         <UserModal
-          userToEdit={currentUser} // Pass the current user to the modal
+          userToEdit={selectedUser} // Pass the current user to the modal
           isEditing={isEditing} // Pass editing state to the modal
           onClose={closeModal}
           onUserCreated={handleUserChange} // Pass function to add or update user
@@ -208,7 +205,7 @@ const UsersPage = () => {
                     <MenuItem onClick={handleArchive}>
                       <ArchiveOutlinedIcon className="mr-2" /> Archive
                     </MenuItem>
-                    <MenuItem onClick={handleDeleteAction}>
+                    <MenuItem onClick={() => handleDelete(user._id)}>
                       <DeleteOutlineOutlinedIcon className="mr-2" /> Delete
                     </MenuItem>
                   </Menu>
@@ -218,6 +215,7 @@ const UsersPage = () => {
           </tbody>
         </table>
       </div>
+      <ToastContainer />
     </div>
   );
 };
