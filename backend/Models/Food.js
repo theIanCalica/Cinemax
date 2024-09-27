@@ -5,21 +5,25 @@ const FoodSchema = new Schema(
   {
     category: {
       type: Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "Category", // Reference to the Category model
       required: true,
     },
     name: {
       type: String,
-      required: "Food is required!",
+      required: [true, "Food is required!"],
       trim: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
     },
     price: {
       type: Number,
-      required: "Price is required",
+      required: [true, "Price is required"],
     },
     available: {
       type: Boolean,
-      required: "Availability is required",
+      required: [true, "Availability is required"],
       default: true,
     },
     image: {
@@ -39,7 +43,9 @@ const FoodSchema = new Schema(
   }
 );
 
+// Create an index on the food name
 FoodSchema.index({ name: 3 });
+
 const Food = mongoose.model("Food", FoodSchema);
 
 module.exports = Food;

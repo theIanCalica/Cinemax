@@ -12,6 +12,31 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Check uniqueness
+exports.checkUnique = async (req, res) => {
+  const { email, phone } = req.query;
+  try {
+    let query = {};
+    if (email) {
+      query.email = email;
+    }
+
+    if (phone) {
+      query.phone = phone;
+    }
+
+    const user = await User.findOne(query);
+
+    if (user) {
+      return res.status(200).json({ isUnique: false });
+    }
+
+    res.status(200).json({ isUnique: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Get all user list
 exports.getAllUsers = async (req, res) => {
   try {
@@ -54,7 +79,7 @@ exports.addUser = async (req, res, next) => {
     });
 
     const saveUser = await newUser.save();
-    res.status(201).json(saveUser);
+    res.status(200).json(saveUser);
   } catch (err) {
     console.log(err.message);
 
@@ -107,6 +132,28 @@ exports.updateUserById = async (req, res) => {
   }
 };
 
+// Deactivate a user
+exports.deactivateUser = async (req, res) => {
+  try {
+    const data = {
+      status: "deactivated",
+    };
+
+    const user = await User.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+    });
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    res.status(200).json({ user, success: true });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 // Delete a user
 exports.deleteUserById = async (req, res) => {
   try {
@@ -128,24 +175,3 @@ exports.deleteUserById = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
-
-// Upload pic locally
-// exports.uploadPic = [
-//   upload.single("profile"),
-//   (req, res) => {
-//     try {
-//       if (req.file) {
-//         return res.status(400).json({ error: "No file uploaded!" });
-//       }
-
-//       // Respond with the path to the saved file
-//       res.json({
-//         filePath: path.join("temp", req.file.filename),
-//         fileName: req.file.filename,
-//       });
-//     } catch (err) {
-//       console.error(err.message);
-//       res.status(500).send("Server Error!");
-//     }
-//   },
-// ];

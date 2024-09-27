@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"; // You can use 'AdapterDateFns' or other adapters based on preference
@@ -8,6 +8,23 @@ import TextField from "@mui/material/TextField";
 import { getBorderColor } from "../../../Utils/borderColor";
 import { Box } from "@mui/material";
 import axios from "axios";
+import { debounce } from "lodash";
+
+// Function to check uniqueness of email or phone number
+const checkUnique = async (field, value) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_LINK}/users/check-unique`,
+      {
+        params: { [field]: value },
+      }
+    );
+    return response.data.isUnique;
+  } catch (error) {
+    console.error("Error checking uniqueness:", error);
+    return false;
+  }
+};
 
 const User = ({
   onClose,
@@ -28,6 +45,9 @@ const User = ({
       });
     }
   }, [isEditing, userToEdit]);
+
+  const [isEmailUnique, setIsEmailUnique] = useState(true);
+  const [isPhoneNumberUnique, setIsPhoneNumberUnique] = useState(true);
 
   const options = [
     { value: "customer", label: "Customer" },
@@ -51,6 +71,17 @@ const User = ({
       role: null,
     },
   });
+
+  const debouncedCheckUnique = debounce(async (field, value) => {
+    if (value) {
+      const isUnique = await checkUnique(field, value);
+      if (field === "email") {
+        setIsEmailUnique(isUnique);
+      } else if (field === "phoneNumber") {
+        setIsPhoneNumberUnique(isUnique);
+      }
+    }
+  }, 500);
 
   const onSubmit = (data) => {
     const user = {
@@ -203,6 +234,9 @@ const User = ({
                   value:
                     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                   message: "Please enter a valid email",
+                },
+                onChange: (e) => {
+                  debouncedCheckUnique("email", e.target.value);
                 },
               })}
               className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
@@ -11,7 +10,7 @@ import UserModal from "../../components/admin/Modal/User";
 import axios from "axios";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-
+import NoAccountsIcon from "@mui/icons-material/NoAccounts";
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,11 +58,6 @@ const UsersPage = () => {
     handleMenuClose();
   };
 
-  const handleArchive = () => {
-    console.log("Archiving:", selectedUser);
-    handleMenuClose();
-  };
-
   const handleUserChange = async () => {
     try {
       fetchUsers();
@@ -75,6 +69,38 @@ const UsersPage = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const handleDeactivate = async (userID) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Deactivating this user will restrict their access. You can reactivate the account at any time.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, deactivate it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      axios
+        .put(`${process.env.REACT_APP_API_LINK}/users/deactivate/${userID}`)
+        .then((response) => {
+          if (response.status === 200) {
+            notifySuccess("Successfully deactivated");
+            setUsers((prevUsers) =>
+              prevUsers.filter((user) => user._id !== userID)
+            );
+          } else {
+            notifyError("Deactivated Unsuccessful");
+          }
+        })
+        .catch((error) => {
+          notifyError("Something went wrong");
+          console.error(error.message);
+        });
+    }
+  };
 
   const handleDelete = async (userID) => {
     const result = await Swal.fire({
@@ -89,24 +115,22 @@ const UsersPage = () => {
     });
 
     if (result.isConfirmed) {
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_LINK}/users/${userID}`,
-          { method: "DELETE" }
-        );
-
-        if (response.ok) {
-          notifySuccess("Successfully Deleted!");
-          setUsers((prevUsers) =>
-            prevUsers.filter((user) => user._id !== userID)
-          );
-        } else {
-          notifyError("Deletion Unsuccessful!");
-        }
-      } catch (err) {
-        notifyError("Deletion Unsuccessful!");
-        console.log(err.message);
-      }
+      axios
+        .delete(`${process.env.REACT_APP_API_LINK}/users/${userID}`)
+        .then((response) => {
+          if (response.status === 200) {
+            notifySuccess("Successfully Deleted");
+            setUsers((prevUsers) =>
+              prevUsers.filter((user) => user._id !== userID)
+            );
+          } else {
+            notifyError("Deletion Unsuccessful");
+          }
+        })
+        .catch((error) => {
+          notifyError("Something went wrong");
+          console.error(error.message);
+        });
     }
   };
 
@@ -202,8 +226,8 @@ const UsersPage = () => {
                     <MenuItem onClick={handleEdit}>
                       <EditOutlinedIcon className="mr-2" /> Edit
                     </MenuItem>
-                    <MenuItem onClick={handleArchive}>
-                      <ArchiveOutlinedIcon className="mr-2" /> Archive
+                    <MenuItem onClick={() => handleDeactivate(user._id)}>
+                      <NoAccountsIcon className="mr-2" /> Deactivate
                     </MenuItem>
                     <MenuItem onClick={() => handleDelete(user._id)}>
                       <DeleteOutlineOutlinedIcon className="mr-2" /> Delete

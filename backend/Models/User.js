@@ -46,6 +46,13 @@ const UserSchema = new Schema(
       default: "Customer",
       enum: ["customer", "serviceCrew"],
     },
+    status: {
+      type: String,
+      required: [true, "Status is required"],
+      trim: true,
+      enum: ["activated", "deactivated", "unverified"],
+      default: "unverified",
+    },
   },
   {
     timestamps: true,
