@@ -23,7 +23,7 @@ const Task = ({
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm({
     defaultValues: {
       title: taskToEdit?.title || "",
@@ -65,32 +65,32 @@ const Task = ({
       : `${process.env.REACT_APP_API_LINK}/tasks`;
     const method = isEditing ? "PUT" : "POST";
 
-    // axios({
-    //   method,
-    //   url,
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   data,
-    // })
-    //   .then((response) => {
-    //     notifySuccess(
-    //       isEditing ? "Task updated successfully" : "Task created successfully"
-    //     );
-    //     refresh();
-    //   })
-    //   .catch((error) => {
-    //     notifyError(isEditing ? "Error updating task" : "Error creating task");
-    //     console.error(
-    //       isEditing ? "Error updating task:" : "Error creating task:",
-    //       error.response ? error.response.data : error.message
-    //     );
-    //   });
+    axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data,
+    })
+      .then((response) => {
+        notifySuccess(
+          isEditing ? "Task updated successfully" : "Task created successfully"
+        );
+        refresh();
+      })
+      .catch((error) => {
+        notifyError(isEditing ? "Error updating task" : "Error creating task");
+        console.error(
+          isEditing ? "Error updating task:" : "Error creating task:",
+          error.response ? error.response.data : error.message
+        );
+      });
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
         <h2 className="text-xl font-bold mb-4">
           {isEditing ? "Edit Task" : "Add Task"}
         </h2>
@@ -107,7 +107,8 @@ const Task = ({
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
                 "title",
-                errors
+                errors,
+                touchedFields
               )}`}
               {...register("title", { required: "Title is required" })}
             />
@@ -126,7 +127,8 @@ const Task = ({
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
                 "description",
-                errors
+                errors,
+                touchedFields
               )}`}
               {...register("description", {
                 required: "Description is required",

@@ -6,25 +6,10 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import TextField from "@mui/material/TextField";
 import { getBorderColor } from "../../../Utils/borderColor";
+import { checkUnique } from "../../../Utils/checkUnique";
 import { Box } from "@mui/material";
 import axios from "axios";
 import { debounce } from "lodash";
-
-// Function to check uniqueness of email or phone number
-const checkUnique = async (field, value) => {
-  try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_API_LINK}/users/check-unique`,
-      {
-        params: { [field]: value },
-      }
-    );
-    return response.data.isUnique;
-  } catch (error) {
-    console.error("Error checking uniqueness:", error);
-    return false;
-  }
-};
 
 const User = ({
   onClose,
@@ -74,16 +59,27 @@ const User = ({
 
   const debouncedCheckUnique = debounce(async (field, value) => {
     if (value) {
-      const isUnique = await checkUnique(field, value);
+      const { isUnique, message } = await checkUnique(field, value);
       if (field === "email") {
         setIsEmailUnique(isUnique);
+        if (!isUnique) {
+          notifyError(message || "Email is already taken");
+        }
       } else if (field === "phoneNumber") {
         setIsPhoneNumberUnique(isUnique);
+        if (!isUnique) {
+          notifyError(message || "Phone number is already taken");
+        }
       }
     }
   }, 500);
 
   const onSubmit = (data) => {
+    if (!isEmailUnique || !isPhoneNumberUnique) {
+      notifyError("Email or Phone Number must be unique");
+      return; // Prevent submission
+    }
+
     const user = {
       fname: data.fname,
       lname: data.lname,
@@ -239,7 +235,7 @@ const User = ({
                   debouncedCheckUnique("email", e.target.value);
                 },
               })}
-              className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(
+              className={`w-full px-3 py-2 border  border-gray-300 rounded-md h-14 ${getBorderColor(
                 "email",
                 errors,
                 touchedFields
@@ -248,6 +244,11 @@ const User = ({
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.email.message}
+              </p>
+            )}
+            {!isEmailUnique && !errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                Email is already taken
               </p>
             )}
           </div>
