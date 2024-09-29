@@ -4,6 +4,7 @@ const cloudinary = require("../utils/Cloudinary");
 const streamifier = require("streamifier");
 const fs = require("fs");
 const path = require("path");
+const upload = require("../middleware/multer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -14,26 +15,18 @@ const transporter = nodemailer.createTransport({
 
 // Check uniqueness
 exports.checkUnique = async (req, res) => {
-  const { email, phone } = req.query;
+  const { field, value } = req.query; // Expecting field and value in query params
+
   try {
-    let query = {};
-    if (email) {
-      query.email = email;
+    const exists = await User.findOne({ [field]: value }); // Assuming User is your model
+
+    if (exists) {
+      return res.status(409).json({ message: `${field} already exists` }); // Conflict
+    } else {
+      return res.status(200).json({ message: `${field} is unique` }); // OK
     }
-
-    if (phone) {
-      query.phone = phone;
-    }
-
-    const user = await User.findOne(query);
-
-    if (user) {
-      return res.status(200).json({ isUnique: false });
-    }
-
-    res.status(200).json({ isUnique: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
   }
 };
 
@@ -82,10 +75,68 @@ exports.addUser = async (req, res, next) => {
     res.status(200).json(saveUser);
   } catch (err) {
     console.log(err.message);
-
     res.status(500).send("Server Error");
   }
 };
+
+exports.register = [
+  upload.single("file"), // Handles the file upload
+  async (req, res) => {
+    try {
+      const { fname, lname, dob, email, phoneNumber, password } = req.body;
+
+      if ((!fname || !lname || !dob || !email || !phoneNumber, !password)) {
+        return res
+          .status(400)
+          .json({ msg: "Please provide all required fields." });
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ msg: "Invalid email format." });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ msg: "File is required." });
+      }
+
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({
+          msg: "Invalid file type. Only JPEG, PNG, and GIF are allowed.",
+        });
+      }
+
+      // Upload the file to Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.path);
+
+      // Check for existing user
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({ msg: "User already exists." });
+      }
+
+      const newUser = new User({
+        fname,
+        lname,
+        dob,
+        email,
+        phoneNumber,
+        profile: {
+          public_id: result.public_id,
+          url: result.secure_url,
+        },
+      });
+
+      const saveUser = await newUser.save();
+      res.status(200).json(saveUser);
+    } catch (err) {
+      console.log(err.message);
+      console.log(req.body);
+      res.status(500).send("Server Error");
+    }
+  },
+];
 
 // Update a user by ID
 exports.updateUserById = async (req, res) => {

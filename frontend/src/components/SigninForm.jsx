@@ -87,7 +87,11 @@ const SigninForm = ({ onSwitchMode }) => {
               <Controller
                 name="password"
                 control={control}
-                rules={{ required: "Password is required" }}
+                rules={{
+                  required: "Password is required", // Ensure field is required
+                  validate: (value) =>
+                    value.trim() !== "" || "Password cannot be empty", // Additional validation to avoid empty strings
+                }}
                 render={({ field }) => (
                   <TextField
                     type="password"

@@ -12,7 +12,11 @@ import FilePondPluginImageCrop from "filepond-plugin-image-crop";
 import FilePondPluginImageResize from "filepond-plugin-image-resize";
 import FilePondPluginImageTransform from "filepond-plugin-image-transform";
 import FilePondPluginImageEdit from "filepond-plugin-image-edit";
-
+import FacebookIcon from "@mui/icons-material/Facebook";
+import GoogleIcon from "@mui/icons-material/Google";
+import { Box } from "@mui/material";
+import axios from "axios";
+import { notifySuccess, notifyError } from "../Utils/notification";
 // Register FilePond plugins
 registerPlugin(
   FilePondPluginFileValidateType,
@@ -24,11 +28,6 @@ registerPlugin(
   FilePondPluginImageEdit
 );
 
-const options = [
-  { value: "admin", label: "Admin" },
-  { value: "user", label: "User" },
-];
-
 export const ScreenMode = {
   SIGN_IN: "SIGN_IN",
   SIGN_UP: "SIGN_UP",
@@ -36,25 +35,31 @@ export const ScreenMode = {
 
 const SignupForm = ({ onSwitchMode }) => {
   const [step, setStep] = useState(1);
+
+  // State to store data from each step
+  const [formData, setFormData] = useState({
+    fname: "",
+    lname: "",
+    email: "",
+    password: "",
+    dob: null,
+    phoneNumber: "",
+  });
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     mode: "onBlur",
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      dob: null,
-      phoneNumber: "",
-    },
+    defaultValues: formData,
   });
 
   const [file, setFile] = useState([]); // State for file upload
 
-  const handleNextStep = () => {
+  // Function to handle step changes
+  const handleNextStep = (data) => {
+    setFormData((prev) => ({ ...prev, ...data }));
     setStep((prevStep) => prevStep + 1);
   };
 
@@ -63,18 +68,40 @@ const SignupForm = ({ onSwitchMode }) => {
   };
 
   const onSubmitStep1 = (data) => {
-    console.log("Step 1 Data:", data);
-    handleNextStep();
+    handleNextStep(data);
   };
 
   const onSubmitStep2 = (data) => {
-    console.log("Step 2 Data:", data);
-    handleNextStep();
+    handleNextStep(data);
   };
 
-  const onSubmitStep3 = (data) => {
-    console.log("Uploaded Files:", file); // Include uploaded files
-    console.log("Form submitted");
+  // Final submit handler
+  const onSubmitStep3 = async (data) => {
+    const completeData = new FormData();
+    completeData.append("file", file.length > 0 ? file[0].file : null); // Adding the file
+    for (const key in data) {
+      completeData.append(key, data[key]); // Append other form data
+    }
+
+    console.log(completeData);
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_LINK}/users/registration`,
+        completeData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Server response:", response.data);
+    } catch (error) {
+      if (error.response) {
+        console.error("Error response:", error.response.data); // Server's response with details
+      } else {
+        console.error("Error uploading data:", error.message);
+      }
+    }
   };
 
   return (
@@ -114,7 +141,7 @@ const SignupForm = ({ onSwitchMode }) => {
                 <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>First Name</Typography>
                   <Controller
-                    name="firstName"
+                    name="fname"
                     control={control}
                     rules={{ required: "First name is required" }}
                     render={({ field }) => (
@@ -122,8 +149,8 @@ const SignupForm = ({ onSwitchMode }) => {
                         fullWidth
                         value={field.value || ""}
                         {...field}
-                        error={!!errors.firstName}
-                        helperText={errors.firstName?.message}
+                        error={!!errors.fname}
+                        helperText={errors.fname?.message}
                       />
                     )}
                   />
@@ -131,7 +158,7 @@ const SignupForm = ({ onSwitchMode }) => {
                 <Stack spacing={1}>
                   <Typography color={colors.grey[800]}>Last Name</Typography>
                   <Controller
-                    name="lastName"
+                    name="lname"
                     control={control}
                     rules={{ required: "Last name is required" }}
                     render={({ field }) => (
@@ -139,8 +166,8 @@ const SignupForm = ({ onSwitchMode }) => {
                         fullWidth
                         value={field.value || ""}
                         {...field}
-                        error={!!errors.lastName}
-                        helperText={errors.lastName?.message}
+                        error={!!errors.lname}
+                        helperText={errors.lname?.message}
                       />
                     )}
                   />
@@ -186,6 +213,59 @@ const SignupForm = ({ onSwitchMode }) => {
                     )}
                   />
                 </Stack>
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  mt={3} // Adding some margin for better spacing
+                >
+                  <Button
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      padding: 0,
+                      marginRight: "10px",
+                      backgroundColor: "transparent",
+                      transition: "background-color 0.3s ease",
+                      "&:hover": {
+                        backgroundColor: colors.blue[600],
+                        "& .MuiSvgIcon-root": {
+                          color: "white",
+                          transition: "color 0s ease",
+                        },
+                      },
+                    }}
+                  >
+                    <FacebookIcon sx={{ color: colors.blue[600] }} />
+                  </Button>
+
+                  <Button
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      padding: 0,
+                      backgroundColor: "transparent",
+                      transition: "background-color 0.3s ease",
+                      "&:hover": {
+                        backgroundColor: colors.red[600],
+                        "& .MuiSvgIcon-root": {
+                          color: "white",
+                          transition: "color 0s ease",
+                        },
+                      },
+                    }}
+                  >
+                    <GoogleIcon sx={{ color: colors.red[600] }} />
+                  </Button>
+                </Box>
               </Stack>
               <Button
                 variant="contained"
@@ -282,21 +362,23 @@ const SignupForm = ({ onSwitchMode }) => {
             {/* Step 3 - File Upload */}
             <Stack spacing={4}>
               <Stack spacing={1}>
-                <Typography color={colors.grey[800]}>Upload Files</Typography>
+                <Typography color={colors.grey[800]}>
+                  Profile Picture
+                </Typography>
                 <FilePond
                   acceptedFileTypes={["image/*"]}
-                  file={file}
+                  files={file}
                   onupdatefiles={setFile}
                   allowMultiple={false}
                   maxFiles={1}
-                  name="files"
+                  name="file"
                   labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
-                  imagePreviewHeight={170}
+                  imagePreviewHeight={200}
                   imageCropAspectRatio="1:1"
                   imageResizeTargetWidth={200}
-                  allowImageEdit={true} // Enable Image Edit
                   imageResizeTargetHeight={200}
-                  stylePanelLayout="compact circle"
+                  allowImageEdit={true}
+                  stylePanelLayout="circle compact"
                   styleLoadIndicatorPosition="center bottom"
                   styleButtonRemoveItemPosition="center bottom"
                 />
@@ -327,26 +409,12 @@ const SignupForm = ({ onSwitchMode }) => {
                   }}
                   type="submit"
                 >
-                  Sign up
+                  Submit
                 </Button>
               </Stack>
             </Stack>
           </form>
         )}
-
-        <Stack direction="row" spacing={2}>
-          <Typography>Already have an account?</Typography>
-          <Typography
-            onClick={() => onSwitchMode(ScreenMode.SIGN_IN)}
-            fontWeight={600}
-            sx={{
-              cursor: "pointer",
-              userSelect: "none",
-            }}
-          >
-            Sign in
-          </Typography>
-        </Stack>
       </Stack>
     </Stack>
   );

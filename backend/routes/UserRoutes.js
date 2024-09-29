@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../Controllers/UserController");
+const upload = require("../middleware/multer");
 
 // Check uniqueness
 router.get("/check-unique", userController.checkUnique);
@@ -13,6 +14,9 @@ router.get("/:id", userController.getUserById);
 
 // Add user
 router.post("/", userController.addUser);
+
+// Registration route
+router.post("/registration", userController.register);
 
 // Update a user by ID
 router.put("/:id", userController.updateUserById);

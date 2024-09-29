@@ -69,6 +69,16 @@ exports.taskUpdateById = async (req, res) => {
   }
 };
 
+// Handle drag and drop of task
+exports.handleDragAndDrop = async (req, res) => {
+  try {
+    const data = {};
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 // Delete task by ID
 exports.deleteTaskById = async (req, res) => {
   try {
