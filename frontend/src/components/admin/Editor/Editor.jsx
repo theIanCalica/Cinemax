@@ -1,43 +1,30 @@
 import React, { useRef, useCallback } from "react";
-import { createReactEditorJS } from "react-editor-js";
+
+// import tools for editor config
 import { EDITOR_JS_TOOLS } from "./Tools/Tools";
+
+// create editor instance
+import { createReactEditorJS } from "react-editor-js";
 
 export default function Editor({ data, setData }) {
   const editorCore = useRef(null);
   const ReactEditorJS = createReactEditorJS();
 
-  console.log("Editor Component data:", data);
-
-  const handleInitialize = useCallback(
-    (instance) => {
-      editorCore.current = instance;
-      console.log("Editor initialized");
-
-      // Check if the editor instance has a `load` or similar method to set initial data
-      if (data) {
-        // Use instance.render or similar method based on the documentation
-        instance.saver
-          .save()
-          .then(() => {
-            console.log("Data rendered in editor");
-          })
-          .catch((err) => {
-            console.error("An error occurred during data rendering", err);
-          });
-      }
-    },
-    [data]
-  );
+  const handleInitialize = useCallback((instance) => {
+    // await instance._editorJS.isReady;
+    instance._editorJS.isReady
+      .then(() => {
+        // set reference to editor
+        editorCore.current = instance;
+      })
+      .catch((err) => console.log("An error occured", err));
+  }, []);
 
   const handleSave = useCallback(async () => {
-    if (editorCore.current) {
-      try {
-        const savedData = await editorCore.current.save();
-        setData(savedData);
-      } catch (err) {
-        console.error("An error occurred during saving", err);
-      }
-    }
+    // retrieve data inserted
+    const savedData = await editorCore.current.save();
+    // save data
+    setData(savedData);
   }, [setData]);
 
   return (
@@ -47,6 +34,7 @@ export default function Editor({ data, setData }) {
         onInitialize={handleInitialize}
         tools={EDITOR_JS_TOOLS}
         onChange={handleSave}
+        defaultValue={data}
       />
     </div>
   );
