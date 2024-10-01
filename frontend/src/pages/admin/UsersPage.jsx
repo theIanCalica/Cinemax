@@ -71,6 +71,7 @@ const UsersPage = () => {
   }, []);
 
   const handleDeactivate = async (userID) => {
+    console.log(userID);
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "Deactivating this user will restrict their access. You can reactivate the account at any time.",
@@ -81,7 +82,6 @@ const UsersPage = () => {
       confirmButtonText: "Yes, deactivate it!",
       cancelButtonText: "Cancel",
     });
-
     if (result.isConfirmed) {
       axios
         .put(`${process.env.REACT_APP_API_LINK}/users/deactivate/${userID}`)
@@ -181,6 +181,7 @@ const UsersPage = () => {
               <th className="py-2 px-4 border-b text-left">Email</th>
               <th className="py-2 px-4 border-b text-left">Phone</th>
               <th className="py-2 px-4 border-b text-left">Role</th>
+              <th className="py-2 px-4 border-b text-left">Status</th>
               <th className="py-2 px-4 border-b text-left">Profile</th>
               <th className="py-2 px-4 border-b text-left">Actions</th>
             </tr>
@@ -195,6 +196,9 @@ const UsersPage = () => {
                 <td className="py-2 px-4 border-b">{user.email}</td>
                 <td className="py-2 px-4 border-b">{user.phoneNumber}</td>
                 <td className="py-2 px-4 border-b">{formatRole(user.role)}</td>
+                <td className="py-2 px-4 border-b">
+                  {formatRole(user.status)}
+                </td>
                 <td>
                   {user.profile ? (
                     <img
@@ -226,7 +230,9 @@ const UsersPage = () => {
                     <MenuItem onClick={handleEdit}>
                       <EditOutlinedIcon className="mr-2" /> Edit
                     </MenuItem>
-                    <MenuItem onClick={() => handleDeactivate(user._id)}>
+                    <MenuItem
+                      onClick={() => handleDeactivate(selectedUser._id)}
+                    >
                       <NoAccountsIcon className="mr-2" /> Deactivate
                     </MenuItem>
                     <MenuItem onClick={() => handleDelete(user._id)}>
