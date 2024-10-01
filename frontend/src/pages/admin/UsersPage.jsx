@@ -32,7 +32,7 @@ const UsersPage = () => {
 
   // Open and close modal
   const openModal = (user = null) => {
-    setCurrentUser(user);
+    setSelectedUser(user);
     setIsEditing(!!user); // If a user is passed, set editing to true
     setIsModalOpen(true);
   };
@@ -156,16 +156,15 @@ const UsersPage = () => {
         Add User
       </button>
 
-      {/* Render the modal for creating or editing a user */}
       {isModalOpen && (
         <UserModal
-          userToEdit={selectedUser} // Pass the current user to the modal
-          isEditing={isEditing} // Pass editing state to the modal
+          userToEdit={selectedUser}
+          isEditing={isEditing}
           onClose={closeModal}
-          onUserCreated={handleUserChange} // Pass function to add or update user
-          notifySuccess={notifySuccess} // Pass success notification
-          notifyError={notifyError} // Pass error notification
-          refresh={fetchUsers} //Pass refresh function for the table
+          onUserCreated={handleUserChange}
+          notifySuccess={notifySuccess}
+          notifyError={notifyError}
+          refresh={fetchUsers}
         />
       )}
 
@@ -227,7 +226,7 @@ const UsersPage = () => {
                     open={Boolean(anchorEl)}
                     onClose={handleMenuClose}
                   >
-                    <MenuItem onClick={handleEdit}>
+                    <MenuItem onClick={() => openModal(selectedUser)}>
                       <EditOutlinedIcon className="mr-2" /> Edit
                     </MenuItem>
                     <MenuItem
@@ -235,7 +234,7 @@ const UsersPage = () => {
                     >
                       <NoAccountsIcon className="mr-2" /> Deactivate
                     </MenuItem>
-                    <MenuItem onClick={() => handleDelete(user._id)}>
+                    <MenuItem onClick={() => handleDelete(selectedUser._id)}>
                       <DeleteOutlineOutlinedIcon className="mr-2" /> Delete
                     </MenuItem>
                   </Menu>

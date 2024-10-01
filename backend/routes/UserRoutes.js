@@ -3,7 +3,7 @@ const router = express.Router();
 const userController = require("../Controllers/UserController");
 
 // Check uniqueness
-router.get("/check-unique", userController.checkUnique);
+router.post("/check-unique", userController.checkUnique);
 
 // Get all users
 router.get("/", userController.getAllUsers);
