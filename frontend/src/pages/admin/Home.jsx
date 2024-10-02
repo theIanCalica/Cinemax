@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import Widget from "../../components/admin/Widget";
 import BarChart from "../../components/admin/Chart/BarChart";
 import LineChart from "../../components/admin/Chart/LineChart";
@@ -6,8 +7,18 @@ import PieChart from "../../components/admin/Chart/PieChart";
 import Map from "../../components/admin/Map";
 import ContactWidget from "../../components/admin/ContactWidget";
 import TopMovies from "../../components/admin/TopMovies";
+import { notifySuccess } from "../../Utils/notification";
+import { ToastContainer } from "react-toastify";
 
 const Home = () => {
+  const user = useSelector((state) => state.user.user);
+  const loggedIn = useSelector((state) => state.user.loggedIn);
+
+  useEffect(() => {
+    if (loggedIn && user && user.role === "admin") {
+      notifySuccess("Successfully logged in");
+    }
+  }, [loggedIn, user]);
   return (
     <div>
       <h1 className="text-2xl font-bold">Admin Dashboard</h1>
@@ -46,6 +57,7 @@ const Home = () => {
       <div className="container mt-5 bg-white p-4 shadow-md rounded-lg">
         <Map />
       </div>
+      <ToastContainer />
     </div>
   );
 };

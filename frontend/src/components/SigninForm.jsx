@@ -14,8 +14,13 @@ import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { authenticate } from "../Utils/helpers";
+import { useDispatch } from "react-redux";
+import { setUser } from "../actions/userAction";
+
 const SigninForm = ({ onSwitchMode }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const {
     control,
     handleSubmit,
@@ -36,6 +41,8 @@ const SigninForm = ({ onSwitchMode }) => {
       })
       .then((response) => {
         console.log("Response:", response.data);
+        const user = response.data.user;
+        dispatch(setUser(user));
         authenticate(response.data, () => navigate("/admin"));
       })
       .catch((error) => {
