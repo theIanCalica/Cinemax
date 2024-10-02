@@ -9,6 +9,7 @@ import { getBorderColor } from "../../../Utils/borderColor";
 import { checkUnique } from "../../../Utils/checkUnique";
 import { Box } from "@mui/material";
 import axios from "axios";
+import dayjs from "dayjs";
 import { debounce } from "lodash";
 
 const User = ({
@@ -19,31 +20,33 @@ const User = ({
   isEditing,
   refresh,
 }) => {
-  useEffect(() => {
-    if (isEditing && userToEdit) {
-      reset({
-        fname: userToEdit.fname,
-        lname: userToEdit.lname,
-        email: userToEdit.email,
-        phoneNumber: userToEdit.phoneNumber,
-        role: options.find((option) => option.value === userToEdit.role),
-      });
+  const checkUnique = async (value, field) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_LINK}/users/check-unique`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ [field]: value }),
+        }
+      );
+      const data = await response.json(); // Await the JSON response
+      console.log(data.isUnique); // Logging for debugging
+      return data.isUnique; // Return the result of the API call
+    } catch (error) {
+      console.error("Error checking uniqueness:", error);
+      return false; // Return false in case of an error
     }
-  }, [isEditing, userToEdit]);
-
-  const [isEmailUnique, setIsEmailUnique] = useState(true);
-  const [isPhoneNumberUnique, setIsPhoneNumberUnique] = useState(true);
-
-  const options = [
-    { value: "customer", label: "Customer" },
-    { value: "serviceCrew", label: "Service Crew" },
-  ];
+  };
 
   const {
     register,
     handleSubmit,
     control,
     reset,
+    setError,
     formState: { errors, touchedFields },
   } = useForm({
     mode: "onChange",
@@ -56,6 +59,28 @@ const User = ({
       role: null,
     },
   });
+
+  useEffect(() => {
+    console.log("userToEdit:", userToEdit);
+    if (isEditing && userToEdit) {
+      reset({
+        fname: userToEdit.fname,
+        lname: userToEdit.lname,
+        email: userToEdit.email,
+        phoneNumber: userToEdit.phoneNumber,
+        role: options.find((option) => option.value === userToEdit.role),
+        dob: userToEdit.dob ? dayjs(userToEdit.dob) : null,
+      });
+    }
+  }, [isEditing, userToEdit, reset]);
+
+  const [isEmailUnique, setIsEmailUnique] = useState(true);
+  const [isPhoneNumberUnique, setIsPhoneNumberUnique] = useState(true);
+
+  const options = [
+    { value: "customer", label: "Customer" },
+    { value: "serviceCrew", label: "Service Crew" },
+  ];
 
   const debouncedCheckUnique = debounce(async (field, value) => {
     if (value) {
@@ -90,33 +115,33 @@ const User = ({
     };
 
     console.log(user);
-    const url = isEditing
-      ? `${process.env.REACT_APP_API_LINK}/users/${userToEdit._id}`
-      : `${process.env.REACT_APP_API_LINK}/users`;
-    const method = isEditing ? "PUT" : "POST";
-    axios({
-      method,
-      url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: user,
-    })
-      .then((response) => {
-        const user = response.data;
-        refresh();
-        notifySuccess(
-          isEditing ? "User updated successfully" : "User created successfully"
-        );
-        onClose();
-      })
-      .catch((error) => {
-        notifyError(isEditing ? "Error updating user" : "Error creating user");
-        console.error(
-          isEditing ? "Error updating user:" : "Error creating user:",
-          error.response ? error.response.data : error.message
-        );
-      });
+    // const url = isEditing
+    //   ? `${process.env.REACT_APP_API_LINK}/users/${userToEdit._id}`
+    //   : `${process.env.REACT_APP_API_LINK}/users`;
+    // const method = isEditing ? "PUT" : "POST";
+    // axios({
+    //   method,
+    //   url,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   data: user,
+    // })
+    //   .then((response) => {
+    //     const user = response.data;
+    //     refresh();
+    //     notifySuccess(
+    //       isEditing ? "User updated successfully" : "User created successfully"
+    //     );
+    //     onClose();
+    //   })
+    //   .catch((error) => {
+    //     notifyError(isEditing ? "Error updating user" : "Error creating user");
+    //     console.error(
+    //       isEditing ? "Error updating user:" : "Error creating user:",
+    //       error.response ? error.response.data : error.message
+    //     );
+    //   });
   };
 
   return (
@@ -226,13 +251,23 @@ const User = ({
               type="text"
               {...register("email", {
                 required: "Email is required",
+                validate: async (value) => {
+                  const isUnique = await checkUnique(value, "email");
+                  console.log(isUnique);
+                  if (!isUnique) {
+                    setError("email", {
+                      type: "manual",
+                      message: "Email is already in use",
+                    });
+                    return false; // Return false to indicate validation failure
+                  } else {
+                    return true;
+                  }
+                },
                 pattern: {
                   value:
                     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                   message: "Please enter a valid email",
-                },
-                onChange: (e) => {
-                  debouncedCheckUnique("email", e.target.value);
                 },
               })}
               className={`w-full px-3 py-2 border  border-gray-300 rounded-md h-14 ${getBorderColor(
@@ -269,6 +304,9 @@ const User = ({
                 pattern: {
                   value: /^((09)|(\+639))\d{9}$/,
                   message: "Invalid phone number format",
+                },
+                onChange: async (value) => {
+                  console.log(value);
                 },
               })}
               maxLength={11}
