@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
@@ -6,12 +6,15 @@ import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNone
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import { useSelector } from "react-redux";
 
 const Navbar = ({ toggleSidebar }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const user = useSelector((state) => state.user.user);
+  const loggedIn = useSelector((state) => state.user.loggedIn);
 
   const handleSearch = () => {
     console.log("Search for:", searchTerm);
@@ -30,6 +33,10 @@ const Navbar = ({ toggleSidebar }) => {
     setIsDropdownOpen(false);
   };
 
+  useEffect(() => {
+    if (loggedIn && user && user.role === "admin") {
+    }
+  }, [loggedIn, user]);
   return (
     <nav className="text-white flex items-center py-2 px-4 bg-white">
       <div className="flex items-center justify-center">
@@ -147,7 +154,7 @@ const Navbar = ({ toggleSidebar }) => {
                 alt="User Profile Pic"
                 className="rounded-full w-1 h-1"
               />
-              <span>Ian Gabriel G. Calica</span>
+              <span>{user.fname + " " + user.lname}</span>
               <KeyboardArrowDownOutlinedIcon
                 className=""
                 style={{ fontSize: "15px" }}

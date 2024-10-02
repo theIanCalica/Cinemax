@@ -4,13 +4,13 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-
 import { CssBaseline } from "@mui/material";
 import SigninPage from "./pages/SigninPage";
 import HomePage from "./pages/customer/index/index";
 import AboutPage from "./pages/customer/About/AboutPage";
 import ContactPage from "./pages/customer/ContactPage";
 import Email from "./pages/Emails/ContactUs";
+import ProtectedRoute from "./Utils/authRoutes/ProtectedRoute";
 
 // Admin Pages
 import Layout from "./components/admin/v2/Layout"; //Admin Layout
@@ -41,7 +41,10 @@ function App() {
         <Route path="/email" element={<Email />} />
         <Route path="/login" element={<SigninPage />}></Route>
         {/* Route for admin */}
-        <Route path="/admin" element={<Layout />}>
+        <Route
+          path="/admin"
+          element={<ProtectedRoute element={<Layout />} adminOnly={true} />}
+        >
           <Route index element={<HomeAdmin />} />
           <Route path="task" element={<Task />}></Route>
           <Route path="users" element={<User />}></Route>

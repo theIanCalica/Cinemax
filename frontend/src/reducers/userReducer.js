@@ -1,6 +1,6 @@
 const initialState = {
   user: null,
-  loggedIn: false, // Add loggedIn flag to track login status
+  loggedIn: false,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -9,13 +9,13 @@ const userReducer = (state = initialState, action) => {
       return {
         ...state,
         user: action.payload.user,
-        loggedIn: action.payload.loggedIn, // Update loggedIn flag
+        loggedIn: action.payload.loggedIn,
       };
     case "CLEAR_USER":
       return {
         ...state,
         user: null,
-        loggedIn: false, // Reset loggedIn flag on logout
+        loggedIn: false,
       };
     default:
       return state;
