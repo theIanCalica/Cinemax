@@ -3,7 +3,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
 
 // Include routes
 const articleRoutes = require("./routes/ArticleRoutes");
@@ -14,6 +13,7 @@ const GenreRoutes = require("./routes/GenreRoutes");
 const MovieRoutes = require("./routes/MovieRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const TaskRoutes = require("./routes/TaskRoutes");
+const authRoutes = require("./routes/AuthRoutes");
 // const OrderRoutes = require("./routes/OrderRoutes");
 
 // express app
@@ -31,6 +31,7 @@ app.use("/api/v1/genres", GenreRoutes);
 app.use("/api/v1/movies", MovieRoutes);
 app.use("/api/v1/users", UserRoutes);
 app.use("/api/v1/tasks", TaskRoutes);
+app.use("/api/v1/auth", authRoutes);
 // app.use("/api/v1/orders", OrderRoutes);
 
 mongoose

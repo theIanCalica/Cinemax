@@ -11,24 +11,41 @@ import { ScreenMode } from "../pages/SigninPage";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GoogleIcon from "@mui/icons-material/Google";
 import { useForm, Controller } from "react-hook-form";
-
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { authenticate } from "../Utils/helpers";
 const SigninForm = ({ onSwitchMode }) => {
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    mode: "onBlur", // Trigger validation on blur
+    mode: "onBlur",
     defaultValues: {
-      // Set default values for controlled inputs
       email: "",
       password: "",
     },
   });
 
-  // Handle form submission
   const onSubmit = (data) => {
     console.log("Form submitted", data);
+    axios
+      .post(`${process.env.REACT_APP_API_LINK}/auth/login`, data, {
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((response) => {
+        console.log("Response:", response.data);
+        authenticate(response.data, () => navigate("/admin"));
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error("Error response:", error.response.data);
+          console.error("Error status:", error.response.status);
+        } else {
+          console.error("Error message:", error.message);
+        }
+      });
   };
 
   return (
@@ -42,7 +59,6 @@ const SigninForm = ({ onSwitchMode }) => {
         overflow: "hidden",
       }}
     >
-      {/* Make sure it's inside a form with onSubmit */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack
           spacing={3}
@@ -73,9 +89,9 @@ const SigninForm = ({ onSwitchMode }) => {
                   <TextField
                     size="large"
                     {...field}
-                    value={field.value || ""} // Ensure the value is never undefined
+                    value={field.value || ""}
                     error={!!errors.email}
-                    helperText={errors.email?.message} // Display the error message
+                    helperText={errors.email?.message}
                     fullWidth
                     variant="outlined"
                   />
@@ -88,28 +104,26 @@ const SigninForm = ({ onSwitchMode }) => {
                 name="password"
                 control={control}
                 rules={{
-                  required: "Password is required", // Ensure field is required
+                  required: "Password is required",
                   validate: (value) =>
-                    value.trim() !== "" || "Password cannot be empty", // Additional validation to avoid empty strings
+                    value.trim() !== "" || "Password cannot be empty",
                 }}
                 render={({ field }) => (
                   <TextField
                     type="password"
                     size="large"
                     {...field}
-                    value={field.value || ""} // Ensure the value is never undefined
+                    value={field.value || ""}
                     error={!!errors.password}
-                    helperText={errors.password?.message} // Display the error message
+                    helperText={errors.password?.message}
                     fullWidth
                     variant="outlined"
                   />
                 )}
               />
             </Stack>
-
-            {/* Add an onSubmit to this button */}
             <Button
-              type="submit" // Important for form submission
+              type="submit"
               variant="contained"
               size="large"
               sx={{
@@ -124,14 +138,7 @@ const SigninForm = ({ onSwitchMode }) => {
           </Stack>
         </Stack>
       </form>
-
-      {/* Social Sign-In Buttons and Sign-Up Link (same as before) */}
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        mt={3} // Adding some margin for better spacing
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" mt={3}>
         <Button
           sx={{
             display: "flex",
