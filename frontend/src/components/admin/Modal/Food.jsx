@@ -3,19 +3,11 @@ import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import axios from "axios";
 import { getBorderColor } from "../../../Utils/borderColor";
-
-// Import React FilePond
 import { FilePond, registerPlugin } from "react-filepond";
-
-// Import FilePond styles
 import "filepond/dist/filepond.min.css";
-
-// Import the Image EXIF Orientation and Image Preview plugins
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
-
-// Register the plugins
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const Food = ({
@@ -24,6 +16,7 @@ const Food = ({
   notifyError,
   foodToEdit,
   isEditing,
+  refresh,
 }) => {
   const {
     control,
@@ -36,12 +29,29 @@ const Food = ({
 
   const [categories, setCategories] = useState([]);
   const [image, setImage] = useState([]);
+  const [foods, setFoods] = useState([]);
 
-  const fetchFoodCategories = () => {
+  const fetchFoods = () => {
     axios
       .get(`${process.env.REACT_APP_API_LINK}/foods`)
       .then((response) => {
-        setCategories(response.data);
+        setFoods(response);
+      })
+      .catch((error) => {
+        notifyError("Error Fetching Categories");
+        console.error("Error fetching Categories: ", error);
+      });
+  };
+
+  const fetchFoodCategories = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/categories`)
+      .then((response) => {
+        const formattedCategories = response.data.map((category) => ({
+          value: category.id,
+          label: category.name,
+        }));
+        setCategories(formattedCategories);
       })
       .catch((error) => {
         notifyError("Error Fetching Categories");
@@ -51,6 +61,7 @@ const Food = ({
 
   useEffect(() => {
     fetchFoodCategories();
+    fetchFoods();
   }, []);
 
   useEffect(() => {
@@ -60,11 +71,11 @@ const Food = ({
         price: foodToEdit.price,
         category: categories.find(
           (category) => category.value === foodToEdit.categoryId
-        ), // Set initial category option object
+        ),
         availability: options.find(
           (option) => option.value === foodToEdit.availability
-        ), // Set initial availability option object
-        image: foodToEdit.image || [], // Set initial image if any
+        ),
+        image: foodToEdit.image || [],
       });
     } else {
       reset({
@@ -79,12 +90,41 @@ const Food = ({
 
   const onSubmit = (data) => {
     console.log(data);
-    // Add your submit logic here
+    const food = {
+      name: data.name,
+      price: data.price,
+    };
+    const url = isEditing
+      ? `${process.env.REACT_APP_API_LINK}/foods/${foodToEdit._id}`
+      : `${process.env.REACT_APP_API_LINK}/foods`;
+    const method = isEditing ? "PUT" : "POST";
+    axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    })
+      .then((response) => {
+        refresh();
+        notifySuccess(
+          isEditing ? "Food updated successfully" : "Food created successfully"
+        );
+        onClose();
+      })
+      .catch((error) => {
+        notifyError(isEditing ? "Error updating food" : "Error creating food");
+        console.error(
+          isEditing ? "Error updating food:" : "Error creating food:",
+          error.response ? error.response.data : error.message
+        );
+      });
   };
 
   const options = [
-    { value: true, label: "Available" },
-    { value: false, label: "Unavailable" },
+    { value: "available", label: "Available" },
+    { value: "unavailable", label: "Unavailable" },
   ];
 
   return (
@@ -123,6 +163,7 @@ const Food = ({
             <Controller
               name="category"
               control={control}
+              rules={{ required: "Category is required" }}
               render={({ field }) => (
                 <Select
                   id="category"
@@ -170,13 +211,34 @@ const Food = ({
               </p>
             )}
           </div>
-          <div className="mb-4">
+          <div className="mb-4 ">
+            <label htmlFor="quantity" className="block text-gray-700 mb-2">
+              Quantity
+            </label>
+            <input
+              id="quantity"
+              type="text"
+              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
+                "quantity",
+                errors,
+                touchedFields
+              )}`}
+              {...register("quantity", { required: "Quantity is required" })}
+            />
+            {errors.quantity && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.quantity.message}
+              </p>
+            )}
+          </div>
+          <div className="mb-4 col-span-2 mx-auto w-96">
             <label htmlFor="availability" className="block text-gray-700 mb-2">
               Availability
             </label>
             <Controller
               name="availability"
               control={control}
+              rules={{ required: "Status is required" }}
               render={({ field }) => (
                 <Select
                   id="availability"
@@ -208,23 +270,21 @@ const Food = ({
               </p>
             )}
           </div>
-
-          {/* FilePond Integration */}
           <div className="mb-4 col-span-2">
             <label className="block text-gray-700 mb-2">Image</label>
             <Controller
               name="image"
+              rules={{ required: "Image is required" }}
               control={control}
               render={({ field }) => (
                 <FilePond
                   {...field}
                   files={field.value}
                   onupdatefiles={(fileItems) => {
-                    // Update the field value
                     field.onChange(fileItems.map((fileItem) => fileItem.file));
                   }}
-                  server={`${process.env.REACT_APP_API_LINK}/foods/upload-pic`}
                   allowMultiple={false}
+                  instantUpload={false}
                   acceptedFileTypes={["image/png", "image/jpeg", "image/jpg"]}
                   labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
                 />
@@ -246,9 +306,9 @@ const Food = ({
           <button
             type="submit"
             form="food-form"
-            className="px-4 py-2 rounded-md bg-blue-500 text-white"
+            className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
           >
-            {isEditing ? "Update" : "Add Food"}
+            {isEditing ? "Update" : "Create"}
           </button>
         </div>
       </div>

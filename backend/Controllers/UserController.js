@@ -16,15 +16,15 @@ const transporter = nodemailer.createTransport({
 
 // Check uniqueness
 exports.checkUnique = async (req, res) => {
-  const { field, value } = req.query; // Expecting field and value in query params
+  const { field, value } = req.query;
 
   try {
-    const exists = await User.findOne({ [field]: value }); // Assuming User is your model
+    const exists = await User.findOne({ [field]: value });
 
     if (exists) {
-      return res.status(409).json({ message: `${field} already exists` }); // Conflict
+      return res.status(409).json({ message: `${field} already exists` });
     } else {
-      return res.status(200).json({ message: `${field} is unique` }); // OK
+      return res.status(200).json({ message: `${field} is unique` });
     }
   } catch (error) {
     return res.status(500).json({ message: "Server error", error });
@@ -133,7 +133,6 @@ exports.register = [
       res.status(200).json(saveUser);
     } catch (err) {
       console.log(err.message);
-      console.log(req.body);
       res.status(500).send("Server Error");
     }
   },

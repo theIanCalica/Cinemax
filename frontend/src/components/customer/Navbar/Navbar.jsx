@@ -74,14 +74,14 @@ const Navbar = () => {
         <div className="hidden md:flex space-x-4 items-center">
           <button
             onClick={() => {
-              closeSidebar(); /* Navigate to search page */
+              closeSidebar();
             }}
           >
             <SearchIcon className="text-white hover:text-themeYellow" />
           </button>
           <button
             onClick={() => {
-              closeSidebar(); /* Navigate to profile page */
+              closeSidebar();
             }}
           >
             <PersonIcon className="text-white hover:text-themeYellow" />
@@ -173,7 +173,9 @@ const Navbar = () => {
 
           <div className="flex space-x-4 mt-4">
             <SearchIcon className="hover:text-themeYellow" />
-            <PersonIcon className="hover:text-themeYellow" />
+            <NavLink to={`/login`}>
+              <PersonIcon className="hover:text-themeYellow" />
+            </NavLink>
           </div>
         </div>
       </div>

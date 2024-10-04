@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-
 import React from "react";
 
 const ProtectedRoute = ({ element, adminOnly = false }) => {

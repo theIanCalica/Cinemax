@@ -17,7 +17,7 @@ const CreateCategory = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, touchedFields },
   } = useForm();
 
   const fetchGenres = () => {
@@ -93,7 +93,8 @@ const CreateCategory = ({
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
                 "name",
-                errors
+                errors,
+                touchedFields
               )}`}
               {...register("name", { required: "Category name is required" })}
             />
@@ -111,7 +112,8 @@ const CreateCategory = ({
               rows={1}
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
                 "name",
-                errors
+                errors,
+                touchedFields
               )}`}
               {...register("description", {
                 required: "Description is required",
@@ -133,7 +135,8 @@ const CreateCategory = ({
               type="text"
               className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
                 "duration",
-                errors
+                errors,
+                touchedFields
               )}`}
               {...register("duration", { required: "Duration is required" })}
             />

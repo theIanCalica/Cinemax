@@ -174,8 +174,7 @@ const UsersPage = () => {
           <thead>
             <tr>
               <th className="py-2 px-4 border-b text-left">ID</th>
-              <th className="py-2 px-4 border-b text-left">First Name</th>
-              <th className="py-2 px-4 border-b text-left">Last Name</th>
+              <th className="py-2 px-4 border-b text-left">Name</th>
               <th className="py-2 px-4 border-b text-left">Date of Birth</th>
               <th className="py-2 px-4 border-b text-left">Email</th>
               <th className="py-2 px-4 border-b text-left">Phone</th>
@@ -189,8 +188,9 @@ const UsersPage = () => {
             {users.map((user) => (
               <tr key={user._id} className="hover:bg-slate-50">
                 <td className="py-2 px-4 border-b">{user._id}</td>
-                <td className="py-2 px-4 border-b">{user.fname}</td>
-                <td className="py-2 px-4 border-b">{user.lname}</td>
+                <td className="py-2 px-4 border-b">
+                  {user.fname + " " + user.lname}
+                </td>
                 <td className="py-2 px-4 border-b">{formatDate(user.dob)}</td>
                 <td className="py-2 px-4 border-b">{user.email}</td>
                 <td className="py-2 px-4 border-b">{user.phoneNumber}</td>

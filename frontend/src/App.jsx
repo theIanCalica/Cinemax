@@ -13,7 +13,7 @@ import Email from "./pages/Emails/ContactUs";
 import ProtectedRoute from "./Utils/authRoutes/ProtectedRoute";
 
 // Admin Pages
-import Layout from "./components/admin/v2/Layout"; //Admin Layout
+import Layout from "./components/admin/v2/Layout";
 import HomeAdmin from "./pages/admin/Home";
 import Category from "./pages/admin/FoodCategory";
 import FoodList from "./pages/admin/FoodList";

@@ -69,7 +69,7 @@ const Movie = () => {
 
   useEffect(() => {
     fetchMovies();
-  });
+  }, []);
 
   return (
     <div className="px-3 mt-8">

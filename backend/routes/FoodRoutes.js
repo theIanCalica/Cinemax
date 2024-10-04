@@ -11,9 +11,6 @@ router.get("/:id", FoodController.getFoodById);
 // Add new food
 router.post("/", FoodController.createFood);
 
-// Upload pic
-router.post("/upload-pic", FoodController.uploadPic);
-
 // Update a food by ID
 router.put("/:id", FoodController.updateFoodById);
 

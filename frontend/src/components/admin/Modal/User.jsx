@@ -115,33 +115,34 @@ const User = ({
     };
 
     console.log(user);
-    // const url = isEditing
-    //   ? `${process.env.REACT_APP_API_LINK}/users/${userToEdit._id}`
-    //   : `${process.env.REACT_APP_API_LINK}/users`;
-    // const method = isEditing ? "PUT" : "POST";
-    // axios({
-    //   method,
-    //   url,
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   data: user,
-    // })
-    //   .then((response) => {
-    //     const user = response.data;
-    //     refresh();
-    //     notifySuccess(
-    //       isEditing ? "User updated successfully" : "User created successfully"
-    //     );
-    //     onClose();
-    //   })
-    //   .catch((error) => {
-    //     notifyError(isEditing ? "Error updating user" : "Error creating user");
-    //     console.error(
-    //       isEditing ? "Error updating user:" : "Error creating user:",
-    //       error.response ? error.response.data : error.message
-    //     );
-    //   });
+
+    const url = isEditing
+      ? `${process.env.REACT_APP_API_LINK}/users/${userToEdit._id}`
+      : `${process.env.REACT_APP_API_LINK}/users`;
+    const method = isEditing ? "PUT" : "POST";
+    axios({
+      method,
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: user,
+    })
+      .then((response) => {
+        const user = response.data;
+        refresh();
+        notifySuccess(
+          isEditing ? "User updated successfully" : "User created successfully"
+        );
+        onClose();
+      })
+      .catch((error) => {
+        notifyError(isEditing ? "Error updating user" : "Error creating user");
+        console.error(
+          isEditing ? "Error updating user:" : "Error creating user:",
+          error.response ? error.response.data : error.message
+        );
+      });
   };
 
   return (

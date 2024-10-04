@@ -1,20 +1,6 @@
 const Food = require("../Models/Food");
-const multer = require("multer");
 const cloudinary = require("../utils/Cloudinary");
-const streamifier = require("streamifier");
-const fs = require("fs");
-const path = require("path");
-
-// Configure multer for temporary storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../temp")); // Save to temp folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname); // Use the original file name
-  },
-});
-const upload = multer({ storage });
+const upload = require("../middleware/multer");
 
 // Get all foods
 exports.getAllFoods = async (req, res) => {
@@ -43,48 +29,48 @@ exports.getFoodById = async (req, res) => {
 };
 
 // Add Food
-exports.createFood = async (req, res) => {
-  try {
-    const { category, name, price, available, image } = req.body;
-    const result = await cloudinary.uploader.upload(image, {
-      folder: "foods",
-    });
-
-    const newFood = new Food({
-      category,
-      name,
-      price,
-      available,
-      image: {
-        public_id: result.public_id,
-        url: result.secure_url,
-      },
-    });
-
-    const saveFood = await newFood.save();
-    res.status(201).json(saveFood);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error!");
-  }
-};
-
-exports.uploadPic = [
+exports.createFood = [
   upload.single("image"),
-  (req, res) => {
+  async (req, res) => {
     try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
+      const { category, name, price, available } = req.body;
+
+      if (!category || !name || !price || !available) {
+        return res
+          .status(400)
+          .json({ msg: "Please provide all required fields" });
       }
 
-      // Respond with the path to the saved file
-      res.json({
-        filePath: path.join("temp", req.file.filename),
-        fileName: req.file.filename,
+      if (!req.file) {
+        return res.status(400).json({ msg: "File is required." });
+      }
+
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({
+          msg: "Invalid file type. Only JPEG, PNG, and GIF are allowed.",
+        });
+      }
+
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "foods",
       });
+
+      const newFood = new Food({
+        category,
+        name,
+        price,
+        available,
+        image: {
+          public_id: result.public_id,
+          url: result.secure_url,
+        },
+      });
+
+      const savedFood = await newFood.save();
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send("Server Error!");
+      console.log(err.message);
+      res.status(500).send("Server Error");
     }
   },
 ];

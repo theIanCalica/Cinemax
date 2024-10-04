@@ -5,7 +5,7 @@ const FoodSchema = new Schema(
   {
     category: {
       type: Schema.Types.ObjectId,
-      ref: "Category", // Reference to the Category model
+      ref: "Category",
       required: true,
     },
     name: {
@@ -21,10 +21,12 @@ const FoodSchema = new Schema(
       type: Number,
       required: [true, "Price is required"],
     },
-    available: {
-      type: Boolean,
-      required: [true, "Availability is required"],
-      default: true,
+    status: {
+      type: String,
+      required: [true, "Status is required"],
+      trim: true,
+      enum: ["available", "unavailable"],
+      default: "available",
     },
     image: {
       public_id: {
