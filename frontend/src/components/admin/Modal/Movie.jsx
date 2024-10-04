@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { getBorderColor } from "../../../Utils/borderColor";
 import Select from "react-select";
 import axios from "axios";
@@ -14,6 +14,7 @@ const CreateCategory = ({
 }) => {
   const [genres, setGenres] = useState([]);
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -23,7 +24,13 @@ const CreateCategory = ({
   const fetchGenres = () => {
     axios
       .get(`${process.env.REACT_APP_API_LINK}/genres`)
-      .then((response) => {})
+      .then((response) => {
+        const formattedGenres = response.data.map((genre) => ({
+          value: genre._id,
+          label: genre.name,
+        }));
+        setGenres(formattedGenres);
+      })
       .catch((error) => {
         notifyError("Error Fetching genres");
         console.error("Error fetching genres:", error);
@@ -31,6 +38,7 @@ const CreateCategory = ({
   };
 
   useEffect(() => {
+    fetchGenres();
     if (isEditing && movieToEdit) {
       reset({ title: movieToEdit.title });
     } else {
@@ -61,8 +69,8 @@ const CreateCategory = ({
           isEditing
             ? "Movie updated successfully"
             : "Movie created successfully"
-        ); // Notify success
-        onClose(); // Close the modal
+        );
+        onClose();
       })
       .catch((error) => {
         notifyError(
@@ -150,7 +158,36 @@ const CreateCategory = ({
             <label htmlFor="genre" className="block text-gray-700 mb-2">
               Genre
             </label>
-            <Select></Select>
+            <Controller
+              name="genre"
+              control={control}
+              rules={{ required: "Genre is required" }}
+              render={({ field }) => (
+                <Select
+                  id="category"
+                  options={genres}
+                  placeholder="Select Category"
+                  isClearable
+                  isSearchable
+                  {...field}
+                  onChange={(selectedOption) => field.onChange(selectedOption)}
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      borderColor: errors.genre ? "red" : base.borderColor,
+                      "&:hover": {
+                        borderColor: errors.genre ? "red" : base.borderColor,
+                      },
+                    }),
+                  }}
+                />
+              )}
+            />
+            {errors.genre && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.genre.message}
+              </p>
+            )}
           </div>
           <div className="flex justify-end col-span-1 md:col-span-2">
             <button
