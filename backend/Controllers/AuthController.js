@@ -25,6 +25,7 @@ exports.googleLogin = async (req, res) => {
         fname,
         lname,
         email,
+        status: "activated",
         profilePicture: {
           public_id: uploadResult.public_id,
           url: uploadResult.secure_url,
