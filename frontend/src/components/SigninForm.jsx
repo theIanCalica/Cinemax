@@ -54,6 +54,34 @@ const SigninForm = ({ onSwitchMode }) => {
       });
   };
 
+  const handleFacebookLogin = () => {
+    window.FB.login(
+      (response) => {
+        if (response.authResponse) {
+          // User successfully logged in
+          const accessToken = response.authResponse.accessToken;
+
+          // Now you can send the access token to your backend for authentication
+          axios
+            .post(`${process.env.REACT_APP_API_LINK}/auth/facebook-login`, {
+              accessToken,
+            })
+            .then((response) => {
+              console.log("Facebook login response:", response.data);
+              const user = response.data.user;
+              authenticate(response.data, () => navigate("/admin"));
+            })
+            .catch((error) => {
+              console.error("Error during Facebook login:", error);
+            });
+        } else {
+          console.log("User cancelled login or did not fully authorize.");
+        }
+      },
+      { scope: "email" } // Add any additional permissions you want to request
+    );
+  };
+
   return (
     <Stack
       justifyContent="center"
@@ -146,6 +174,7 @@ const SigninForm = ({ onSwitchMode }) => {
       </form>
       <Box display="flex" justifyContent="center" alignItems="center" mt={3}>
         <Button
+          onClick={handleFacebookLogin} // Call the Facebook login function
           sx={{
             display: "flex",
             alignItems: "center",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -32,6 +32,25 @@ import Try from "./pages/Filepond";
 import "./main.css";
 
 function App() {
+  useEffect(() => {
+    // Load Facebook SDK
+    window.fbAsyncInit = function () {
+      window.FB.init({
+        appId: process.env.REACT_APP_FACEBOOK_APP_ID, // Replace with your Facebook App ID
+        cookie: true,
+        xfbml: true,
+        version: "v10.0", // Use the latest version
+      });
+    };
+
+    // Load the SDK asynchronously
+    (function (d, s, id) {
+      var js = d.createElement(s);
+      js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      d.getElementsByTagName("head")[0].appendChild(js);
+    })(document, "script", "facebook-jssdk");
+  }, []);
   return (
     <Router>
       <Routes>

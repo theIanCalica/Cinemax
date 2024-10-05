@@ -5,6 +5,10 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
   {
+    accountId: {
+      type: String,
+      trim: true,
+    },
     fname: {
       type: String,
       required: "First Name is required!",
