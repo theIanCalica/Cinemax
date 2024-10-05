@@ -6,15 +6,14 @@ import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNone
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import { useSelector } from "react-redux";
+import { getUser } from "../../../Utils/helpers";
 
 const Navbar = ({ toggleSidebar }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
-  const user = useSelector((state) => state.user.user);
-  const loggedIn = useSelector((state) => state.user.loggedIn);
+  const user = getUser();
 
   const handleSearch = () => {
     console.log("Search for:", searchTerm);
@@ -33,10 +32,7 @@ const Navbar = ({ toggleSidebar }) => {
     setIsDropdownOpen(false);
   };
 
-  useEffect(() => {
-    if (loggedIn && user && user.role === "admin") {
-    }
-  }, [loggedIn, user]);
+  useEffect(() => {}, [user]);
   return (
     <nav className="text-white flex items-center py-2 px-4 bg-white">
       <div className="flex items-center justify-center">
@@ -150,9 +146,9 @@ const Navbar = ({ toggleSidebar }) => {
               className="text-black flex items-center gap-3"
             >
               <img
-                src="https://scontent.fmnl30-3.fna.fbcdn.net/v/t39.30808-1/449489364_3442005009435229_5169651470885319346_n.jpg?stp=c0.110.720.720a_dst-jpg_s160x160&_nc_cat=104&ccb=1-7&_nc_sid=0ecb9b&_nc_eui2=AeHYMCLIHQNyASo7bAaWwgCQg-zyKTd5D_SD7PIpN3kP9NpIaisNhLJZwuRBVqMfwsTTC5IxFzvJgQsKsJadgHiA&_nc_ohc=_6Bx7Fluu_4Q7kNvgFpr5gY&_nc_ht=scontent.fmnl30-3.fna&oh=00_AYDjdgvpmcx_Oulg6UOTBjZngp3L25vt1NMOISd0hBZarg&oe=66DCDAB4"
+                src={user.profile.url}
                 alt="User Profile Pic"
-                className="rounded-full w-1 h-1"
+                className="rounded-full w-12 h-12"
               />
               <span>{user.fname + " " + user.lname}</span>
               <KeyboardArrowDownOutlinedIcon

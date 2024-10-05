@@ -1,11 +1,11 @@
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import React from "react";
+import { getUser } from "../../Utils/helpers";
 
 const ProtectedRoute = ({ element, adminOnly = false }) => {
-  const { user, loggedIn } = useSelector((state) => state.user);
+  const user = getUser();
 
-  if (!loggedIn) {
+  if (!user) {
     return <Navigate to="/login" replace />; // Redirect to login if not authenticated
   }
 

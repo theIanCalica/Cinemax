@@ -5,6 +5,8 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { CssBaseline } from "@mui/material";
+import error_404 from "./pages/error_404";
+import error_500 from "./pages/error_500";
 import SigninPage from "./pages/SigninPage";
 import HomePage from "./pages/customer/index/index";
 import AboutPage from "./pages/customer/About/AboutPage";
@@ -33,6 +35,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/error-404" element={<error_404 />}></Route>
         <Route path="/try" element={<Try />}></Route>
         <Route path="/" element={<HomePage />} />
         <Route path="/articles" element={<Article />}></Route>

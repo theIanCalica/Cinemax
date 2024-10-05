@@ -42,7 +42,6 @@ const SigninForm = ({ onSwitchMode }) => {
       .then((response) => {
         console.log("Response:", response.data);
         const user = response.data.user;
-        dispatch(setUser(user));
         authenticate(response.data, () => navigate("/admin"));
       })
       .catch((error) => {

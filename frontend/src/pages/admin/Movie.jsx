@@ -22,9 +22,9 @@ const Movie = () => {
   };
 
   // Open and close modal
-  const openModal = (genre = null) => {
-    setCurrentMovie(genre);
-    setIsEditing(!!genre); // If a movie is passed, set editing to true
+  const openModal = (movie = null) => {
+    setCurrentMovie(movie);
+    setIsEditing(!!movie);
     setIsModalOpen(true);
   };
 
