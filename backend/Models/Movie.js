@@ -62,6 +62,12 @@ const MoviesSchema = new Schema(
       enum: ["G", "PG", "PG-13", "R", "NC-17", "SPG"],
       trim: true,
     },
+    starRating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5,
+    },
   },
   {
     timestamps: true,
