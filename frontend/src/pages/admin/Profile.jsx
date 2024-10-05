@@ -1,38 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { getUser } from "../../Utils/helpers";
-import { formatDate } from "../../Utils/FormatDate"; // Import the formatDate function
+import { formatDate } from "../../Utils/FormatDate";
+import ProfileModal from "../../components/admin/Modal/Profile";
+import { notifySuccess, notifyError } from "../../Utils/notification";
 
 const Profile = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const user = getUser();
 
   const handleEditProfile = () => {
-    Swal.fire({
-      title: "Edit Profile",
-      text: "Feature under development",
-      icon: "info",
-      confirmButtonText: "Ok",
-    });
+    setIsModalOpen(true); // Open the modal
   };
 
-  const handleDeleteAccount = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire("Deleted!", "Your account has been deleted.", "success");
-      }
-    });
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // Close the modal
   };
 
   return (
@@ -113,6 +99,13 @@ const Profile = () => {
       </div>
 
       <ToastContainer />
+      {isModalOpen && (
+        <ProfileModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          user={user}
+        />
+      )}
     </div>
   );
 };
