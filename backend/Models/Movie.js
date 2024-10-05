@@ -1,21 +1,33 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const CastSchema = require("./Cast");
 
-// Define the schema or attributes of a model
 const MoviesSchema = new Schema(
   {
-    genre: {
-      type: Schema.Types.ObjectId,
-      ref: "Genre", // Reference to the Genre model
-      required: true,
-    },
+    genre: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Genre",
+        required: true,
+      },
+    ],
     title: {
       type: String,
       required: true,
       trim: true,
       maxlength: 255,
     },
-    description: {
+    storyLine: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    directorName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    writerName: {
       type: String,
       required: true,
       trim: true,
@@ -37,6 +49,18 @@ const MoviesSchema = new Schema(
         type: String,
         required: true,
       },
+    },
+    cast: [CastSchema],
+    trailer: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    rating: {
+      type: String,
+      required: true,
+      enum: ["G", "PG", "PG-13", "R", "NC-17", "SPG"],
+      trim: true,
     },
   },
   {
