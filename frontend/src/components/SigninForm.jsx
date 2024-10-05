@@ -15,7 +15,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { authenticate } from "../Utils/helpers";
 import { useDispatch } from "react-redux";
-import { setUser } from "../actions/userAction";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 const SigninForm = ({ onSwitchMode }) => {
   const navigate = useNavigate();
@@ -42,7 +43,9 @@ const SigninForm = ({ onSwitchMode }) => {
       .then((response) => {
         console.log("Response:", response.data);
         const user = response.data.user;
-        authenticate(response.data, () => navigate("/admin"));
+        const { role } = user;
+        const targetPath = role === "admin" ? "/admin" : "/";
+        authenticate(response.data, () => navigate(targetPath));
       })
       .catch((error) => {
         if (error.response) {
@@ -80,6 +83,28 @@ const SigninForm = ({ onSwitchMode }) => {
       },
       { scope: "email" } // Add any additional permissions you want to request
     );
+  };
+
+  const handleGoogleLoginSuccess = (credentialResponse) => {
+    const decoded = jwtDecode(credentialResponse?.credential);
+    console.log(decoded);
+    axios
+      .post(`${process.env.REACT_APP_API_LINK}/auth/google-login`, {
+        fname: decoded.given_name,
+        lname: decoded.family_name,
+        email: decoded.email,
+        profile: decoded.picture,
+      })
+      .then((response) => {
+        console.log("Google login response:", response.data);
+        const user = response.data.user;
+        const { role } = user;
+        const targetPath = role === "admin" ? "/admin" : "/";
+        authenticate(response.data, () => navigate(targetPath));
+      })
+      .catch((error) => {
+        console.error("Error during Google login:", error);
+      });
   };
 
   return (
@@ -197,29 +222,16 @@ const SigninForm = ({ onSwitchMode }) => {
         >
           <FacebookIcon sx={{ color: colors.blue[600] }} />
         </Button>
-
-        <Button
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "50px",
-            height: "50px",
-            borderRadius: "50%",
-            padding: 0,
-            backgroundColor: "transparent",
-            transition: "background-color 0.3s ease",
-            "&:hover": {
-              backgroundColor: colors.red[600],
-              "& .MuiSvgIcon-root": {
-                color: "white",
-                transition: "color 0s ease",
-              },
-            },
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            handleGoogleLoginSuccess(credentialResponse);
           }}
-        >
-          <GoogleIcon sx={{ color: colors.red[600] }} />
-        </Button>
+          onError={() => {
+            console.log("Login Failed");
+          }}
+          clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+        />
+        ;
       </Box>
 
       <Stack direction="row" spacing={1} justifyContent="center" mt={2}>

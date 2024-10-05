@@ -21,7 +21,6 @@ const UserSchema = new Schema(
     },
     dob: {
       type: Date,
-      required: "Date of Birth is required!",
     },
     email: {
       type: String,
@@ -30,8 +29,6 @@ const UserSchema = new Schema(
     },
     phoneNumber: {
       type: String,
-      required: "Phone Number is required!",
-      unique: true,
     },
     profile: {
       public_id: {
@@ -61,7 +58,6 @@ const UserSchema = new Schema(
     },
     password: {
       type: String,
-      required: "Password is required",
     },
   },
   {
