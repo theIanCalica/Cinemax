@@ -9,9 +9,9 @@ import { formatDate } from "../../Utils/FormatDate";
 import { notifyError, notifySuccess } from "../../Utils/notification";
 import axios from "axios";
 import ReactLoading from "react-loading";
-import "./Genre.scss";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import range from "underscore/modules/range";
+import "react-loading-skeleton/dist/skeleton.css";
+import "./Genre.scss";
 
 const Genre = () => {
   const [genres, setGenres] = useState([]);
@@ -19,6 +19,7 @@ const Genre = () => {
   const [currentGenre, setCurrentGenre] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const fetchGenres = async () => {
@@ -27,7 +28,7 @@ const Genre = () => {
     try {
       const [response] = await Promise.all([
         axios.get(`${process.env.REACT_APP_API_LINK}/genres`),
-        delay(1000),
+        delay(1000), // Simulate delay to show loading effect
       ]);
 
       setGenres(response.data);
@@ -92,6 +93,7 @@ const Genre = () => {
       }
     });
   };
+
   return (
     <div className="px-3 mt-8">
       <div className="flex justify-between">
@@ -109,8 +111,58 @@ const Genre = () => {
       </button>
 
       {isLoading ? (
-        <div className="loading-wrapper">
-          <ReactLoading type="spin" color="#33C92D" height={50} width={50} />
+        <div>
+          <div className="loading-wrapper">
+            <ReactLoading
+              type="spin"
+              color="#33C92D"
+              height={50}
+              width={50}
+              className="z-50"
+            />
+          </div>
+          <SkeletonTheme
+            baseColor="#e5e7eb"
+            highlightColor="#f3f4f6"
+            borderRadius="0.5rem"
+            duration={5}
+          >
+            <table className="min-w-full bg-white border-collapse">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b text-left">ID</th>
+                  <th className="py-2 px-4 border-b text-left">Name</th>
+                  <th className="py-2 px-4 border-b text-left">Created</th>
+                  <th className="py-2 px-4 border-b text-left">Updated</th>
+                  <th className="py-2 px-4 border-b text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Generate skeleton rows */}
+                {Array(5)
+                  .fill()
+                  .map((_, index) => (
+                    <tr key={index}>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </SkeletonTheme>
         </div>
       ) : (
         <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
