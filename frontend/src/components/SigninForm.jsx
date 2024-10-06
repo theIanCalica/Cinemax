@@ -199,7 +199,7 @@ const SigninForm = ({ onSwitchMode }) => {
       </form>
       <Box display="flex" justifyContent="center" alignItems="center" mt={3}>
         <Button
-          onClick={handleFacebookLogin} // Call the Facebook login function
+          onClick={handleFacebookLogin}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -231,7 +231,6 @@ const SigninForm = ({ onSwitchMode }) => {
           }}
           clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
         />
-        ;
       </Box>
 
       <Stack direction="row" spacing={1} justifyContent="center" mt={2}>

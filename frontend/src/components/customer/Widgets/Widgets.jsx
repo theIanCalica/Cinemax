@@ -14,9 +14,9 @@ const Widgets = ({ type }) => {
         subtitle: "Join Now",
         icon: (
           <StadiumIcon
-            classname="icon"
             style={{
               color: "white",
+              fontSize: "55px",
             }}
           />
         ),
@@ -28,9 +28,9 @@ const Widgets = ({ type }) => {
         subtitle: "Watch Now",
         icon: (
           <EmojiEventsIcon
-            classname="icon"
             style={{
               color: "white",
+              fontSize: "55px",
             }}
           />
         ),
@@ -42,9 +42,9 @@ const Widgets = ({ type }) => {
         subtitle: "Get Ticket",
         icon: (
           <TheatersIcon
-            className="icon"
             style={{
               color: "white",
+              fontSize: "55px",
             }}
           />
         ),
@@ -65,7 +65,7 @@ const Widgets = ({ type }) => {
           <p className="text-sm text-gray-500 font-serif ">{data.subtitle}</p>
           <h1 className="text-4xl font-bold font-mono">{data.title}</h1>
         </div>
-        <div className="bg-themeYellow icon  flex items-center justify-center">
+        <div className="bg-themeYellow icon flex items-center justify-center">
           {data.icon}
         </div>
       </div>

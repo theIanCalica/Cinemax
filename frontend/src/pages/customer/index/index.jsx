@@ -14,7 +14,7 @@ import { Navigation, Scrollbar, A11y, Autoplay } from "swiper/modules";
 import Navbar from "../../../components/customer/Navbar/Navbar";
 import Widget from "../../../components/customer/Widgets/Widgets";
 import Footer from "../../../components/customer/Footer/Footer";
-
+import NowPlaying from "../../../components/customer/carousels/NowPlaying/NowPlaying";
 import "./Index.scss";
 const Index = () => {
   return (
@@ -210,11 +210,14 @@ const Index = () => {
         </Swiper>
         {/* Film Strip */}
         <hr class="broken-hr"></hr>
-        {/* Widgets */}
-        <div className="flex mt-11 mx-10">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-11 mx-10 mb-48">
           <Widget type="Festival" />
           <Widget type="filmAward" />
           <Widget type="unmissable" />
+        </div>
+        <div className="my-4 text-center">
+          <NowPlaying />
         </div>
       </div>
     </div>
