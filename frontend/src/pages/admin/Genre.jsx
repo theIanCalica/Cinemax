@@ -8,29 +8,41 @@ import GenreModal from "../../components/admin/Modal/Genre";
 import { formatDate } from "../../Utils/FormatDate";
 import { notifyError, notifySuccess } from "../../Utils/notification";
 import axios from "axios";
+import ReactLoading from "react-loading";
+import "./Genre.scss";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import range from "underscore/modules/range";
 
 const Genre = () => {
   const [genres, setGenres] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentGenre, setCurrentGenre] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const fetchGenres = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/genres`)
-      .then((response) => {
-        setGenres(response.data);
-      })
-      .catch((error) => {
-        notifyError("Error Fetching genres");
-        console.error("Error fetching genres:", error);
-      });
+  const fetchGenres = async () => {
+    setIsLoading(true);
+
+    try {
+      const [response] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_LINK}/genres`),
+        delay(1000),
+      ]);
+
+      setGenres(response.data);
+    } catch (error) {
+      notifyError("Error Fetching genres");
+      console.error("Error fetching genres:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Open and close modal
   const openModal = (genre = null) => {
     setCurrentGenre(genre);
-    setIsEditing(!!genre); // If a genre is passed, set editing to true
+    setIsEditing(!!genre);
     setIsModalOpen(true);
   };
 
@@ -65,7 +77,6 @@ const Genre = () => {
           .then((response) => {
             if (response.status === 201) {
               notifySuccess("Successfully Deleted!");
-              // Remove the deleted category from the state
               setGenres((prevGenres) =>
                 prevGenres.filter((genre) => genre._id !== genreID)
               );
@@ -91,71 +102,62 @@ const Genre = () => {
         </p>
       </div>
       <button
-        onClick={() => openModal()} // Open modal for adding new genre
+        onClick={() => openModal()}
         className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
       >
         Add Genre
       </button>
 
-      {/* Render the modal for creating or editing a genre */}
-      {isModalOpen && (
-        <GenreModal
-          genreToEdit={currentGenre} // Pass the current genre to the modal
-          isEditing={isEditing} // Pass editing state to the modal
-          onClose={closeModal}
-          notifySuccess={notifySuccess} // Pass success notification
-          notifyError={notifyError} // Pass error notification
-          refresh={fetchGenres} //Pass refresh function for the table
-        />
+      {isLoading ? (
+        <div className="loading-wrapper">
+          <ReactLoading type="spin" color="#33C92D" height={50} width={50} />
+        </div>
+      ) : (
+        <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
+          <table className="min-w-full bg-white border-collapse">
+            <thead>
+              <tr>
+                <th className="py-2 px-4 border-b text-left">ID</th>
+                <th className="py-2 px-4 border-b text-left">Name</th>
+                <th className="py-2 px-4 border-b text-left">Created</th>
+                <th className="py-2 px-4 border-b text-left">Updated</th>
+                <th className="py-2 px-4 border-b text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {genres.map((genre) => (
+                <tr key={genre._id} className="hover:bg-slate-50">
+                  <td className="py-2 px-4 border-b">{genre._id}</td>
+                  <td className="py-2 px-4 border-b">{genre.name}</td>
+                  <td className="py-2 px-4 border-b">
+                    {formatDate(genre.createdAt)}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {formatDate(genre.updatedAt)}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <button
+                      className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+                      onClick={() => openModal(genre)}
+                    >
+                      <EditOutlinedIcon />
+                    </button>
+                    <button
+                      className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
+                      onClick={() => {
+                        handleDelete(genre._id);
+                      }}
+                    >
+                      <DeleteOutlineOutlinedIcon />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
-      {/* Display categories in a table */}
-      <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
-        <table className="min-w-full bg-white border-collapse">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b text-left">ID</th>
-              <th className="py-2 px-4 border-b text-left">Name</th>
-              <th className="py-2 px-4 border-b text-left">Created</th>
-              <th className="py-2 px-4 border-b text-left">Updated</th>
-              <th className="py-2 px-4 border-b text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {genres.map((genre) => (
-              <tr key={genre._id} className="hover:bg-slate-50">
-                <td className="py-2 px-4 border-b">{genre._id}</td>
-                <td className="py-2 px-4 border-b">{genre.name}</td>
-                <td className="py-2 px-4 border-b">
-                  {formatDate(genre.createdAt)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  {formatDate(genre.updatedAt)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  <button
-                    className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
-                    onClick={() => openModal(genre)} // Pass the genre to be edited
-                  >
-                    <EditOutlinedIcon />
-                  </button>
-
-                  <button
-                    className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
-                    onClick={() => {
-                      handleDelete(genre._id);
-                    }}
-                  >
-                    <DeleteOutlineOutlinedIcon />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Toastify container for notifications */}
       <ToastContainer />
     </div>
   );

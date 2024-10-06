@@ -9,7 +9,13 @@ import "swiper/css/scrollbar";
 import "swiper/css/autoplay";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Navigation, Scrollbar, A11y, Autoplay } from "swiper/modules";
+import {
+  Navigation,
+  Scrollbar,
+  A11y,
+  Autoplay,
+  Pagination,
+} from "swiper/modules";
 
 import Navbar from "../../../components/customer/Navbar/Navbar";
 import Widget from "../../../components/customer/Widgets/Widgets";
@@ -21,15 +27,18 @@ const Index = () => {
     <div className="home">
       <div className="homeContainer" style={{ overflow: "hidden" }}>
         <Navbar />
-        {/* Hero Section */}
         <Swiper
           spaceBetween={0}
           slidesPerView={1}
-          modules={[Navigation, Scrollbar, A11y, Autoplay]}
-          // autoplay={{
-          //   delay: 5000, // Time between slides in ms
-          //   disableOnInteraction: false, // Continue autoplay after user interactions
-          // }}
+          modules={[Navigation, Scrollbar, A11y, Autoplay, Pagination]}
+          pagination={{
+            clickable: true,
+            dynamicBullets: true,
+          }}
+          autoplay={{
+            delay: 5000,
+            disableOnInteraction: false,
+          }}
           loop={true}
           onSlideChange={() => console.log("slide change")}
           onSwiper={(swiper) => console.log(swiper)}
@@ -219,6 +228,7 @@ const Index = () => {
         <div className="my-4 text-center">
           <NowPlaying />
         </div>
+        <Footer />
       </div>
     </div>
   );

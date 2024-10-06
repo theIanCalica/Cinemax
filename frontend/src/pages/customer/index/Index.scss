@@ -10,6 +10,14 @@
     overflow-x: hidden; /* Hide horizontal scrollbar for Swiper */
   }
  
+  .swiper-pagination-bullet {
+    background: #F3D2BF;
+    opacity: 0.7;
+    transition: background 0.3s ease;
+  }
+  .swiper-pagination-bullet-active {
+    background: #D96C2C;
+  }
   .broken-hr {
     border: none;
     height: 10px;
