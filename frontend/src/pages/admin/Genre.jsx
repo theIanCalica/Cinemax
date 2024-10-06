@@ -12,6 +12,7 @@ import ReactLoading from "react-loading";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "./Genre.scss";
+import { delay } from "../../Utils/helpers";
 
 const Genre = () => {
   const [genres, setGenres] = useState([]);
@@ -20,17 +21,14 @@ const Genre = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
   const fetchGenres = async () => {
     setIsLoading(true);
 
     try {
       const [response] = await Promise.all([
         axios.get(`${process.env.REACT_APP_API_LINK}/genres`),
-        delay(1000), // Simulate delay to show loading effect
+        delay(1000),
       ]);
-
       setGenres(response.data);
     } catch (error) {
       notifyError("Error Fetching genres");

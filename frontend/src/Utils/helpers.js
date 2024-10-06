@@ -5,6 +5,7 @@ export const authenticate = (data, next) => {
   }
   next();
 };
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const getToken = () => {
   if (window !== "undefined") {

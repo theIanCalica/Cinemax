@@ -8,29 +8,39 @@ import { notifySuccess, notifyError } from "../../Utils/notification";
 import CategoryModal from "../../components/admin/Modal/FoodCategory";
 import axios from "axios";
 import { formatDate } from "../../Utils/FormatDate.js";
+import ReactLoading from "react-loading";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { delay } from "../../Utils/helpers";
+import "./FoodCategory.scss";
 
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchCategories = async () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/categories`)
-      .then((response) => {
-        setCategories(response.data);
-      })
-      .catch((error) => {
-        notifyError("Error Fetching Categories");
-        console.error("Error fetching categories:", error);
-      });
+    setIsLoading(true);
+
+    try {
+      const [response] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_LINK}/categories`),
+        delay(1000),
+      ]);
+      setCategories(response.data);
+    } catch (err) {
+      notifyError("Error Fetching Categories");
+      console.error("Error fetching categories:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Open and close modal
   const openModal = (category = null) => {
     setCurrentCategory(category);
-    setIsEditing(!!category); // If a category is passed, set editing to true
+    setIsEditing(!!category);
     setIsModalOpen(true);
   };
 
@@ -65,7 +75,6 @@ const FoodCategory = () => {
           .then((response) => {
             if (response.status === 201) {
               notifySuccess("Successfully Deleted!");
-              // Remove the deleted category from the state
               setCategories((prevCategories) =>
                 prevCategories.filter((category) => category._id !== categoryId)
               );
@@ -92,72 +101,127 @@ const FoodCategory = () => {
         </p>
       </div>
       <button
-        onClick={() => openModal()} // Open modal for adding new category
+        onClick={() => openModal()}
         className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
       >
         Add Category
       </button>
 
-      {/* Render the modal for creating or editing a category */}
       {isModalOpen && (
         <CategoryModal
-          categoryToEdit={currentCategory} // Pass the current category to the modal
-          isEditing={isEditing} // Pass editing state to the modal
+          categoryToEdit={currentCategory}
+          isEditing={isEditing}
           onClose={closeModal}
-          notifySuccess={notifySuccess} // Pass success notification
-          notifyError={notifyError} // Pass error notification
-          refresh={refresh} //Pass refresh function for the table
+          notifySuccess={notifySuccess}
+          notifyError={notifyError}
+          refresh={refresh}
         />
       )}
 
-      {/* Display categories in a table */}
-      <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
-        <table className="min-w-full bg-white border-collapse">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b text-left">ID</th>
-              <th className="py-2 px-4 border-b text-left">Name</th>
-              <th className="py-2 px-4 border-b text-left">Created</th>
-              <th className="py-2 px-4 border-b text-left">Updated</th>
-              <th className="py-2 px-4 border-b text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((category) => (
-              <tr key={category._id} className="hover:bg-slate-50">
-                <td className="py-2 px-4 border-b">{category._id}</td>
-                <td className="py-2 px-4 border-b">{category.name}</td>
-                <td className="py-2 px-4 border-b">
-                  {formatDate(category.createdAt)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  {formatDate(category.updatedAt)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  <button
-                    className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
-                    onClick={() => openModal(category)} // Pass the category to be edited
-                  >
-                    <EditOutlinedIcon />
-                  </button>
+      {isLoading ? (
+        <>
+          <div className="loading-wrapper">
+            <ReactLoading
+              type="spin"
+              color="#33C92D"
+              height={50}
+              width={50}
+              className="z-50"
+            />
+          </div>
+          <SkeletonTheme
+            baseColor="#e5e7eb"
+            highlightColor="#f3f4f6"
+            borderRadius="0.5rem"
+            duration={5}
+          >
+            <table className="min-w-full bg-white border-collapse mt-5">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b text-left">ID</th>
+                  <th className="py-2 px-4 border-b text-left">Name</th>
+                  <th className="py-2 px-4 border-b text-left">Created</th>
+                  <th className="py-2 px-4 border-b text-left">Updated</th>
+                  <th className="py-2 px-4 border-b text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Generate skeleton rows */}
+                {Array(5)
+                  .fill()
+                  .map((_, index) => (
+                    <tr key={index}>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <Skeleton />
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </SkeletonTheme>
+        </>
+      ) : (
+        <>
+          <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
+            <table className="min-w-full bg-white border-collapse">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b text-left">ID</th>
+                  <th className="py-2 px-4 border-b text-left">Name</th>
+                  <th className="py-2 px-4 border-b text-left">Created</th>
+                  <th className="py-2 px-4 border-b text-left">Updated</th>
+                  <th className="py-2 px-4 border-b text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories.map((category) => (
+                  <tr key={category._id} className="hover:bg-slate-50">
+                    <td className="py-2 px-4 border-b">{category._id}</td>
+                    <td className="py-2 px-4 border-b">{category.name}</td>
+                    <td className="py-2 px-4 border-b">
+                      {formatDate(category.createdAt)}
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      {formatDate(category.updatedAt)}
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      <button
+                        className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+                        onClick={() => openModal(category)}
+                      >
+                        <EditOutlinedIcon />
+                      </button>
 
-                  <button
-                    className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
-                    onClick={() => {
-                      handleDelete(category._id);
-                    }}
-                  >
-                    <DeleteOutlineOutlinedIcon />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                      <button
+                        className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
+                        onClick={() => {
+                          handleDelete(category._id);
+                        }}
+                      >
+                        <DeleteOutlineOutlinedIcon />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      {/* Toastify container for notifications */}
-      <ToastContainer />
+          <ToastContainer />
+        </>
+      )}
     </div>
   );
 };
