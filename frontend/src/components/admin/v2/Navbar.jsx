@@ -7,6 +7,7 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { getUser } from "../../../Utils/helpers";
+import { NavLink } from "react-router-dom";
 
 const Navbar = ({ toggleSidebar }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -131,15 +132,16 @@ const Navbar = ({ toggleSidebar }) => {
             )}
           </div>
 
-          {/* Email Icon */}
-          <button className="text-black">
-            <EmailOutlinedIcon style={{ fontSize: "20px" }} />
-          </button>
-          {/* Notifications Icon */}
+          <NavLink to={"/admin/email"}>
+            <button className="text-black">
+              <EmailOutlinedIcon style={{ fontSize: "20px" }} />
+            </button>
+          </NavLink>
+
           <button className="text-black">
             <NotificationsNoneOutlinedIcon style={{ fontSize: "20px" }} />
           </button>
-          {/* Profile Icon */}
+
           <div className="relative">
             <button
               onClick={toggleProfileDropdown}
@@ -158,10 +160,13 @@ const Navbar = ({ toggleSidebar }) => {
             </button>
             {isProfileDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                <button className="flex gap-4 px-4 py-3 text-gray-700 justify-between hover:bg-gray-100 w-full text-left">
-                  <span className="text-gray-700">Profile</span>
-                  <PersonOutlineOutlinedIcon style={{ fontSize: "18px" }} />
-                </button>
+                <NavLink to={"/admin/profile"}>
+                  <button className="flex gap-4 px-4 py-3 text-gray-700 justify-between hover:bg-gray-100 w-full text-left">
+                    <span className="text-gray-700">Profile</span>
+                    <PersonOutlineOutlinedIcon style={{ fontSize: "18px" }} />
+                  </button>
+                </NavLink>
+
                 <button className="flex gap-4 px-4 py-3 text-gray-700 justify-between hover:bg-gray-100 w-full text-left">
                   <span className="text-gray-700">Logout</span>
                   <LogoutOutlinedIcon style={{ fontSize: "18px" }} />

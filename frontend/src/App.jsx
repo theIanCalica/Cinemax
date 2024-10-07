@@ -29,11 +29,11 @@ import Profile from "./pages/admin/Profile";
 import Movie from "./pages/admin/Movie";
 import Calendar from "./pages/admin/Calendar";
 import Try from "./pages/Filepond";
+import EmailAdmin from "./pages/admin/email";
 import "./main.css";
 
 function App() {
   useEffect(() => {
-    // Load Facebook SDK
     window.fbAsyncInit = function () {
       window.FB.init({
         appId: process.env.REACT_APP_FACEBOOK_APP_ID, // Replace with your Facebook App ID
@@ -43,7 +43,6 @@ function App() {
       });
     };
 
-    // Load the SDK asynchronously
     (function (d, s, id) {
       var js = d.createElement(s);
       js.id = id;
@@ -62,7 +61,6 @@ function App() {
         <Route path="/contact" element={<ContactPage />}></Route>
         <Route path="/email" element={<Email />} />
         <Route path="/login" element={<SigninPage />}></Route>
-        {/* Route for admin */}
         <Route
           path="/admin"
           element={<ProtectedRoute element={<Layout />} adminOnly={true} />}
@@ -71,11 +69,11 @@ function App() {
           <Route path="task" element={<Task />}></Route>
           <Route path="users" element={<User />}></Route>
           <Route path="calendar" element={<Calendar />}></Route>
+          <Route path="email" element={<EmailAdmin />}></Route>
           <Route path="profile" element={<Profile />}></Route>
           <Route path="emails"></Route>
           <Route path="messages" element={<Message />}></Route>
           <Route path="contacts" element={<Contacts />}></Route>
-          {/* Route for food related pages */}
           <Route path="food" element={null}>
             <Route path="category" element={<Category />} />
             <Route path="food-list" element={<FoodList />} />
