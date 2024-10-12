@@ -13,9 +13,30 @@ body {
   justify-content: space-between;
 }
 
+.basket-icon {
+  position: relative;
+  margin-left: 15px;
+  cursor: pointer;
+}
+
+.basket-count {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background-color: #ff6600;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.8em;
+}
+
 .basket {
   margin-top: 40px;
   padding: 20px;
   background-color: #fff3e0;
   border-radius: 10px;
+}
+
+.filters button {
+  margin-right: 10px;
 }
