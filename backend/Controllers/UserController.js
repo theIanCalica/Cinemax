@@ -42,6 +42,16 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+// Count all users
+exports.countUsers = async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();
+    res.status(200).json({ count: userCount });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to retrieve user count" });
+  }
+};
+
 // Get a single User by ID
 exports.getUserById = async (req, res) => {
   try {

@@ -12,6 +12,16 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
+// Count orders
+exports.countOrder = async (req, res) => {
+  try {
+    const orderCount = await Order.countDocuments();
+    res.status(200).json({ count: orderCount });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to retrieve order count" });
+  }
+};
+
 // Get single Order by ID
 exports.getSingleOrder = async (req, res) => {
   try {

@@ -5,9 +5,8 @@ import { ShoppingCartOutlined as ShoppingCartOutlinedIcon } from "@mui/icons-mat
 import { MonetizationOnOutlined as MonetizationOnOutlinedIcon } from "@mui/icons-material";
 import { ConfirmationNumberOutlined as ConfirmationNumberOutlinedIcon } from "@mui/icons-material";
 
-const Widget = ({ type }) => {
+const Widget = ({ type, count }) => {
   let data;
-  const amount = 100;
   const diff = 20;
 
   switch (type) {
@@ -15,6 +14,7 @@ const Widget = ({ type }) => {
       data = {
         title: "USERS",
         isMoney: false,
+        count: count,
         link: "See all users",
         icon: (
           <PersonOutlineOutlinedIcon
@@ -34,6 +34,7 @@ const Widget = ({ type }) => {
       data = {
         title: "ORDERS",
         isMoney: false,
+        count: count,
         link: "View all orders",
         icon: (
           <ShoppingCartOutlinedIcon
@@ -53,6 +54,7 @@ const Widget = ({ type }) => {
       data = {
         title: "BOOKINGS",
         isMoney: false,
+        count: count,
         link: "View all bookings",
         icon: (
           <ConfirmationNumberOutlinedIcon
@@ -96,7 +98,7 @@ const Widget = ({ type }) => {
       <div className="flex flex-col justify-between">
         <span className="font-bold text-lg text-gray-600">{data.title}</span>
         <span className="text-4xl font-medium">
-          {data.isMoney && "₱"} {amount}
+          {data.isMoney && "₱"} {count}
         </span>
         <span className="text-sm border-b border-gray-400 w-max cursor-pointer">
           {data.link}
