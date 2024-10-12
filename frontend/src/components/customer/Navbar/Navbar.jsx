@@ -79,17 +79,18 @@ const Navbar = () => {
           >
             <SearchIcon className="text-white hover:text-themeYellow" />
           </button>
-          <button
-            onClick={() => {
-              closeSidebar();
-            }}
-          >
-            <PersonIcon className="text-white hover:text-themeYellow" />
-          </button>
+          <NavLink to={"/login"}>
+            <button
+              onClick={() => {
+                closeSidebar();
+              }}
+            >
+              <PersonIcon className="text-white hover:text-themeYellow" />
+            </button>
+          </NavLink>
         </div>
       </div>
 
-      {/* Sidebar for smaller screens */}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-themeGrayExteral text-white z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
@@ -118,7 +119,6 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          {/* Dropdowns for Movies and Announcements */}
           {["movies", "announcements"].map((dropdown) => (
             <div key={dropdown} className="w-full m-0 p-0">
               <button
