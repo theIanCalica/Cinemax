@@ -29,14 +29,14 @@ exports.getTaskById = async (req, res) => {
 // Add task
 exports.taskCreate = async (req, res) => {
   try {
-    const { title, description, deadline, user, status, priority } = req.body;
+    const { title, description, deadline, user, dueDate, priority } = req.body;
 
     const newTask = new Task({
       title,
       description,
       deadline,
       user,
-      status,
+      dueDate,
       priority,
     });
 

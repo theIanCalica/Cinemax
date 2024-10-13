@@ -52,6 +52,25 @@ exports.countUsers = async (req, res) => {
   }
 };
 
+exports.getEmployees = async (req, res) => {
+  try {
+    const employees = await User.find(
+      { role: "service crew" },
+      "fname lname role"
+    );
+    res.status(200).json({
+      success: true,
+      data: employees,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to get employees",
+      error: err.message,
+    });
+  }
+};
+
 // Get a single User by ID
 exports.getUserById = async (req, res) => {
   try {

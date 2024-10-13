@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { ToastContainer } from "react-toastify";
@@ -9,7 +9,6 @@ import TaskModal from "../../components/admin/Modal/Task";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
 
-// Dummy data
 const dummyTasks = [
   {
     _id: "1",
@@ -138,6 +137,7 @@ const Task = () => {
     completed: tasks.filter((task) => task.status === "Completed"),
   };
 
+  useEffect(() => {});
   return (
     <div className="px-3 mt-8">
       <div className="flex justify-between">

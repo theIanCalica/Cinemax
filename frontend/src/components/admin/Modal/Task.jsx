@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"; // Updated import
-import { TextField } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TextField, Checkbox, FormControlLabel } from "@mui/material";
 import axios from "axios";
 import { getBorderColor } from "../../../Utils/borderColor";
 import { Box } from "@mui/material";
+import { getUser } from "../../../Utils/helpers";
 
 const Task = ({
   onClose,
@@ -18,11 +19,12 @@ const Task = ({
   refresh,
 }) => {
   const [users, setUsers] = useState([]);
+  const [showEmployeeSelect, setShowEmployeeSelect] = useState(false);
+  const user = getUser();
   const {
     register,
     handleSubmit,
     control,
-    reset,
     formState: { errors, touchedFields },
   } = useForm({
     defaultValues: {
@@ -30,18 +32,38 @@ const Task = ({
       description: taskToEdit?.description || "",
       priority: taskToEdit?.priority || null,
       dueDate: taskToEdit?.dueDate || null,
+      isAssigned: true,
     },
   });
 
   const fetchUsers = () => {
     axios
-      .get(`${process.env.REACT_APP_API_LINK}/users`)
+      .get(`${process.env.REACT_APP_API_LINK}/users/employees`)
       .then((response) => {
-        setUsers(response.data);
+        // Log the response to check its structure
+        console.log("API Response:", response.data);
+
+        // Check if response.data is an array
+        const usersData = Array.isArray(response.data)
+          ? response.data
+          : response.data.data;
+
+        // Ensure usersData is an array before mapping
+        if (Array.isArray(usersData)) {
+          const userOptions = usersData.map((user) => ({
+            value: user._id,
+            label: user.fname + " " + user.lname,
+          }));
+          setUsers(userOptions);
+        } else {
+          throw new Error(
+            "Expected an array but received a different structure."
+          );
+        }
       })
       .catch((error) => {
-        notifyError("Error Fetching genres");
-        console.error("Error fetching genres:", error);
+        notifyError("Error Fetching users");
+        console.error("Error fetching users:", error);
       });
   };
 
@@ -52,13 +74,17 @@ const Task = ({
   ];
 
   const onSubmit = (data) => {
-    const task = {
-      title: data.title,
-      description: data.description,
-      priority: data.priority.value,
-      dueDate: data.dueDate.toISOString(),
-    };
-    console.log(task);
+    let task = {};
+    if (data.isAssigned === true) {
+      task = {
+        title: data.title,
+        description: data.description,
+        priority: data.priority.value,
+        dueDate: data.dueDate.toISOString(),
+        user: user._id,
+      };
+      console.log(task);
+    }
 
     const url = isEditing
       ? `${process.env.REACT_APP_API_LINK}/tasks/${taskToEdit._id}`
@@ -71,13 +97,14 @@ const Task = ({
       headers: {
         "Content-Type": "application/json",
       },
-      data,
+      data: task,
     })
       .then((response) => {
         notifySuccess(
           isEditing ? "Task updated successfully" : "Task created successfully"
         );
         refresh();
+        onClose();
       })
       .catch((error) => {
         notifyError(isEditing ? "Error updating task" : "Error creating task");
@@ -88,6 +115,9 @@ const Task = ({
       });
   };
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
@@ -98,6 +128,7 @@ const Task = ({
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
+          {/* Task Title */}
           <div className="mb-4">
             <label htmlFor="title" className="block text-gray-700 mb-2">
               Title
@@ -118,6 +149,8 @@ const Task = ({
               </p>
             )}
           </div>
+
+          {/* Task Description */}
           <div className="mb-4">
             <label htmlFor="description" className="block text-gray-700 mb-2">
               Description
@@ -140,6 +173,8 @@ const Task = ({
               </p>
             )}
           </div>
+
+          {/* Task Priority */}
           <div className="mb-4">
             <label htmlFor="priority" className="block text-gray-700 mb-2">
               Priority
@@ -217,6 +252,8 @@ const Task = ({
               </p>
             )}
           </div>
+
+          {/* Due Date */}
           <div className="mb-4">
             <label htmlFor="dueDate" className="block text-gray-700 mb-2">
               Due Date
@@ -230,20 +267,13 @@ const Task = ({
                   <Box
                     sx={{
                       width: 300,
-
                       "& .MuiOutlinedInput-root": {
-                        borderRadius: "8px", // Custom border radius
+                        borderRadius: "8px",
                         "& fieldset": {
-                          borderColor: errors.dueDate ? "#f87171" : "#e5e7eb", // Conditional border color
+                          borderColor: errors.dueDate ? "#f87171" : "#e5e7eb",
                         },
                         "&:hover fieldset": {
-                          borderColor: errors.dueDate ? "#f87171" : "#0056b3", // Conditional border color on hover
-                        },
-                      },
-                      "& .MuiPickersDay-root": {
-                        backgroundColor: "#fff", // Custom day background color
-                        "&:hover": {
-                          backgroundColor: "#e0e0e0", // Custom day hover background color
+                          borderColor: errors.dueDate ? "#f87171" : "#0056b3",
                         },
                       },
                     }}
@@ -258,10 +288,10 @@ const Task = ({
                             "& .MuiInputBase-root": {
                               border: `1px solid ${
                                 errors.dueDate ? "#f87171" : "#e5e7eb"
-                              }`, // Apply border color
+                              }`,
                             },
                             "& .MuiFormLabel-root": {
-                              color: errors.dueDate ? "#f87171" : "#6b7280", // Optional: Change label color based on error
+                              color: errors.dueDate ? "#f87171" : "#6b7280",
                             },
                           }}
                         />
@@ -271,12 +301,61 @@ const Task = ({
                 </LocalizationProvider>
               )}
             />
-
             {errors.dueDate && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.dueDate.message}
               </p>
             )}
+          </div>
+
+          {showEmployeeSelect && (
+            <div className="mb-4 col-span-1 md:col-span-2">
+              <label htmlFor="isAssigned" className="block text-gray-700 mb-2">
+                Assign to Employee
+              </label>
+              <Controller
+                name="isAssigned"
+                control={control}
+                rules={{ required: "Please select an employee" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    options={users}
+                    isClearable
+                    placeholder="Select an employee"
+                    classNamePrefix="react-select"
+                  />
+                )}
+              />
+              {errors.assignedEmployee && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.assignedEmployee.message}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Completed Checkbox */}
+          <div className="mb-4 col-span-1 md:col-span-2">
+            <Controller
+              name="isAssigned"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      {...field}
+                      checked={field.value}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setShowEmployeeSelect(!e.target.checked);
+                      }}
+                    />
+                  }
+                  label="Assign to me"
+                />
+              )}
+            />
           </div>
 
           <div className="flex justify-end col-span-1 md:col-span-2">

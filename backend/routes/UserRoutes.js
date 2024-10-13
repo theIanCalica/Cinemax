@@ -9,6 +9,9 @@ router.post("/check-unique", userController.checkUnique);
 // Get all users
 router.get("/", userController.getAllUsers);
 
+// Get all employees
+router.get("/employees", userController.getEmployees);
+
 // Count user
 router.get("/count", userController.countUsers);
 
