@@ -7,9 +7,11 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { getUser } from "../../../Utils/helpers";
-import { NavLink } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
+import { logout } from "../../../Utils/helpers";
 
 const Navbar = ({ toggleSidebar }) => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -31,6 +33,12 @@ const Navbar = ({ toggleSidebar }) => {
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);
     setIsDropdownOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout(() => {
+      navigate("/");
+    });
   };
 
   useEffect(() => {}, [user]);
@@ -167,7 +175,10 @@ const Navbar = ({ toggleSidebar }) => {
                   </button>
                 </NavLink>
 
-                <button className="flex gap-4 px-4 py-3 text-gray-700 justify-between hover:bg-gray-100 w-full text-left">
+                <button
+                  className="flex gap-4 px-4 py-3 text-gray-700 justify-between hover:bg-gray-100 w-full text-left"
+                  onClick={handleLogout}
+                >
                   <span className="text-gray-700">Logout</span>
                   <LogoutOutlinedIcon style={{ fontSize: "18px" }} />
                 </button>

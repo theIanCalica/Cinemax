@@ -29,40 +29,19 @@ const ChangePasswordModal = ({ onClose }) => {
       })
       .catch((error) => {
         if (error.response) {
-          // Access the error message sent by the backend
           const errorMessage = error.response.data.msg;
-          console.log(errorMessage); // Log the backend error message
-          notifyError(errorMessage); // Use the error message from the backend in your notification
+          console.log(errorMessage);
+          notifyError(errorMessage);
         } else {
-          // Fallback for network errors or no response
           console.log(error.message);
           notifyError(error.message);
         }
       });
-    // axios({
-    //   method,
-    //   url,
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   data: data,
-    // })
-    //   .then((response) => {
-    //     notifySuccess("Password change successfully");
-    //     onClose();
-    //   })
-    //   .catch((error) => {
-    //     notifyError("Error changing password");
-    //     console.error(
-    //       "Error changing password",
-    //       error.response ? error.response.data : error.message
-    //     );
-    //   });
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
         <h2 className="text-xl font-bold mb-4">Change Password</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
