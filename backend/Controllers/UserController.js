@@ -16,18 +16,16 @@ const transporter = nodemailer.createTransport({
 
 // Check uniqueness
 exports.checkUnique = async (req, res) => {
-  const { field, value } = req.query;
-
   try {
-    const exists = await User.findOne({ [field]: value });
-
-    if (exists) {
-      return res.status(409).json({ message: `${field} already exists` });
-    } else {
-      return res.status(200).json({ message: `${field} is unique` });
+    const { email } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email is already taken" });
     }
-  } catch (error) {
-    return res.status(500).json({ message: "Server error", error });
+    return res.status(200).json({ message: "Email is available" });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -110,7 +108,7 @@ exports.addUser = async (req, res, next) => {
 };
 
 exports.register = [
-  upload.single("file"), // Handles the file upload
+  upload.single("file"),
   async (req, res) => {
     try {
       const { fname, lname, dob, email, phoneNumber, password } = req.body;
@@ -159,6 +157,7 @@ exports.register = [
       });
 
       const saveUser = await newUser.save();
+
       res.status(200).json(saveUser);
     } catch (err) {
       console.log(err.message);

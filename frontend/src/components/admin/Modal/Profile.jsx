@@ -74,23 +74,6 @@ const Profile = ({
   const [isEmailUnique, setIsEmailUnique] = useState(true);
   const [isPhoneNumberUnique, setIsPhoneNumberUnique] = useState(true);
 
-  const debouncedCheckUnique = debounce(async (field, value) => {
-    if (value) {
-      const { isUnique, message } = await checkUnique(field, value);
-      if (field === "email") {
-        setIsEmailUnique(isUnique);
-        if (!isUnique) {
-          notifyError(message || "Email is already taken");
-        }
-      } else if (field === "phoneNumber") {
-        setIsPhoneNumberUnique(isUnique);
-        if (!isUnique) {
-          notifyError(message || "Phone number is already taken");
-        }
-      }
-    }
-  }, 500);
-
   const onSubmit = (data) => {
     if (!isEmailUnique || !isPhoneNumberUnique) {
       notifyError("Email or Phone Number must be unique");
@@ -138,9 +121,7 @@ const Profile = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
-        <h2 className="text-xl font-bold mb-4">
-          {isEditing ? "Edit User" : "Add User"}
-        </h2>
+        <h2 className="text-xl font-bold mb-4">Update Profile</h2>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-2 gap-4"

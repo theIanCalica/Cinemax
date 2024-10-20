@@ -12,9 +12,11 @@ import EmailIcon from "@mui/icons-material/Email";
 import MessageIcon from "@mui/icons-material/Message";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ArticleIcon from "@mui/icons-material/Article";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../../../Utils/helpers";
 
 const Sidebar = ({ isMinimized }) => {
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState("dashboard");
   const [expanded, setExpanded] = useState({
@@ -33,6 +35,11 @@ const Sidebar = ({ isMinimized }) => {
     }));
   };
 
+  const handleLogout = () => {
+    logout(() => {
+      navigate("/");
+    });
+  };
   return (
     <aside
       className={`  text-white overflow-hidden  ${
@@ -527,7 +534,7 @@ const Sidebar = ({ isMinimized }) => {
           className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
           onMouseOver={() => setHovered("logout")}
           onMouseOut={() => setHovered(null)}
-          onClick={() => handleItemClick("logout")}
+          onClick={handleLogout}
           style={{
             backgroundColor:
               hovered === "logout" || selected === "logout"

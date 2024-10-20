@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"; // You can use 'AdapterDateFns' or other adapters based on preference
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import TextField from "@mui/material/TextField";
 import { getBorderColor } from "../../../Utils/borderColor";
-import { checkUnique } from "../../../Utils/checkUnique";
 import { Box } from "@mui/material";
 import axios from "axios";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
+import { getUser } from "../../../Utils/helpers";
 
 const User = ({
   onClose,
@@ -20,24 +20,29 @@ const User = ({
   isEditing,
   refresh,
 }) => {
-  const checkUnique = async (value, field) => {
+  const user = getUser();
+
+  const checkEmail = async (email) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_LINK}/users/check-unique`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ [field]: value }),
-        }
-      );
-      const data = await response.json(); // Await the JSON response
-      console.log(data.isUnique); // Logging for debugging
-      return data.isUnique; // Return the result of the API call
+      const response = await fetch("/api/check-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 200) {
+        console.log(data.message);
+        return true;
+      } else if (response.status === 400) {
+        console.error(data.message);
+        return false;
+      }
     } catch (error) {
-      console.error("Error checking uniqueness:", error);
-      return false; // Return false in case of an error
+      console.error("Error:", error);
     }
   };
 
@@ -82,27 +87,10 @@ const User = ({
     { value: "serviceCrew", label: "Service Crew" },
   ];
 
-  const debouncedCheckUnique = debounce(async (field, value) => {
-    if (value) {
-      const { isUnique, message } = await checkUnique(field, value);
-      if (field === "email") {
-        setIsEmailUnique(isUnique);
-        if (!isUnique) {
-          notifyError(message || "Email is already taken");
-        }
-      } else if (field === "phoneNumber") {
-        setIsPhoneNumberUnique(isUnique);
-        if (!isUnique) {
-          notifyError(message || "Phone number is already taken");
-        }
-      }
-    }
-  }, 500);
-
   const onSubmit = (data) => {
     if (!isEmailUnique || !isPhoneNumberUnique) {
       notifyError("Email or Phone Number must be unique");
-      return; // Prevent submission
+      return;
     }
 
     const user = {
@@ -252,18 +240,15 @@ const User = ({
               type="text"
               {...register("email", {
                 required: "Email is required",
-                validate: async (value) => {
-                  const isUnique = await checkUnique(value, "email");
-                  console.log(isUnique);
+                unique: async (value) => {
+                  const isUnique = await checkEmail(value);
                   if (!isUnique) {
                     setError("email", {
                       type: "manual",
-                      message: "Email is already in use",
+                      message: "Email is already taken",
                     });
-                    return false; // Return false to indicate validation failure
-                  } else {
-                    return true;
                   }
+                  return isUnique || "Email is already taken";
                 },
                 pattern: {
                   value:

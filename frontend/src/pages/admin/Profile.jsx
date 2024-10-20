@@ -1,24 +1,31 @@
 import React, { useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Swal from "sweetalert2";
 import { getUser } from "../../Utils/helpers";
 import { formatDate } from "../../Utils/FormatDate";
 import ProfileModal from "../../components/admin/Modal/Profile";
-import { notifySuccess, notifyError } from "../../Utils/notification";
+import ChangePasswordModal from "../../components/admin/Modal/ChangePasswordModal";
 
 const Profile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const user = getUser();
 
   const handleEditProfile = () => {
-    setIsModalOpen(true); // Open the modal
+    setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false);
+  };
+
+  const handleOpenPasswordModal = () => {
+    setIsPasswordModalOpen(true);
+  };
+
+  const handleClosePasswordModal = () => {
+    setIsPasswordModalOpen(false);
   };
 
   return (
@@ -85,16 +92,49 @@ const Profile = () => {
               <strong>Phone:</strong> {user?.phoneNumber || "N/A"}
             </p>
           </div>
+          {/* Change Password Button */}
+          <div className="mt-10 flex justify-center">
+            <button
+              onClick={handleOpenPasswordModal}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+            >
+              Change Password
+            </button>
+          </div>
         </div>
 
+        {/* Linked Accounts Section */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
-          <ul className="text-gray-600 space-y-2">
-            <li>- Logged in from IP: 192.168.1.1</li>
-            <li>- Updated profile information</li>
-            <li>- Changed password</li>
-            <li>- Viewed reports dashboard</li>
-          </ul>
+          <h3 className="text-lg font-semibold mb-4">Linked Accounts</h3>
+          <div className="text-gray-600 space-y-2">
+            <p>
+              <strong>Facebook:</strong>{" "}
+              {user?.linkedAccounts?.facebook || "Not Linked"}
+              {!user?.linkedAccounts?.facebook && (
+                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 ml-4 rounded-md">
+                  Link Facebook
+                </button>
+              )}
+            </p>
+            <p>
+              <strong>Google:</strong>{" "}
+              {user?.linkedAccounts?.google || "Not Linked"}
+              {!user?.linkedAccounts?.google && (
+                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 ml-4 rounded-md">
+                  Link Google
+                </button>
+              )}
+            </p>
+            <p>
+              <strong>Twitter:</strong>{" "}
+              {user?.linkedAccounts?.twitter || "Not Linked"}
+              {!user?.linkedAccounts?.twitter && (
+                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 ml-4 rounded-md">
+                  Link Twitter
+                </button>
+              )}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -104,6 +144,12 @@ const Profile = () => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           user={user}
+        />
+      )}
+      {isPasswordModalOpen && (
+        <ChangePasswordModal
+          isOpen={isPasswordModalOpen}
+          onClose={handleClosePasswordModal}
         />
       )}
     </div>

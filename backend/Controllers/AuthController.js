@@ -82,4 +82,43 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = (req, res) => {};
+exports.logout = (req, res) => {
+  try {
+  } catch (err) {
+    console.error("Login error:", error);
+    return res
+      .status(500)
+      .json({ error: "Something went wrong. Please try again later." });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { current, newPassword, confirm, user } = req.body;
+
+    const foundUser = await User.findById(user._id);
+
+    if (!foundUser) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const isMatch = await foundUser.comparePassword(current);
+
+    if (!isMatch) {
+      return res.status(403).json({ msg: "Current password is incorrect" });
+    }
+
+    if (newPassword !== confirm) {
+      return res.status(403).json({ msg: "Password does not match" });
+    }
+
+    foundUser.password = newPassword;
+    await foundUser.save();
+    return res.status(200).json({ msg: "Password updated successfully" });
+  } catch (err) {
+    console.error("Login error:", error);
+    return res
+      .status(500)
+      .json({ error: "Something went wrong. Please try again later." });
+  }
+};
