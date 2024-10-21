@@ -66,16 +66,23 @@ const Sidebar = ({ isMinimized }) => {
       style={{ backgroundColor: "#181824" }}
     >
       {!isMinimized && (
-        <div className="p-4 text-xl font-bold font-serif">Cinemax</div>
+        <div className="p-4 text-xl font-bold font-serif flex flex-row justify-center items-center -ml-2">
+          <img
+            src="/images/logoTransparent.png"
+            alt="Cinemax"
+            className="w-12 mr-3"
+          />
+          Cinemax
+        </div>
       )}
 
       {/* Image displayed when minimized */}
       {isMinimized && (
-        <div className="p-4">
+        <div className="p-4 flex justify-center items-center">
           <img
             src="/images/logoTransparent.png"
             alt="Cinemax"
-            className="w-32 h-auto"
+            className="ml-6"
           />
         </div>
       )}

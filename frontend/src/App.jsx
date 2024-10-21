@@ -32,6 +32,15 @@ import Try from "./pages/Filepond";
 import EmailAdmin from "./pages/admin/email";
 import "./main.css";
 
+// Crew protected route
+import EmployeeProtectedRoute from "./Utils/authRoutes/EmployeeProtectedRoute";
+
+// Crew layout
+import CrewLayout from "./components/service-crew/Layout";
+
+// Crew pages
+import HomeCrew from "./pages/crew/Home";
+
 function App() {
   useEffect(() => {
     window.fbAsyncInit = function () {
@@ -82,6 +91,14 @@ function App() {
             <Route path="genre" element={<Genre />}></Route>
             <Route path="movie-list" element={<Movie />}></Route>
           </Route>
+        </Route>
+        <Route
+          path="/crew"
+          element={
+            <EmployeeProtectedRoute element={<CrewLayout />} crewOnly={true} />
+          }
+        >
+          <Route index element={<HomeCrew />}></Route>
         </Route>
       </Routes>
     </Router>

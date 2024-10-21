@@ -27,6 +27,9 @@ router.post("/registration", userController.register);
 // Update a user by ID
 router.put("/:id", userController.updateUserById);
 
+// Activate user
+router.put("/activate/:id", userController.activateUser);
+
 // Deactivate user
 router.put("/deactivate/:id", userController.deactivateUser);
 
