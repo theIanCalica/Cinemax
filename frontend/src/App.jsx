@@ -62,6 +62,15 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route
+          path="/crew"
+          element={
+            <EmployeeProtectedRoute element={<CrewLayout />} crewOnly={true} />
+          }
+        >
+          <Route index element={<HomeCrew />}></Route>
+          <Route path="profile" element={<Profile />}></Route>
+        </Route>
         <Route path="/error-404" element={<error_404 />}></Route>
         <Route path="/try" element={<Try />}></Route>
         <Route path="/" element={<HomePage />} />
@@ -91,14 +100,6 @@ function App() {
             <Route path="genre" element={<Genre />}></Route>
             <Route path="movie-list" element={<Movie />}></Route>
           </Route>
-        </Route>
-        <Route
-          path="/crew"
-          element={
-            <EmployeeProtectedRoute element={<CrewLayout />} crewOnly={true} />
-          }
-        >
-          <Route index element={<HomeCrew />}></Route>
         </Route>
       </Routes>
     </Router>

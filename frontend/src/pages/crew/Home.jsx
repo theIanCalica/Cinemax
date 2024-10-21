@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import Navbar from "../../components/service-crew/Navbar/Navbar";
-import Sidebar from "../../components/service-crew/Sidebar/Sidebar";
 import axios from "axios";
 import { notifySuccess, notifyError } from "../../Utils/notification";
 
@@ -32,7 +30,9 @@ const Home = () => {
 
   return (
     <div>
-      <div></div>
+      <div>
+        <h1>Hi</h1>
+      </div>
     </div>
   );
 };

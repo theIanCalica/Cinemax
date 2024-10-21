@@ -87,7 +87,7 @@ exports.getUserById = async (req, res) => {
 
 // Create a user
 exports.addUser = async (req, res, next) => {
-  const { fname, lname, dob, email, phoneNumber, role } = req.body;
+  const { fname, lname, dob, email, phoneNumber, role, password } = req.body;
 
   try {
     const newUser = new User({
@@ -97,6 +97,7 @@ exports.addUser = async (req, res, next) => {
       email,
       phoneNumber,
       role,
+      password,
     });
 
     const saveUser = await newUser.save();

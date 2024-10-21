@@ -10,8 +10,9 @@ const EmployeeProtectedRoute = ({ element, crewOnly = false }) => {
     return <Navigate to="/login" replace />; // Redirect to login if not authenticated
   }
 
-  if (crewOnly && user.role !== "crew") {
-    return <Navigate to="/" replace />; // Redirect non-admin users to the homepage
+  if (crewOnly && user.role !== "serviceCrew") {
+    console.log(user.role);
+    return <Navigate to="/" replace />; // Redirect non-employee users to the homepage
   }
 
   return element;

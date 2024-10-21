@@ -62,6 +62,7 @@ const User = ({
       phoneNumber: "",
       dob: null,
       role: null,
+      password: "",
     },
   });
 
@@ -100,6 +101,8 @@ const User = ({
       phoneNumber: data.phoneNumber,
       role: data.role.value,
       dob: data.dob.toISOString(),
+      password: data.password,
+      status: "activated",
     };
 
     console.log(user);
@@ -385,6 +388,28 @@ const User = ({
             />
             {errors.role && (
               <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+            )}
+          </div>
+          <div className="mb-4 col-span-2">
+            {" "}
+            {/* Use col-span-2 to take both columns */}
+            <label htmlFor="password" className="block text-gray-700 mb-2">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md h-14 ${getBorderColor(
+                "password",
+                errors,
+                touchedFields
+              )}`}
+              {...register("password", { required: "Password is required" })}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
           <div className="flex justify-end col-span-1 md:col-span-2">

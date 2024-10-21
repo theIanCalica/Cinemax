@@ -96,10 +96,22 @@ const SigninForm = ({ onSwitchMode }) => {
         profile: decoded.picture,
       })
       .then((response) => {
-        console.log("Google login response:", response.data);
+        // console.log("Google login response:", response.data);
         const user = response.data.user;
         const { role } = user;
-        const targetPath = role === "admin" ? "/admin" : "/";
+        let targetPath;
+        console.log(role);
+        switch (role) {
+          case "admin":
+            targetPath = "/admin";
+            break;
+          case "serviceCrew":
+            targetPath = "/crew";
+            break;
+          default:
+            targetPath = "/";
+        }
+
         authenticate(response.data, () => navigate(targetPath));
       })
       .catch((error) => {
