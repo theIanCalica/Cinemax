@@ -9,6 +9,7 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { getUser } from "../../../Utils/helpers";
 import { useNavigate, NavLink } from "react-router-dom";
 import { logout } from "../../../Utils/helpers";
+import Swal from "sweetalert2";
 
 const Navbar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
@@ -36,8 +37,25 @@ const Navbar = ({ toggleSidebar }) => {
   };
 
   const handleLogout = () => {
-    logout(() => {
-      navigate("/");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of your account!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout(() => {
+          navigate("/");
+        });
+        Swal.fire(
+          "Logged Out!",
+          "You have been logged out successfully.",
+          "success"
+        );
+      }
     });
   };
 

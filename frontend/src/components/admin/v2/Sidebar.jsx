@@ -14,7 +14,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import ArticleIcon from "@mui/icons-material/Article";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../../Utils/helpers";
-
+import Swal from "sweetalert2";
 const Sidebar = ({ isMinimized }) => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
@@ -36,10 +36,28 @@ const Sidebar = ({ isMinimized }) => {
   };
 
   const handleLogout = () => {
-    logout(() => {
-      navigate("/");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of your account!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout(() => {
+          navigate("/");
+        });
+        Swal.fire(
+          "Logged Out!",
+          "You have been logged out successfully.",
+          "success"
+        );
+      }
     });
   };
+
   return (
     <aside
       className={`  text-white overflow-hidden  ${
