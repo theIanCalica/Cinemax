@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import GroupIcon from "@mui/icons-material/Group";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import FastfoodIcon from "@mui/icons-material/Fastfood";
@@ -10,7 +9,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MessageIcon from "@mui/icons-material/Message";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import ArticleIcon from "@mui/icons-material/Article";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../../Utils/helpers";
 import Swal from "sweetalert2";
@@ -239,7 +237,7 @@ const Sidebar = ({ isMinimized }) => {
         </li>
         {expanded.foods && (
           <ul className="mt-2 text-gray-400 text-xs">
-            <Link to="food/food-list">
+            <Link to="/food/food-list">
               <li className="py-2 px-8 cursor-pointer hover:bg-gray-700 transition-colors duration-300 ease-in-out">
                 <KeyboardArrowRightIcon className="mr-5 ml-2" />
                 Food List

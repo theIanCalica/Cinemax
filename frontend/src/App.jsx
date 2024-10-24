@@ -59,6 +59,13 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/articles" element={<Article />}></Route>
+        <Route path="/about" element={<AboutPage />}></Route>
+        <Route path="/contact" element={<ContactPage />}></Route>
+        <Route path="/email" element={<Email />} />
+        <Route path="/login" element={<SigninPage />}></Route>
+        {/* Routes for crew */}
         <Route
           path="/crew"
           element={
@@ -68,13 +75,10 @@ function App() {
           <Route index element={<HomeCrew />}></Route>
           <Route path="profile" element={<Profile />}></Route>
           <Route path="email" element={<EmailCrew />}></Route>
+          <Route path="food-list" element={<FoodList />}></Route>
         </Route>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/articles" element={<Article />}></Route>
-        <Route path="/about" element={<AboutPage />}></Route>
-        <Route path="/contact" element={<ContactPage />}></Route>
-        <Route path="/email" element={<Email />} />
-        <Route path="/login" element={<SigninPage />}></Route>
+
+        {/* Routes for admin */}
         <Route
           path="/admin"
           element={<ProtectedRoute element={<Layout />} adminOnly={true} />}
