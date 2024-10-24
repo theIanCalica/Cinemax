@@ -94,7 +94,7 @@ const Sidebar = ({ isMinimized }) => {
           Main
         </h1>
         {/* Sidebar Items */}
-        <Link to="/admin">
+        <Link to="/crew">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
             onMouseOver={() => setHovered("dashboard")}
@@ -139,7 +139,7 @@ const Sidebar = ({ isMinimized }) => {
             </span>
           </li>
         </Link>
-        <Link to="/admin/task">
+        <Link to="/crew/task">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
             onMouseOver={() => setHovered("task")}

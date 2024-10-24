@@ -1,6 +1,6 @@
 import React from "react";
 
-const email = () => {
+const Email = () => {
   return (
     <>
       <h1>Email</h1>
@@ -9,4 +9,4 @@ const email = () => {
   );
 };
 
-export default email;
+export default Email;

@@ -158,7 +158,7 @@ const Navbar = ({ toggleSidebar }) => {
             )}
           </div>
 
-          <NavLink to={"/admin/email"}>
+          <NavLink to={"/crew/email"}>
             <button className="text-black">
               <EmailOutlinedIcon style={{ fontSize: "20px" }} />
             </button>
@@ -186,7 +186,7 @@ const Navbar = ({ toggleSidebar }) => {
             </button>
             {isProfileDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                <NavLink to={"/admin/profile"}>
+                <NavLink to={"/crew/profile"}>
                   <button className="flex gap-4 px-4 py-3 text-gray-700 justify-between hover:bg-gray-100 w-full text-left">
                     <span className="text-gray-700">Profile</span>
                     <PersonOutlineOutlinedIcon style={{ fontSize: "18px" }} />

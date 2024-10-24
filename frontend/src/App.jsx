@@ -4,9 +4,6 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { CssBaseline } from "@mui/material";
-import error_404 from "./pages/error_404";
-import error_500 from "./pages/error_500";
 import SigninPage from "./pages/SigninPage";
 import HomePage from "./pages/customer/index/index";
 import AboutPage from "./pages/customer/About/AboutPage";
@@ -28,8 +25,7 @@ import Message from "./pages/admin/Message";
 import Profile from "./pages/admin/Profile";
 import Movie from "./pages/admin/Movie";
 import Calendar from "./pages/admin/Calendar";
-import Try from "./pages/Filepond";
-import EmailAdmin from "./pages/admin/email";
+import EmailAdmin from "./pages/admin/Email";
 import "./main.css";
 
 // Crew protected route
@@ -40,6 +36,7 @@ import CrewLayout from "./components/service-crew/Layout";
 
 // Crew pages
 import HomeCrew from "./pages/crew/Home";
+import EmailCrew from "./pages/crew/Email";
 
 function App() {
   useEffect(() => {
@@ -70,9 +67,8 @@ function App() {
         >
           <Route index element={<HomeCrew />}></Route>
           <Route path="profile" element={<Profile />}></Route>
+          <Route path="email" element={<EmailCrew />}></Route>
         </Route>
-        <Route path="/error-404" element={<error_404 />}></Route>
-        <Route path="/try" element={<Try />}></Route>
         <Route path="/" element={<HomePage />} />
         <Route path="/articles" element={<Article />}></Route>
         <Route path="/about" element={<AboutPage />}></Route>
