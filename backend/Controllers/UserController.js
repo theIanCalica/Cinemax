@@ -6,13 +6,7 @@ const streamifier = require("streamifier");
 const fs = require("fs");
 const path = require("path");
 const upload = require("../middleware/multer");
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "iggc654@gmail.com",
-    pass: "lrwd plzs ktnd kcqs",
-  },
-});
+const sendEmail = require("../utils/Mailtrap");
 
 // Check uniqueness
 exports.checkUnique = async (req, res) => {
@@ -212,6 +206,34 @@ exports.updateUserById = async (req, res) => {
   }
 };
 
+// Send email
+exports.sendEmail = async (req, res) => {
+  try {
+    const { to, subject, message } = req.body;
+
+    // Check if files exist
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).send({ message: "No attachments provided." });
+    }
+
+    // Prepare attachments with correct path handling
+    const attachments = req.files.map((file) => ({
+      filename: file.originalname,
+      path: path.normalize(file.path), // Normalizes the path, ensures it works across platforms
+      contentType: file.mimetype, // Ensure the right content type
+    }));
+
+    // Send the email
+    await sendEmail(to, subject, message, attachments);
+
+    res.status(200).send({ message: "Email sent successfully" });
+  } catch (err) {
+    console.error("Error sending email:", err);
+    res.status(500).send({ message: "Server Error" });
+  }
+};
+
+// Deactivate a user
 exports.deactivateUser = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -239,7 +261,7 @@ exports.deactivateUser = async (req, res) => {
   }
 };
 
-// Activate account
+// Activate a user account
 exports.activateUser = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

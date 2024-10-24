@@ -27,6 +27,9 @@ router.post("/registration", userController.register);
 // Update a user by ID
 router.put("/:id", userController.updateUserById);
 
+// Send email
+router.post("/send-email", upload.array("files"), userController.sendEmail);
+
 // Activate user
 router.put("/activate/:id", userController.activateUser);
 
