@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const SocialAccount = new Schema({
+const SocialAccountSchema = new Schema({
   provider: {
     type: String,
     enum: ["google", "facebook"],
@@ -14,3 +15,5 @@ const SocialAccount = new Schema({
     type: String,
   },
 });
+
+module.exports = SocialAccountSchema;

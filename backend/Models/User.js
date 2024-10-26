@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const SocialAccountSchema = require("./SocialAccount");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
@@ -59,6 +60,7 @@ const UserSchema = new Schema(
     password: {
       type: String,
     },
+    socialAccounts: [SocialAccountSchema],
   },
   {
     timestamps: true,
