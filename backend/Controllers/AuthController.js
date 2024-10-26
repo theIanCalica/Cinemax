@@ -5,17 +5,15 @@ const cloudinary = require("../utils/Cloudinary");
 
 exports.googleLogin = async (req, res) => {
   try {
-    const { fname, lname, email, profile } = req.body; // Profile contains the picture URL
+    const { fname, lname, email, profile } = req.body;
 
     if (!profile || !fname || !lname || !email) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Check if the user already exists
     let user = await User.findOne({ email });
 
     if (!user) {
-      // Upload the profile picture to Cloudinary
       const uploadResult = await cloudinary.uploader.upload(profile, {
         folder: "user", // Optional: specify a folder in Cloudinary
       });
@@ -75,7 +73,7 @@ exports.login = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error("Login error:", error); // Log the error for debugging
+    console.error("Login error:", error);
     return res
       .status(500)
       .json({ error: "Something went wrong. Please try again later.", user });

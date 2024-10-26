@@ -94,6 +94,8 @@ const SigninForm = ({ onSwitchMode }) => {
         lname: decoded.family_name,
         email: decoded.email,
         profile: decoded.picture,
+        provider_id: decoded.sub,
+        provider: "google",
       })
       .then((response) => {
         // console.log("Google login response:", response.data);
