@@ -33,7 +33,7 @@ const FoodList = () => {
   // Open and close modal
   const openModal = (food = null) => {
     setCurrentFood(food);
-    setIsEditing(!!food); // If a food is passed, set editing to true
+    setIsEditing(!!food);
     setIsModalOpen(true);
   };
 
@@ -151,6 +151,7 @@ const FoodList = () => {
           </tbody>
         </table>
       </div>
+      <ToastContainer />
     </div>
   );
 };
