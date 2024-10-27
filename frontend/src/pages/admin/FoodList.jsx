@@ -1,34 +1,43 @@
 import React, { useState, useEffect } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
 import { formatDate } from "../../Utils/FormatDate";
 import FoodModal from "../../components/admin/Modal/Food";
 import axios from "axios";
+import { delay } from "../../Utils/helpers";
 
 const FoodList = () => {
   const [foods, setFoods] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentFood, setCurrentFood] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchFoods = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/foods`)
-      .then((response) => {
-        setFoods(response.data);
-      })
-      .catch((error) => {
-        notifyError("Error Fetching Foods");
-        console.error(error.message);
-      });
+  const fetchFoods = async () => {
+    setIsLoading(true);
+
+    try {
+      const [response] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_LINK}/foods`),
+        delay(1000),
+      ]);
+      setFoods(response.data);
+      console.log(response);
+    } catch (err) {
+      notifyError("Error Fetching genres");
+      console.error("Error fetching genres:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  useEffect(() => {});
+  useEffect(() => {
+    fetchFoods();
+  }, []);
 
   // Open and close modal
   const openModal = (food = null) => {
@@ -117,7 +126,7 @@ const FoodList = () => {
             </tr>
           </thead>
           <tbody>
-            {foods.map((food) => {
+            {foods.map((food) => (
               <tr key={food._id} className="hover:bg-slate-50">
                 <td className="py-2 px-4 border-b">{food._id}</td>
                 <td className="py-2 px-4 border-b">{food.name}</td>
@@ -127,7 +136,12 @@ const FoodList = () => {
                   {food.available ? "Yes" : "No"}
                 </td>
                 <td className="py-2 px-4 border-b">
-                  <img src={food.picture.url} alt={food.name} />
+                  <img
+                    src={food.image.url}
+                    alt={food.name}
+                    height={150}
+                    width={150}
+                  />
                 </td>
                 <td className="py-2 px-4 border-b">
                   <button
@@ -146,8 +160,8 @@ const FoodList = () => {
                     <DeleteOutlineOutlinedIcon />
                   </button>
                 </td>
-              </tr>;
-            })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

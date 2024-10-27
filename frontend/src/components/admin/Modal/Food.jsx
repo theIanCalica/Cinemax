@@ -30,6 +30,7 @@ const Food = ({
   const [categories, setCategories] = useState([]);
   const [image, setImage] = useState([]);
   const [foods, setFoods] = useState([]);
+  const [originalImageUrl, setOriginalImageUrl] = useState("");
 
   const fetchFoods = () => {
     axios
@@ -48,7 +49,7 @@ const Food = ({
       .get(`${process.env.REACT_APP_API_LINK}/categories`)
       .then((response) => {
         const formattedCategories = response.data.map((category) => ({
-          value: category.id,
+          value: category._id,
           label: category.name,
         }));
         setCategories(formattedCategories);
@@ -70,41 +71,52 @@ const Food = ({
         name: foodToEdit.name,
         price: foodToEdit.price,
         category: categories.find(
-          (category) => category.value === foodToEdit.categoryId
+          (category) => category.value === foodToEdit.category
         ),
         availability: options.find(
-          (option) => option.value === foodToEdit.availability
+          (option) => option.value === foodToEdit.status
         ),
-        image: foodToEdit.image || [],
+        image: foodToEdit.image.url || [],
+        quantity: foodToEdit.quantity,
       });
+      setOriginalImageUrl(foodToEdit.image.url);
     } else {
       reset({
         name: "",
+        quantity: "",
         price: "",
         category: null,
         availability: null,
         image: [],
       });
+      setOriginalImageUrl("");
     }
   }, [isEditing, foodToEdit, categories]);
 
   const onSubmit = (data) => {
-    console.log(data);
-    const food = {
-      name: data.name,
-      price: data.price,
-    };
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("price", data.price);
+    formData.append("quantity", data.quantity);
+    formData.append("availability", data.availability.value);
+    formData.append("category", data.category.value);
+
+    if (data.image && data.image.length > 0) {
+      formData.append("image", data.image[0]);
+    }
+
     const url = isEditing
       ? `${process.env.REACT_APP_API_LINK}/foods/${foodToEdit._id}`
       : `${process.env.REACT_APP_API_LINK}/foods`;
     const method = isEditing ? "PUT" : "POST";
+
     axios({
       method,
       url,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
       },
-      data: data,
+      data: formData,
     })
       .then((response) => {
         refresh();
