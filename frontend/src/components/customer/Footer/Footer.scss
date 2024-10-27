@@ -1,6 +1,28 @@
-.footer{
-  
+footer{
+
+
   .icon{
     background-color: #2F2F2F;
   }
+
+  .hover-underline {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .hover-underline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px; /* Adjusts underline position */
+    width: 0;
+    height: 2px;
+    background-color: orange;
+    transition: width 0.7s ease;
+  }
+  
+  .hover-underline:hover::before {
+    width: 100%;
+  }
+  
 }
