@@ -9,51 +9,12 @@ import TaskModal from "../../components/admin/Modal/Task";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
 
-const dummyTasks = [
-  {
-    _id: "1",
-    title: "Task 1",
-    description: "Description for Task 1",
-    deadline: "2024-10-01",
-    priority: "High",
-    status: "Pending",
-    profilePicture: "https://via.placeholder.com/40",
-  },
-  {
-    _id: "2",
-    title: "Task 2",
-    description: "Description for Task 2",
-    deadline: "2024-09-30",
-    priority: "Medium",
-    status: "In Progress",
-    profilePicture: "https://via.placeholder.com/40",
-  },
-  {
-    _id: "3",
-    title: "Task 3",
-    description: "Description for Task 3",
-    deadline: "2024-09-28",
-    priority: "Low",
-    status: "Completed",
-    profilePicture: "https://via.placeholder.com/40",
-  },
-  {
-    _id: "4",
-    title: "Task 4",
-    description: "Description for Task 4",
-    deadline: "2024-10-05",
-    priority: "High",
-    status: "Pending",
-    profilePicture: "https://via.placeholder.com/40",
-  },
-];
-
 const Task = () => {
-  const [tasks, setTasks] = useState(dummyTasks);
+  const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-
+  const [users, setUsers] = useState([]);
   const fetchTasks = () => {
     axios
       .get(`${process.env.REACT_APP_API_LINK}/tasks`)
@@ -61,10 +22,31 @@ const Task = () => {
         setTasks(response.data);
       })
       .catch((error) => {
-        notifyError("Error Fetching genres");
-        console.error("Error fetching genres:", error);
+        notifyError("Error Fetching tasks");
+        console.error("Error fetching tasks:", error);
       });
   };
+
+  const fetchUsers = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_LINK}/users`)
+      .then((response) => {
+        setUsers(response.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching contacts:", err);
+      });
+  };
+
+  useEffect(() => {
+    fetchTasks();
+    fetchUsers();
+  }, []);
+
+  const userMap = {};
+  users.forEach((user) => {
+    userMap[user._id] = " " + user.fname + " " + user.lname; // Assuming user object has _id and name properties
+  });
 
   // Open and close modal
   const openModal = (task = null) => {
@@ -92,18 +74,32 @@ const Task = () => {
     });
 
     if (result.isConfirmed) {
-      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskID));
-      notifySuccess("Successfully Deleted!");
+      axios
+        .delete(`${process.env.REACT_APP_API_LINK}/tasks/${taskID}`)
+        .then((response) => {
+          if (response.status === 201) {
+            setTasks((prevTasks) =>
+              prevTasks.filter((task) => task._id !== taskID)
+            );
+            notifySuccess("Successfully Deleted");
+          } else {
+            notifyError("Deletion Unsuccessful");
+            console.error(response.statusText);
+          }
+        })
+        .catch((err) => {
+          notifyError("Deletion Unsuccessful");
+          console.error(err.message);
+        });
     }
   };
 
-  const handleDragEnd = (result) => {
-    // Check if dropped outside a droppable
-    if (!result.destination) return;
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return; // If there's no destination, exit
 
     const { source, destination } = result;
 
-    // If the source and destination are the same, return early
+    // If the item was dropped in the same position, do nothing
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
@@ -111,33 +107,48 @@ const Task = () => {
       return;
     }
 
-    // Get the dragged task
-    const draggedTask = tasks[source.index];
+    // Create a new array based on the existing tasks
+    const newTasks = Array.from(tasks);
 
-    // Update task status based on destination droppable area
+    // Remove the dragged task from its original position
+    const [removedTask] = newTasks.splice(source.index, 1);
+
+    // Update the task's status based on its new droppableId
     const updatedTask = {
-      ...draggedTask,
-      status: destination.droppableId,
+      ...removedTask,
+      status: destination.droppableId, // Update the status to the new column
     };
 
-    // Create a new list of tasks without the dragged task
-    const updatedTasks = Array.from(tasks);
-    updatedTasks.splice(source.index, 1); // Remove the task from the source index
+    // Insert the updated task into the new position
+    newTasks.splice(destination.index, 0, updatedTask);
 
-    // Insert the task back into the new status list at the destination index
-    updatedTasks.splice(destination.index, 0, updatedTask);
+    // Update the local state
+    setTasks(newTasks); // Set the state with the updated task list
 
-    // Set the updated task list in state
-    setTasks(updatedTasks);
+    // Now update the backend
+    try {
+      await axios
+        .put(
+          `${process.env.REACT_APP_API_LINK}/tasks/update-status/${removedTask._id}`,
+          {
+            status: updatedTask.status,
+          }
+        )
+        .then((response) => {
+          notifySuccess("Successfully Updated");
+        });
+    } catch (error) {
+      console.error("Error updating task status:", error);
+      setTasks(tasks); // Optionally revert state if there's an error
+    }
   };
 
   const categorizedTasks = {
-    pending: tasks.filter((task) => task.status === "Pending"),
-    inProgress: tasks.filter((task) => task.status === "In Progress"),
-    completed: tasks.filter((task) => task.status === "Completed"),
+    pending: tasks.filter((task) => task.status === "pending"),
+    inProgress: tasks.filter((task) => task.status === "inProgress"),
+    completed: tasks.filter((task) => task.status === "completed"),
   };
 
-  useEffect(() => {});
   return (
     <div className="px-3 mt-8">
       <div className="flex justify-between">
@@ -160,6 +171,7 @@ const Task = () => {
           onClose={closeModal}
           notifySuccess={notifySuccess}
           notifyError={notifyError}
+          refresh={fetchTasks}
         />
       )}
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -170,9 +182,11 @@ const Task = () => {
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="border p-4 rounded-md w-full"
+                  className="border p-4 rounded-md w-full bg-gray-100 shadow-md"
                 >
-                  <h2 className="font-bold text-lg capitalize">{key}</h2>
+                  <h2 className="font-bold text-lg capitalize text-center mb-4 text-gray-700">
+                    {key}
+                  </h2>
                   {tasks.map((task, index) => (
                     <Draggable
                       key={task._id}
@@ -184,27 +198,56 @@ const Task = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className="bg-white p-2 rounded-md shadow mt-2 flex items-center"
+                          className="bg-white p-4 rounded-lg shadow-lg mt-3 flex flex-col"
                         >
-                          <img
-                            src={task.profilePicture}
-                            alt="Profile"
-                            className="w-10 h-10 rounded-full mr-2"
-                          />
-                          <div className="flex-1">
-                            <h3 className="font-semibold">{task.title}</h3>
-                            <p>{task.description}</p>
-                            <p className="text-sm">
-                              Deadline: {task.deadline} | Priority:{" "}
-                              {task.priority}
-                            </p>
-                          </div>
-                          <div className="flex flex-col justify-between">
-                            <button onClick={() => openModal(task)}>
-                              <EditOutlinedIcon />
+                          <h3 className="font-semibold text-blue-600 mb-1">
+                            {task.title}
+                          </h3>
+                          <p className="text-gray-700 text-sm mb-2">
+                            {task.description}
+                          </p>
+                          <p className="text-sm text-gray-500 mb-3">
+                            Deadline:{" "}
+                            <span className="font-semibold text-gray-800">
+                              {new Date(task.dueDate).toLocaleString("en-US", {
+                                month: "long",
+                                day: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                                hour12: true,
+                              })}
+                            </span>
+                          </p>
+                          <p
+                            className={`text-sm font-semibold ${
+                              task.priority === "high"
+                                ? "text-red-500"
+                                : task.priority === "medium"
+                                ? "text-yellow-500"
+                                : "text-green-500"
+                            }`}
+                          >
+                            Priority:{" "}
+                            {task.priority[0].toUpperCase() +
+                              task.priority.slice(1).toLowerCase()}
+                          </p>
+                          <p className="text-sm text-gray-700">
+                            Assigned to:
+                            <span className="font-semibold">
+                              {userMap[task.user]}
+                            </span>
+                          </p>
+                          <div className="flex justify-end mt-4 border-t pt-2">
+                            <button
+                              onClick={() => openModal(task)}
+                              className="mr-2"
+                            >
+                              <EditOutlinedIcon className="text-blue-500 hover:text-blue-600" />
                             </button>
                             <button onClick={() => handleDelete(task._id)}>
-                              <DeleteOutlineOutlinedIcon />
+                              <DeleteOutlineOutlinedIcon className="text-red-500 hover:text-red-600" />
                             </button>
                           </div>
                         </div>

@@ -14,6 +14,9 @@ router.post("/", TaskController.taskCreate);
 // Update a task by ID
 router.put("/:id", TaskController.taskUpdateById);
 
+// Drag and drop update of status
+router.put("/update-status/:id", TaskController.handleDragAndDrop);
+
 // Delete task by ID
 router.delete("/:id", TaskController.deleteTaskById);
 

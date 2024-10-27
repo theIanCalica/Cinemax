@@ -21,18 +21,22 @@ const Task = ({
   const [users, setUsers] = useState([]);
   const [showEmployeeSelect, setShowEmployeeSelect] = useState(false);
   const user = getUser();
+
   const {
     register,
     handleSubmit,
     control,
     formState: { errors, touchedFields },
+    setValue,
+    reset,
   } = useForm({
     defaultValues: {
       title: taskToEdit?.title || "",
       description: taskToEdit?.description || "",
-      priority: taskToEdit?.priority || null,
+      priority: taskToEdit?.status || null,
       dueDate: taskToEdit?.dueDate || null,
       isAssigned: true,
+      assignedEmployee: null,
     },
   });
 
@@ -40,19 +44,14 @@ const Task = ({
     axios
       .get(`${process.env.REACT_APP_API_LINK}/users/employees`)
       .then((response) => {
-        // Log the response to check its structure
-        console.log("API Response:", response.data);
-
-        // Check if response.data is an array
         const usersData = Array.isArray(response.data)
           ? response.data
           : response.data.data;
 
-        // Ensure usersData is an array before mapping
         if (Array.isArray(usersData)) {
           const userOptions = usersData.map((user) => ({
             value: user._id,
-            label: user.fname + " " + user.lname,
+            label: `${user.fname} ${user.lname}`,
           }));
           setUsers(userOptions);
         } else {
@@ -74,17 +73,14 @@ const Task = ({
   ];
 
   const onSubmit = (data) => {
-    let task = {};
-    if (data.isAssigned === true) {
-      task = {
-        title: data.title,
-        description: data.description,
-        priority: data.priority.value,
-        dueDate: data.dueDate.toISOString(),
-        user: user._id,
-      };
-      console.log(task);
-    }
+    console.log(data.assignedEmployee.value);
+    let task = {
+      title: data.title,
+      description: data.description,
+      priority: data.priority.value,
+      dueDate: data.dueDate.toISOString(),
+      user: data.isAssigned ? user._id : data.assignedEmployee.value,
+    };
 
     const url = isEditing
       ? `${process.env.REACT_APP_API_LINK}/tasks/${taskToEdit._id}`
@@ -104,6 +100,7 @@ const Task = ({
           isEditing ? "Task updated successfully" : "Task created successfully"
         );
         refresh();
+        reset();
         onClose();
       })
       .catch((error) => {
@@ -118,6 +115,30 @@ const Task = ({
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    const selectedUser = users.find((user) => user.value === taskToEdit.user);
+
+    if (isEditing) {
+      reset({
+        title: taskToEdit.title || "",
+        description: taskToEdit.description || "",
+        priority: taskToEdit.priority
+          ? {
+              value: taskToEdit.priority,
+              label:
+                taskToEdit.priority[0].toUpperCase() +
+                taskToEdit.priority.slice(1).toLowerCase(),
+            }
+          : null,
+        dueDate: taskToEdit.dueDate ? new Date(taskToEdit.dueDate) : null,
+        isAssigned: taskToEdit.user === user._id ? true : false,
+        assignedEmployee: selectedUser || null,
+      });
+      setShowEmployeeSelect(taskToEdit.user !== user._id);
+    }
+  }, [taskToEdit, isEditing, reset, users, user._id]);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
@@ -260,44 +281,24 @@ const Task = ({
             </label>
             <Controller
               name="dueDate"
-              rules={{ required: "Due Date is required" }}
               control={control}
+              rules={{ required: "Please enter due date" }}
               render={({ field }) => (
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <Box
-                    sx={{
-                      width: 300,
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "8px",
-                        "& fieldset": {
-                          borderColor: errors.dueDate ? "#f87171" : "#e5e7eb",
-                        },
-                        "&:hover fieldset": {
-                          borderColor: errors.dueDate ? "#f87171" : "#0056b3",
-                        },
-                      },
+                  <DateTimePicker
+                    {...field}
+                    onChange={(newValue) => {
+                      field.onChange(newValue);
                     }}
-                  >
-                    <DateTimePicker
-                      {...field}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          id="dueDate"
-                          sx={{
-                            "& .MuiInputBase-root": {
-                              border: `1px solid ${
-                                errors.dueDate ? "#f87171" : "#e5e7eb"
-                              }`,
-                            },
-                            "& .MuiFormLabel-root": {
-                              color: errors.dueDate ? "#f87171" : "#6b7280",
-                            },
-                          }}
-                        />
-                      )}
-                    />
-                  </Box>
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        error={!!errors.dueDate}
+                        fullWidth
+                        variant="outlined"
+                      />
+                    )}
+                  />
                 </LocalizationProvider>
               )}
             />
@@ -308,13 +309,41 @@ const Task = ({
             )}
           </div>
 
+          {/* Assign to Me Checkbox */}
+          <Controller
+            name="isAssigned"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    {...field}
+                    checked={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.checked); // Update the form state
+                      setShowEmployeeSelect(!e.target.checked); // Show/hide employee select
+                      if (e.target.checked) {
+                        setValue("assignedEmployee", null); // Clear assigned employee when checked
+                      }
+                    }}
+                  />
+                }
+                label="Assign to me"
+              />
+            )}
+          />
+
+          {/* Assigned Employee Select */}
           {showEmployeeSelect && (
             <div className="mb-4 col-span-1 md:col-span-2">
-              <label htmlFor="isAssigned" className="block text-gray-700 mb-2">
+              <label
+                htmlFor="assignedEmployee"
+                className="block text-gray-700 mb-2"
+              >
                 Assign to Employee
               </label>
               <Controller
-                name="isAssigned"
+                name="assignedEmployee"
                 control={control}
                 rules={{ required: "Please select an employee" }}
                 render={({ field }) => (
@@ -324,6 +353,9 @@ const Task = ({
                     isClearable
                     placeholder="Select an employee"
                     classNamePrefix="react-select"
+                    onChange={(selectedOption) => {
+                      field.onChange(selectedOption);
+                    }}
                   />
                 )}
               />
@@ -335,30 +367,8 @@ const Task = ({
             </div>
           )}
 
-          {/* Completed Checkbox */}
-          <div className="mb-4 col-span-1 md:col-span-2">
-            <Controller
-              name="isAssigned"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      {...field}
-                      checked={field.value}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setShowEmployeeSelect(!e.target.checked);
-                      }}
-                    />
-                  }
-                  label="Assign to me"
-                />
-              )}
-            />
-          </div>
-
-          <div className="flex justify-end col-span-1 md:col-span-2">
+          {/* Submit Button */}
+          <div className="col-span-1 md:col-span-2">
             <button
               type="button"
               onClick={onClose}

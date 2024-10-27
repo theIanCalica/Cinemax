@@ -47,7 +47,7 @@ exports.countUsers = async (req, res) => {
 exports.getEmployees = async (req, res) => {
   try {
     const employees = await User.find(
-      { role: "service crew" },
+      { role: "serviceCrew" },
       "fname lname role"
     );
     res.status(200).json({

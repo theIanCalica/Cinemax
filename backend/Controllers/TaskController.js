@@ -52,7 +52,7 @@ exports.taskCreate = async (req, res) => {
 exports.taskUpdateById = async (req, res) => {
   try {
     const { title, description, deadline, user, status, priority } = req.body;
-    const task = await Task.findByAndUpdate(
+    const task = await Task.findByIdAndUpdate(
       req.params.id,
       { title, description, deadline, user, status, priority },
       { new: true }
@@ -63,7 +63,7 @@ exports.taskUpdateById = async (req, res) => {
     }
 
     res.status(201).json(task);
-  } catch {
+  } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
@@ -72,7 +72,20 @@ exports.taskUpdateById = async (req, res) => {
 // Handle drag and drop of task
 exports.handleDragAndDrop = async (req, res) => {
   try {
-    const data = {};
+    const { status } = req.body;
+    const { id } = req.params;
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      id, // ID of the task to update
+      { status }, // Update with new status
+      { new: true } // Return the updated task
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({ msg: "Task not found" }); // Handle case where task is not found
+    }
+
+    res.status(200).json(updatedTask);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -82,7 +95,7 @@ exports.handleDragAndDrop = async (req, res) => {
 // Delete task by ID
 exports.deleteTaskById = async (req, res) => {
   try {
-    const task = await Task.FindByIdAndDelete(req.params.id);
+    const task = await Task.findByIdAndDelete(req.params.id);
 
     if (!task) {
       return res.status(404).json({ msg: "Task not found" });

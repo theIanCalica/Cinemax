@@ -28,11 +28,12 @@ const TaskSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      default: "66fc115389197d34aa84b58a",
     },
     status: {
       type: String,
-      enum: ["Pending", "In Progress", "Completed"],
-      default: "Pending",
+      enum: ["pending", "inProgress", "completed"],
+      default: "pending",
     },
     priority: {
       type: String,
