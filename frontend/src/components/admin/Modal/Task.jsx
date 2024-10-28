@@ -7,7 +7,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TextField, Checkbox, FormControlLabel } from "@mui/material";
 import axios from "axios";
 import { getBorderColor } from "../../../Utils/borderColor";
-import { Box } from "@mui/material";
 import { getUser } from "../../../Utils/helpers";
 
 const Task = ({

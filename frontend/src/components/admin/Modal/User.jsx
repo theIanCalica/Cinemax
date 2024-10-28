@@ -9,7 +9,6 @@ import { getBorderColor } from "../../../Utils/borderColor";
 import { Box } from "@mui/material";
 import axios from "axios";
 import dayjs from "dayjs";
-import { debounce } from "lodash";
 import { getUser } from "../../../Utils/helpers";
 
 const User = ({
@@ -186,6 +185,7 @@ const User = ({
               </p>
             )}
           </div>
+          {/* Date of Birth */}
           <div className="mb-4">
             <label htmlFor="dob" className="block text-gray-700 mb-2">
               Date of Birth

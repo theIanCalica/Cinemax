@@ -282,6 +282,7 @@ const Food = ({
               </p>
             )}
           </div>
+          {/* Image filepond */}
           <div className="mb-4 col-span-2">
             <label className="block text-gray-700 mb-2">Image</label>
             <Controller
