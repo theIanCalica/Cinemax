@@ -9,6 +9,7 @@ import HomePage from "./pages/customer/index/index";
 import AboutPage from "./pages/customer/About/AboutPage";
 import ContactPage from "./pages/customer/ContactPage";
 import Email from "./pages/Emails/ContactUs";
+import FoodCategory from "./pages/customer/FoodCategory";
 import ProtectedRoute from "./Utils/authRoutes/ProtectedRoute";
 
 // Admin Pages
@@ -65,6 +66,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />}></Route>
         <Route path="/email" element={<Email />} />
         <Route path="/login" element={<SigninPage />}></Route>
+        <Route path="/food/category" element={<FoodCategory />}></Route>
         {/* Routes for crew */}
         <Route
           path="/crew"

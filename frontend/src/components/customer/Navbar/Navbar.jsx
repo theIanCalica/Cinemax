@@ -12,6 +12,7 @@ const Navbar = () => {
   const [dropdowns, setDropdowns] = useState({
     movies: false,
     announcements: false,
+    food: false, // Added food dropdown
   });
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -21,7 +22,9 @@ const Navbar = () => {
     setDropdowns((prev) => ({
       ...prev,
       [dropdown]: !prev[dropdown],
-      ...(dropdown === "movies" ? { announcements: false } : { movies: false }),
+      movies: dropdown === "movies" ? !prev[dropdown] : false,
+      announcements: dropdown === "announcements" ? !prev[dropdown] : false,
+      food: dropdown === "food" ? !prev[dropdown] : false,
     }));
   };
 
@@ -72,19 +75,11 @@ const Navbar = () => {
           ))}
         </div>
         <div className="hidden md:flex space-x-4 items-center">
-          <button
-            onClick={() => {
-              closeSidebar();
-            }}
-          >
+          <button onClick={closeSidebar}>
             <SearchIcon className="text-white hover:text-themeYellow" />
           </button>
           <NavLink to={"/login"}>
-            <button
-              onClick={() => {
-                closeSidebar();
-              }}
-            >
+            <button onClick={closeSidebar}>
               <PersonIcon className="text-white hover:text-themeYellow" />
             </button>
           </NavLink>
@@ -119,7 +114,7 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          {["movies", "announcements"].map((dropdown) => (
+          {["movies", "announcements", "food"].map((dropdown) => (
             <div key={dropdown} className="w-full m-0 p-0">
               <button
                 className="flex w-full justify-between items-center pb-2 font-bold border-b text-left border-themeBorderBottom hover:text-slate-400 text-white"
@@ -138,33 +133,60 @@ const Navbar = () => {
               {dropdowns[dropdown] && (
                 <div className="dropdown-content mt-2">
                   <ul className="text-white p-2 rounded">
-                    <li>
-                      <NavLink
-                        to={`/movies/action`}
-                        className="block p-2 hover:text-slate-400"
-                        onClick={closeSidebar}
-                      >
-                        Now Showing
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to={`/movies/comedy`}
-                        className="block p-2 hover:text-slate-400"
-                        onClick={closeSidebar}
-                      >
-                        Coming Soon
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to={`/movies/drama`}
-                        className="block p-2 hover:text-slate-400"
-                        onClick={closeSidebar}
-                      >
-                        All Movies
-                      </NavLink>
-                    </li>
+                    {dropdown === "movies" && (
+                      <>
+                        <li>
+                          <NavLink
+                            to={`/movies/action`}
+                            className="block p-2 hover:text-slate-400"
+                            onClick={closeSidebar}
+                          >
+                            Now Showing
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to={`/movies/comedy`}
+                            className="block p-2 hover:text-slate-400"
+                            onClick={closeSidebar}
+                          >
+                            Coming Soon
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to={`/movies/drama`}
+                            className="block p-2 hover:text-slate-400"
+                            onClick={closeSidebar}
+                          >
+                            All Movies
+                          </NavLink>
+                        </li>
+                      </>
+                    )}
+
+                    {dropdown === "food" && (
+                      <>
+                        <li>
+                          <NavLink
+                            to={`/food/category`}
+                            className="block p-2 hover:text-slate-400"
+                            onClick={closeSidebar}
+                          >
+                            Food Category
+                          </NavLink>
+                        </li>
+                        <li>
+                          <NavLink
+                            to={`/food/all`}
+                            className="block p-2 hover:text-slate-400"
+                            onClick={closeSidebar}
+                          >
+                            Foods
+                          </NavLink>
+                        </li>
+                      </>
+                    )}
                   </ul>
                 </div>
               )}
