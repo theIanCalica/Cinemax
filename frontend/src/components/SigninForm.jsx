@@ -9,7 +9,6 @@ import {
 import React from "react";
 import { ScreenMode } from "../pages/SigninPage";
 import FacebookIcon from "@mui/icons-material/Facebook";
-import GoogleIcon from "@mui/icons-material/Google";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -147,7 +146,7 @@ const SigninForm = ({ onSwitchMode }) => {
               Welcome back
             </Typography>
             <Typography color={colors.grey[600]}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit
+              Please sign in to continue accessing your account.
             </Typography>
           </Stack>
 
