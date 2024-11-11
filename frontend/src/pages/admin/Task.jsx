@@ -15,6 +15,7 @@ const Task = () => {
   const [currentTask, setCurrentTask] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [users, setUsers] = useState([]);
+
   const fetchTasks = () => {
     axios
       .get(`${process.env.REACT_APP_API_LINK}/tasks`)
@@ -45,10 +46,9 @@ const Task = () => {
 
   const userMap = {};
   users.forEach((user) => {
-    userMap[user._id] = " " + user.fname + " " + user.lname; // Assuming user object has _id and name properties
+    userMap[user._id] = " " + user.fname + " " + user.lname;
   });
 
-  // Open and close modal
   const openModal = (task = null) => {
     setCurrentTask(task);
     setIsEditing(!!task);
@@ -95,11 +95,10 @@ const Task = () => {
   };
 
   const handleDragEnd = async (result) => {
-    if (!result.destination) return; // If there's no destination, exit
+    if (!result.destination) return;
 
     const { source, destination } = result;
 
-    // If the item was dropped in the same position, do nothing
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
@@ -107,39 +106,26 @@ const Task = () => {
       return;
     }
 
-    // Create a new array based on the existing tasks
     const newTasks = Array.from(tasks);
-
-    // Remove the dragged task from its original position
     const [removedTask] = newTasks.splice(source.index, 1);
-
-    // Update the task's status based on its new droppableId
     const updatedTask = {
       ...removedTask,
-      status: destination.droppableId, // Update the status to the new column
+      status: destination.droppableId,
     };
-
-    // Insert the updated task into the new position
     newTasks.splice(destination.index, 0, updatedTask);
+    setTasks(newTasks);
 
-    // Update the local state
-    setTasks(newTasks); // Set the state with the updated task list
-
-    // Now update the backend
     try {
-      await axios
-        .put(
-          `${process.env.REACT_APP_API_LINK}/tasks/update-status/${removedTask._id}`,
-          {
-            status: updatedTask.status,
-          }
-        )
-        .then((response) => {
-          notifySuccess("Successfully Updated");
-        });
+      await axios.put(
+        `${process.env.REACT_APP_API_LINK}/tasks/update-status/${removedTask._id}`,
+        {
+          status: updatedTask.status,
+        }
+      );
+      notifySuccess("Successfully Updated");
     } catch (error) {
       console.error("Error updating task status:", error);
-      setTasks(tasks); // Optionally revert state if there's an error
+      setTasks(tasks);
     }
   };
 
@@ -151,16 +137,16 @@ const Task = () => {
 
   return (
     <div className="px-3 mt-8">
-      <div className="flex justify-between">
+      <div className="flex flex-col md:flex-row justify-between">
         <h1 className="font-bold font-serif text-2xl">Tasks</h1>
-        <p style={{ fontSize: "13.5px" }}>
+        <p className="text-sm text-center md:text-right mt-2 md:mt-0">
           <span className="text-blue-500 hover:underline">Home</span> /
           <span className="text-gray-500">Tasks</span>
         </p>
       </div>
       <button
         onClick={() => openModal()}
-        className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+        className="mt-5 px-4 py-2 w-full md:w-auto rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
       >
         Add Task
       </button>
@@ -175,14 +161,14 @@ const Task = () => {
         />
       )}
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex space-x-4 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
           {Object.entries(categorizedTasks).map(([key, tasks]) => (
             <Droppable key={key} droppableId={key}>
               {(provided) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="border p-4 rounded-md w-full bg-gray-100 shadow-md"
+                  className="border p-4 rounded-md bg-gray-100 shadow-md"
                 >
                   <h2 className="font-bold text-lg capitalize text-center mb-4 text-gray-700">
                     {key}

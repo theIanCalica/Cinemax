@@ -92,7 +92,7 @@ function App() {
           <Route path="email" element={<EmailAdmin />}></Route>
           <Route path="profile" element={<Profile />}></Route>
           <Route path="emails"></Route>
-          <Route path="messages" element={<Message />}></Route>
+          {/* <Route path="messages" element={<Message />}></Route> */}
           <Route path="contacts" element={<Contacts />}></Route>
           <Route path="food" element={null}>
             <Route path="category" element={<Category />} />

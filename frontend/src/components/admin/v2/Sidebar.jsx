@@ -508,7 +508,7 @@ const Sidebar = ({ isMinimized }) => {
         </Link>
 
         {/* Message */}
-        <Link to="messages">
+        {/* <Link to="messages">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
             onMouseOver={() => setHovered("message")}
@@ -552,7 +552,7 @@ const Sidebar = ({ isMinimized }) => {
               Message
             </span>
           </li>
-        </Link>
+        </Link> */}
 
         {/* Logout */}
         <li

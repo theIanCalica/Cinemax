@@ -13,15 +13,15 @@ import Swal from "sweetalert2";
 
 const Navbar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const user = getUser();
 
-  const handleSearch = () => {
-    console.log("Search for:", searchTerm);
-  };
+  // const handleSearch = () => {
+  //   console.log("Search for:", searchTerm);
+  // };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -73,6 +73,7 @@ const Navbar = ({ toggleSidebar }) => {
       </div>
       <div className="ml-auto flex items-center w-full">
         {/* Search */}
+        {/*         
         <div
           className="flex items-center h-12 w-80 overflow-hidden"
           style={{ backgroundColor: "#EEF0FA" }}
@@ -101,72 +102,14 @@ const Navbar = ({ toggleSidebar }) => {
             style={{ backgroundColor: "#EEF0FA" }}
           />
         </div>
-
+        */}
         {/* Right Side Icons */}
         <div className="flex items-center ml-auto space-x-4">
-          <div className="relative">
-            <button
-              onClick={toggleDropdown}
-              className="text-black flex gap-1 items-center"
-            >
-              <img
-                src={
-                  selectedLanguage === "English"
-                    ? "https://flagcdn.com/h20/um.png"
-                    : "https://flagcdn.com/h20/ph.png"
-                }
-                srcSet={
-                  selectedLanguage === "English"
-                    ? "https://flagcdn.com/h40/um.png 2x, https://flagcdn.com/h60/um.png 3x"
-                    : "https://flagcdn.com/h40/ph.png 2x, https://flagcdn.com/h60/ph.png 3x"
-                }
-                height="20"
-                alt={selectedLanguage}
-                className="mr-3"
-              />
-              <span className="text-sm">{selectedLanguage}</span>
-              <span className="ml-1">&#9662;</span> {/* Down arrow */}
-            </button>
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-300 rounded shadow-lg">
-                <button
-                  onClick={() => handleLanguageChange("English")}
-                  className="flex gap-4 px-4 py-3 text-gray-700 hover:bg-gray-100 w-full text-left"
-                >
-                  <img
-                    src="https://flagcdn.com/h20/um.png"
-                    srcSet="https://flagcdn.com/h40/um.png 2x, https://flagcdn.com/h60/um.png 3x"
-                    height="20"
-                    alt="English"
-                  />
-                  English
-                </button>
-
-                <button
-                  onClick={() => handleLanguageChange("Tagalog")}
-                  className="flex gap-4 px-4 py-3 text-gray-700 hover:bg-gray-100 w-full text-left"
-                >
-                  <img
-                    src="https://flagcdn.com/h20/ph.png"
-                    srcSet="https://flagcdn.com/h40/ph.png 2x, https://flagcdn.com/h60/ph.png 3x"
-                    height="20"
-                    alt="Tagalog"
-                  />
-                  Tagalog
-                </button>
-              </div>
-            )}
-          </div>
-
           <NavLink to={"/admin/email"}>
             <button className="text-black">
               <EmailOutlinedIcon style={{ fontSize: "20px" }} />
             </button>
           </NavLink>
-
-          <button className="text-black">
-            <NotificationsNoneOutlinedIcon style={{ fontSize: "20px" }} />
-          </button>
 
           <div className="relative">
             <button
