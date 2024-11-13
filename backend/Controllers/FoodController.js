@@ -1,6 +1,7 @@
 const Food = require("../Models/Food");
 const cloudinary = require("../utils/Cloudinary");
 const upload = require("../middleware/multer");
+const Category = require("../Models/Category");
 
 // Get all foods
 exports.getAllFoods = async (req, res) => {
@@ -28,45 +29,54 @@ exports.getFoodById = async (req, res) => {
   }
 };
 
-// Add Food
+// Add food
 exports.createFood = [
-  upload.single("image"),
+  upload.array("images"), // No limit on number of files
   async (req, res) => {
     try {
-      const { category, name, price, availability, quantity } = req.body;
-      console.log(category);
-      console.log(availability);
+      const { category, name, price, description, availability, quantity } =
+        req.body;
+
       if (!category || !availability || !name || !price) {
         return res
           .status(400)
           .json({ msg: "Please provide all required fields" });
       }
-
-      if (!req.file) {
-        return res.status(400).json({ msg: "File is required." });
+      const categoryObj = await Category.findById(category);
+      if (!req.files || req.files.length === 0) {
+        return res
+          .status(400)
+          .json({ msg: "At least one image file is required." });
       }
 
       const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-      if (!allowedTypes.includes(req.file.mimetype)) {
-        return res.status(400).json({
-          msg: "Invalid file type. Only JPEG, PNG, and GIF are allowed.",
-        });
-      }
+      const imageUploads = await Promise.all(
+        req.files.map((file) => {
+          if (!allowedTypes.includes(file.mimetype)) {
+            throw new Error(
+              "Invalid file type. Only JPEG, PNG, and GIF are allowed."
+            );
+          }
+          return cloudinary.uploader.upload(file.path, { folder: "foods" });
+        })
+      );
 
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "foods",
-      });
+      const images = imageUploads.map((result) => ({
+        public_id: result.public_id,
+        url: result.secure_url,
+      }));
 
       const newFood = new Food({
-        category,
+        category: {
+          id: categoryObj.id,
+          name: categoryObj.name,
+        },
         name,
         price,
+        description,
         availability,
         quantity,
-        image: {
-          public_id: result.public_id,
-          url: result.secure_url,
-        },
+        images,
       });
 
       const savedFood = await newFood.save();
@@ -78,34 +88,38 @@ exports.createFood = [
   },
 ];
 
+// Update food
 exports.updateFoodById = [
-  upload.single("image"),
+  upload.array("images"), // No limit on number of files
   async (req, res) => {
     try {
       const currentFood = await Food.findById(req.params.id);
-
       const data = {
         category: req.body.category,
         name: req.body.name,
         price: req.body.price,
-        available: req.body.available,
+        availability: req.body.availability,
       };
 
-      if (req.body.image !== "") {
-        const ImgId = currentFood.image.public_id;
+      if (req.files && req.files.length > 0) {
+        // Delete old images
+        await Promise.all(
+          currentFood.images.map((img) =>
+            cloudinary.uploader.destroy(img.public_id)
+          )
+        );
 
-        if (ImgId) {
-          await cloudinary.uploader.destroy(ImgId);
-        }
+        // Upload new images
+        const imageUploads = await Promise.all(
+          req.files.map((file) => {
+            return cloudinary.uploader.upload(file.path, { folder: "foods" });
+          })
+        );
 
-        const newFood = await cloudinary.uploader.upload(req.body.image, {
-          foler: "foods",
-        });
-
-        data.image = {
-          public_id: newFood.public_id,
-          url: newFood.secure_url,
-        };
+        data.images = imageUploads.map((result) => ({
+          public_id: result.public_id,
+          url: result.secure_url,
+        }));
       }
 
       const food = await Food.findByIdAndUpdate(req.params.id, data, {
@@ -127,20 +141,21 @@ exports.updateFoodById = [
 // Delete a food by ID
 exports.deleteFoodById = async (req, res) => {
   try {
+    // Find and delete the food by ID
     const food = await Food.findByIdAndDelete(req.params.id);
-
-    // Retrieve image id
-    const ImgId = food.image.public_id;
-
-    if (ImgId) {
-      await cloudinary.uploader.destroy(ImgId);
-    }
 
     if (!food) {
       return res.status(404).json({ msg: "Food not found" });
     }
 
-    res.status(201).json({ msg: "Successfully deleted" });
+    // Iterate over each image in the images array to delete them from Cloudinary
+    for (const image of food.images) {
+      if (image.public_id) {
+        await cloudinary.uploader.destroy(image.public_id);
+      }
+    }
+
+    res.status(200).json({ msg: "Successfully deleted" });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error!");

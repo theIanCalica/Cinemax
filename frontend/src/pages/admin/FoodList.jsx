@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import { notifySuccess, notifyError } from "../../Utils/notification";
 import FoodModal from "../../components/admin/Modal/Food";
+import FoodImagesModal from "../../components/admin/Modal/FoodImages";
 import axios from "axios";
 import { delay } from "../../Utils/helpers";
 
@@ -15,7 +16,8 @@ const FoodList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentFood, setCurrentFood] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedFoods, setSelectedFoods] = useState([]);
+  const [isImagesModalOpen, setIsImagesModalOpen] = useState(false);
+  const [selectedFood, setSelectedFood] = useState(null);
 
   const fetchFoods = async () => {
     try {
@@ -23,7 +25,6 @@ const FoodList = () => {
         axios.get(`${process.env.REACT_APP_API_LINK}/foods`),
         delay(1000),
       ]);
-      console.log(response.data);
       setFoods(response.data);
     } catch (err) {
       notifyError("Error Fetching foods");
@@ -47,6 +48,16 @@ const FoodList = () => {
     setIsEditing(false);
   };
 
+  const openImagesModal = (food) => {
+    setSelectedFood(food);
+    setIsImagesModalOpen(true);
+  };
+
+  const closeImagesModal = () => {
+    setIsImagesModalOpen(false);
+    setSelectedFood(null);
+  };
+
   const handleDelete = (ids) => {
     Swal.fire({
       title: "Are you sure?",
@@ -64,7 +75,7 @@ const FoodList = () => {
 
         Promise.all(deleteRequests)
           .then((responses) => {
-            if (responses.every((response) => response.status === 201)) {
+            if (responses.every((response) => response.status === 200)) {
               notifySuccess("Successfully Deleted");
               setFoods((prevFoods) =>
                 prevFoods.filter((food) => !ids.includes(food._id))
@@ -84,7 +95,13 @@ const FoodList = () => {
   const columns = [
     { name: "_id", label: "ID", options: { display: false } },
     { name: "name", label: "Name" },
-    { name: "category.name", label: "Category" },
+    {
+      name: "category",
+      label: "Category",
+      options: {
+        customBodyRender: (value) => (value ? value.name : "N/A"),
+      },
+    },
     { name: "price", label: "Price" },
     {
       name: "available",
@@ -94,12 +111,26 @@ const FoodList = () => {
       },
     },
     {
-      name: "image.url",
+      name: "images",
       label: "Image",
       options: {
-        customBodyRender: (url, { rowData }) => (
-          <img src={url} alt={rowData[1]} height={50} width={50} />
-        ),
+        customBodyRender: (images, { rowData }) => {
+          const imageUrl = images && images.length > 0 ? images[0].url : null;
+          return imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={rowData[1]}
+              height={100}
+              width={100}
+              className="cursor-pointer"
+              onClick={() =>
+                openImagesModal(foods.find((food) => food._id === rowData[0]))
+              }
+            />
+          ) : (
+            "No image"
+          );
+        },
       },
     },
     {
@@ -130,38 +161,58 @@ const FoodList = () => {
       const idsToDelete = rowsDeleted.data.map((d) => foods[d.dataIndex]._id);
       handleDelete(idsToDelete);
     },
+    expandableRows: true,
+    renderExpandableRow: (rowData, rowMeta) => {
+      const food = foods[rowMeta.dataIndex];
+      return (
+        <tr>
+          <td colSpan={rowData.length + 1}>
+            <strong>Description:</strong>{" "}
+            {food.description || "No description available"}
+          </td>
+        </tr>
+      );
+    },
   };
 
   return (
-    <div className="px-3 mt-8">
+    <div className="px-3 mt-8 relative">
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black opacity-50 z-40"
+          onClick={closeModal}
+        ></div>
+      )}
+
       <div className="flex justify-between">
-        <h1 className="font-bold font-serif text-2xl">List of food</h1>
+        <h1 className="font-bold font-serif text-2xl">List of Food</h1>
       </div>
 
       <button
         onClick={() => openModal()}
-        className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+        className="my-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
       >
         Add Food
       </button>
 
       {isModalOpen && (
-        <FoodModal
-          foodToEdit={currentFood}
-          isEditing={isEditing}
-          onClose={closeModal}
-          notifySuccess={notifySuccess}
-          notifyError={notifyError}
-          refresh={fetchFoods}
-        />
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <FoodModal
+            foodToEdit={currentFood}
+            isEditing={isEditing}
+            onClose={closeModal}
+            notifySuccess={notifySuccess}
+            notifyError={notifyError}
+            refresh={fetchFoods}
+          />
+        </div>
       )}
 
-      <MUIDataTable
-        title={"Food List"}
-        data={foods}
-        columns={columns}
-        options={options}
-      />
+      {isImagesModalOpen && selectedFood && (
+        <FoodImagesModal food={selectedFood} onClose={closeImagesModal} />
+      )}
+
+      <MUIDataTable data={foods} columns={columns} options={options} />
 
       <ToastContainer />
     </div>

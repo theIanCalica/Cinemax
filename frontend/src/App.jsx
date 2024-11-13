@@ -39,72 +39,64 @@ import CrewLayout from "./components/service-crew/Layout";
 import HomeCrew from "./pages/crew/Home";
 import EmailCrew from "./pages/crew/Email";
 
+// Auth Provider
+import { AuthProvider } from "./contexts/authContext";
+
 function App() {
-  useEffect(() => {
-    window.fbAsyncInit = function () {
-      window.FB.init({
-        appId: process.env.REACT_APP_FACEBOOK_APP_ID, // Replace with your Facebook App ID
-        cookie: true,
-        xfbml: true,
-        version: "v10.0", // Use the latest version
-      });
-    };
-
-    (function (d, s, id) {
-      var js = d.createElement(s);
-      js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js";
-      d.getElementsByTagName("head")[0].appendChild(js);
-    })(document, "script", "facebook-jssdk");
-  }, []);
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/articles" element={<Article />}></Route>
-        <Route path="/about" element={<AboutPage />}></Route>
-        <Route path="/contact" element={<ContactPage />}></Route>
-        <Route path="/email" element={<Email />} />
-        <Route path="/login" element={<SigninPage />}></Route>
-        <Route path="/food/category" element={<FoodCategory />}></Route>
-        {/* Routes for crew */}
-        <Route
-          path="/crew"
-          element={
-            <EmployeeProtectedRoute element={<CrewLayout />} crewOnly={true} />
-          }
-        >
-          <Route index element={<HomeCrew />}></Route>
-          <Route path="profile" element={<Profile />}></Route>
-          <Route path="email" element={<EmailCrew />}></Route>
-          <Route path="food-list" element={<FoodList />}></Route>
-        </Route>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/articles" element={<Article />}></Route>
+          <Route path="/about" element={<AboutPage />}></Route>
+          <Route path="/contact" element={<ContactPage />}></Route>
+          <Route path="/email" element={<Email />} />
+          <Route path="/login" element={<SigninPage />}></Route>
+          <Route path="/food/category" element={<FoodCategory />}></Route>
 
-        {/* Routes for admin */}
-        <Route
-          path="/admin"
-          element={<ProtectedRoute element={<Layout />} adminOnly={true} />}
-        >
-          <Route index element={<HomeAdmin />} />
-          <Route path="task" element={<Task />}></Route>
-          <Route path="users" element={<User />}></Route>
-          <Route path="calendar" element={<Calendar />}></Route>
-          <Route path="email" element={<EmailAdmin />}></Route>
-          <Route path="profile" element={<Profile />}></Route>
-          <Route path="emails"></Route>
-          {/* <Route path="messages" element={<Message />}></Route> */}
-          <Route path="contacts" element={<Contacts />}></Route>
-          <Route path="food" element={null}>
-            <Route path="category" element={<Category />} />
-            <Route path="food-list" element={<FoodList />} />
+          {/* Routes for crew */}
+          <Route
+            path="/crew"
+            element={
+              <EmployeeProtectedRoute
+                element={<CrewLayout />}
+                crewOnly={true}
+              />
+            }
+          >
+            <Route index element={<HomeCrew />}></Route>
+            <Route path="profile" element={<Profile />}></Route>
+            <Route path="email" element={<EmailCrew />}></Route>
+            <Route path="food-list" element={<FoodList />}></Route>
           </Route>
-          <Route path="movie" element={null}>
-            <Route path="genre" element={<Genre />}></Route>
-            <Route path="movie-list" element={<Movie />}></Route>
+
+          {/* Routes for admin */}
+          <Route
+            path="/admin"
+            element={<ProtectedRoute element={<Layout />} adminOnly={true} />}
+          >
+            <Route index element={<HomeAdmin />} />
+            <Route path="task" element={<Task />}></Route>
+            <Route path="users" element={<User />}></Route>
+            <Route path="calendar" element={<Calendar />}></Route>
+            <Route path="email" element={<EmailAdmin />}></Route>
+            <Route path="profile" element={<Profile />}></Route>
+            <Route path="emails"></Route>
+            {/* <Route path="messages" element={<Message />}></Route> */}
+            <Route path="contacts" element={<Contacts />}></Route>
+            <Route path="food" element={null}>
+              <Route path="category" element={<Category />} />
+              <Route path="food-list" element={<FoodList />} />
+            </Route>
+            <Route path="movie" element={null}>
+              <Route path="genre" element={<Genre />}></Route>
+              <Route path="movie-list" element={<Movie />}></Route>
+            </Route>
           </Route>
-        </Route>
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

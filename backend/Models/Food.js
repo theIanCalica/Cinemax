@@ -4,13 +4,25 @@ const Schema = mongoose.Schema;
 const FoodSchema = new Schema(
   {
     category: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
+      id: {
+        type: Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+      },
+      name: {
+        type: String,
+        required: [true, "Category name is required"],
+        trim: true,
+      },
     },
     name: {
       type: String,
       required: [true, "Food is required!"],
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: [true, "Description is required"],
       trim: true,
     },
     quantity: {
@@ -28,16 +40,18 @@ const FoodSchema = new Schema(
       enum: ["available", "unavailable"],
       default: "available",
     },
-    image: {
-      public_id: {
-        type: String,
-        required: true,
+    images: [
+      {
+        public_id: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
       },
-      url: {
-        type: String,
-        required: true,
-      },
-    },
+    ],
   },
   {
     timestamps: true,

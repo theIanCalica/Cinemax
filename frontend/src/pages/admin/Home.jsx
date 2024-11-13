@@ -10,7 +10,7 @@ import TopMovies from "../../components/admin/TopMovies";
 import { notifySuccess } from "../../Utils/notification";
 import { ToastContainer } from "react-toastify";
 import axios from "axios";
-
+import { Link } from "react-router-dom";
 const Home = () => {
   const user = useSelector((state) => state.user.user);
   const loggedIn = useSelector((state) => state.user.loggedIn);
@@ -80,8 +80,9 @@ const Home = () => {
         <BarChart />
 
         <div className="flex justify-between items-center mt-4">
-          <div className="text-blue-500 cursor-pointer hover:underline">
-            View More
+          <div className="text-blue-500 flex justify-between gap-6 cursor-pointer">
+            <Link className="hover:underline">View orders</Link>
+            <Link className="hover:underline">View bookings</Link>
           </div>
 
           <button className="bg-transparent border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">

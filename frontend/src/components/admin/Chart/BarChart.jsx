@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,6 +9,11 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TextField } from "@mui/material";
+import dayjs from "dayjs";
 
 // Register Chart.js components
 ChartJS.register(
@@ -21,7 +26,7 @@ ChartJS.register(
 );
 
 const BarChart = () => {
-  // Data for bookings and order sales (in PHP)
+  // Initial data for bookings and order sales
   const data = {
     labels: [
       "January",
@@ -61,6 +66,24 @@ const BarChart = () => {
     ],
   };
 
+  // State for selected date range (using dayjs)
+  const [startDate, setStartDate] = useState(dayjs("2024-01-01"));
+  const [endDate, setEndDate] = useState(dayjs("2024-12-31"));
+
+  // Filter data based on the selected date range
+  const filteredData = (startDate, endDate) => {
+    const startMonth = startDate.month(); // get the month (0-indexed)
+    const endMonth = endDate.month(); // get the month (0-indexed)
+
+    return {
+      labels: data.labels.slice(startMonth, endMonth + 1),
+      datasets: data.datasets.map((dataset) => ({
+        ...dataset,
+        data: dataset.data.slice(startMonth, endMonth + 1),
+      })),
+    };
+  };
+
   // Chart options with currency formatting
   const options = {
     responsive: true,
@@ -77,9 +100,8 @@ const BarChart = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          // Custom callback for formatting values in PHP
           callback: function (value) {
-            return "₱" + value.toLocaleString(); // Format the value as PHP
+            return "₱" + value.toLocaleString();
           },
         },
       },
@@ -88,7 +110,27 @@ const BarChart = () => {
 
   return (
     <div className="chart-container">
-      <Bar data={data} options={options} />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <div className="date-filter">
+          <label>Start Date: </label>
+          <DatePicker
+            value={startDate}
+            onChange={(date) => setStartDate(date)}
+            renderInput={(params) => <TextField {...params} />}
+            minDate={dayjs("2024-01-01")}
+            maxDate={dayjs("2024-12-31")}
+          />
+          <label>End Date: </label>
+          <DatePicker
+            value={endDate}
+            onChange={(date) => setEndDate(date)}
+            renderInput={(params) => <TextField {...params} />}
+            minDate={startDate}
+            maxDate={dayjs("2024-12-31")}
+          />
+        </div>
+      </LocalizationProvider>
+      <Bar data={filteredData(startDate, endDate)} options={options} />
     </div>
   );
 };

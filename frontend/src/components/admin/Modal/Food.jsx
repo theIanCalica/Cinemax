@@ -69,6 +69,7 @@ const Food = ({
     if (isEditing && foodToEdit) {
       reset({
         name: foodToEdit.name,
+        description: foodToEdit.description,
         price: foodToEdit.price,
         category: categories.find(
           (category) => category.value === foodToEdit.category
@@ -76,10 +77,10 @@ const Food = ({
         availability: options.find(
           (option) => option.value === foodToEdit.status
         ),
-        image: foodToEdit.image.url || [],
+        image: foodToEdit.images.url || [],
         quantity: foodToEdit.quantity,
       });
-      setOriginalImageUrl(foodToEdit.image.url);
+      setOriginalImageUrl(foodToEdit.images.url);
     } else {
       reset({
         name: "",
@@ -97,12 +98,13 @@ const Food = ({
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("price", data.price);
+    formData.append("description", data.description);
     formData.append("quantity", data.quantity);
     formData.append("availability", data.availability.value);
     formData.append("category", data.category.value);
 
     if (data.image && data.image.length > 0) {
-      formData.append("image", data.image[0]);
+      data.image.forEach((file) => formData.append("images", file));
     }
 
     const url = isEditing
@@ -223,6 +225,29 @@ const Food = ({
               </p>
             )}
           </div>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-700 mb-2">
+              Description
+            </label>
+            <textarea
+              name="description"
+              rows={1}
+              id="description"
+              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
+                "description",
+                errors,
+                touchedFields
+              )}`}
+              {...register("description", {
+                required: "Description is required",
+              })}
+            ></textarea>
+            {errors.description && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.description.message}
+              </p>
+            )}
+          </div>
           <div className="mb-4 ">
             <label htmlFor="quantity" className="block text-gray-700 mb-2">
               Quantity
@@ -243,7 +268,7 @@ const Food = ({
               </p>
             )}
           </div>
-          <div className="mb-4 col-span-2 mx-auto w-96">
+          <div className="mb-4  mx-auto w-96">
             <label htmlFor="availability" className="block text-gray-700 mb-2">
               Availability
             </label>
@@ -296,10 +321,11 @@ const Food = ({
                   onupdatefiles={(fileItems) => {
                     field.onChange(fileItems.map((fileItem) => fileItem.file));
                   }}
-                  allowMultiple={false}
+                  allowMultiple={true}
                   instantUpload={false}
                   acceptedFileTypes={["image/png", "image/jpeg", "image/jpg"]}
-                  labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+                  labelIdle='Drag & Drop your images or <span class="filepond--label-action">Browse</span>'
+                  allowImagePreview={false}
                 />
               )}
             />

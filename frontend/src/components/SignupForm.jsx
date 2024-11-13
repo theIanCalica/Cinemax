@@ -17,6 +17,9 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { Box } from "@mui/material";
 import axios from "axios";
 import { notifySuccess, notifyError } from "../Utils/notification";
+import { doCreateUserWithEmailAndPassword } from "../firebase/auth";
+import { useNavigate } from "react-router-dom";
+
 // Register FilePond plugins
 registerPlugin(
   FilePondPluginFileValidateType,
@@ -34,6 +37,7 @@ export const ScreenMode = {
 };
 
 const SignupForm = ({ onSwitchMode }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
   // State to store data from each step
@@ -82,7 +86,7 @@ const SignupForm = ({ onSwitchMode }) => {
     for (const key in data) {
       completeData.append(key, data[key]); // Append other form data
     }
-
+    await doCreateUserWithEmailAndPassword(data.email, data.password);
     console.log(completeData);
     try {
       const response = await axios.post(
@@ -94,6 +98,7 @@ const SignupForm = ({ onSwitchMode }) => {
           },
         }
       );
+      navigate("/");
       console.log("Server response:", response.data);
     } catch (error) {
       if (error.response) {
@@ -415,6 +420,19 @@ const SignupForm = ({ onSwitchMode }) => {
             </Stack>
           </form>
         )}
+      </Stack>
+      <Stack direction="row" spacing={1} justifyContent="center" mt={2}>
+        <Typography>Already have an account</Typography>
+        <Typography
+          onClick={() => onSwitchMode(ScreenMode.SIGN_IN)}
+          fontWeight={600}
+          sx={{
+            cursor: "pointer",
+            userSelect: "none",
+          }}
+        >
+          Sign in now
+        </Typography>
       </Stack>
     </Stack>
   );

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import MUIDataTable from "mui-datatables";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -58,6 +59,110 @@ const Contact = () => {
     fetchContacts();
   }, []);
 
+  // Columns definition for the DataTable
+  const columns = [
+    {
+      name: "ID",
+      label: "ID",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "name",
+      label: "Name",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "email",
+      label: "Email",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "phone",
+      label: "Phone",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "subject",
+      label: "Subject",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "createdAt",
+      label: "Sent",
+      options: {
+        customBodyRender: (value) => formatDate(value),
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "status",
+      label: "Status",
+      options: {
+        filter: true,
+        sort: true,
+        customBodyRender: (value) => {
+          return value
+            .split("-")
+            .map(
+              (word) =>
+                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            )
+            .join("-");
+        },
+      },
+    },
+    {
+      name: "edit",
+      label: "Edit",
+      options: {
+        customBodyRender: (value, tableMeta, updateValue) => {
+          const contact = contacts[tableMeta.rowIndex];
+          return (
+            <button
+              className={`p-1 mr-2 rounded-full bg-transparent ${
+                contact.status.toLowerCase() === "resolved"
+                  ? "text-gray-500 cursor-not-allowed"
+                  : "text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
+              }`}
+              onClick={() => openModal(contact)}
+              disabled={contact.status.toLowerCase() === "resolved"}
+            >
+              <EditOutlinedIcon />
+            </button>
+          );
+        },
+      },
+    },
+  ];
+
+  // Options for MUIDataTable
+  const options = {
+    filterType: "checkbox",
+    responsive: "standard",
+    selectableRows: "none", // No row selection
+    elevation: 3,
+    onRowClick: (rowData, rowMeta) => {
+      // If you want to do something on row click (e.g., opening a modal for the selected contact)
+      console.log(rowData);
+    },
+  };
+
   return (
     <div className="px-3 mt-8">
       <div className="flex justify-between">
@@ -97,115 +202,21 @@ const Contact = () => {
             borderRadius="0.5rem"
             duration={5}
           >
-            <table className="min-w-full bg-white border-collapse">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b text-left">ID</th>
-                  <th className="py-2 px-4 border-b text-left">Name</th>
-                  <th className="py-2 px-4 border-b text-left">Email</th>
-                  <th className="py-2 px-4 border-b text-left">Phone</th>
-                  <th className="py-2 px-4 border-b text-left">Subject</th>
-                  <th className="py-2 px-4 border-b text-left">Sent</th>
-                  <th className="py-2 px-4 border-b text-left">Status</th>
-                  <th className="py-2 px-4 border-b text-left">Edit</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Generate skeleton rows */}
-                {Array(5)
-                  .fill()
-                  .map((_, index) => (
-                    <tr key={index}>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <Skeleton count={5} height={40} />
           </SkeletonTheme>
         </div>
       ) : (
-        <>
-          <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
-            <table className="min-w-full bg-white border-collapse">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b text-left">ID</th>
-                  <th className="py-2 px-4 border-b text-left">Name</th>
-                  <th className="py-2 px-4 border-b text-left">Email</th>
-                  <th className="py-2 px-4 border-b text-left">Phone</th>
-                  <th className="py-2 px-4 border-b text-left">Subject</th>
-                  <th className="py-2 px-4 border-b text-left">Sent</th>
-                  <th className="py-2 px-4 border-b text-left">Status</th>
-                  <th className="py-2 px-4 border-b text-left">Edit</th>
-                </tr>
-              </thead>
-              <tbody>
-                {contacts.map((contact) => (
-                  <tr key={contact._id} className="hover:bg-slate-50">
-                    <td className="py-2 px-4 border-b">{contact._id}</td>
-                    <td className="py-2 px-4 border-b">{contact.name}</td>
-                    <td className="py-2 px-4 border-b">{contact.email}</td>
-                    <td className="py-2 px-4 border-b">{contact.phone}</td>
-                    <td className="py-2 px-4 border-b">{contact.subject}</td>
-                    <td className="py-2 px-4 border-b">
-                      {formatDate(contact.createdAt)}
-                    </td>
-                    <td className="py-2 px-4 border-b">
-                      {contact.status
-                        .split("-") // Split the status by hyphen if it has one (e.g., in-progress)
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() +
-                            word.slice(1).toLowerCase()
-                        ) // Capitalize the first letter of each part
-                        .join("-")}{" "}
-                      {/* Join the words back together */}
-                    </td>
-
-                    <td className="py-2 px-4 border-b">
-                      <button
-                        className={`p-1 mr-2 rounded-full bg-transparent ${
-                          contact.status.toLowerCase() === "resolved"
-                            ? "text-gray-500 cursor-not-allowed"
-                            : "text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
-                        }`}
-                        onClick={() => openModal(contact)} // Pass the contact to be edited
-                        disabled={contact.status.toLowerCase() === "resolved"} // Disable if status is Resolved
-                      >
-                        <EditOutlinedIcon />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <ToastContainer />
-        </>
+        <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
+          <MUIDataTable
+            title={"Contacts List"}
+            data={contacts}
+            columns={columns}
+            options={options}
+          />
+        </div>
       )}
+
+      <ToastContainer />
     </div>
   );
 };
