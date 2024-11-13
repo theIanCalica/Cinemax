@@ -1,6 +1,14 @@
 import React, { useState } from "react";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { ToastContainer } from "react-toastify";
+import { EditOutlined } from "@mui/icons-material";
+import {
+  Button,
+  Typography,
+  Grid,
+  Paper,
+  Avatar,
+  Box,
+  IconButton,
+} from "@mui/material";
 import "react-toastify/dist/ReactToastify.css";
 import { getUser } from "../../Utils/helpers";
 import { formatDate } from "../../Utils/FormatDate";
@@ -29,116 +37,122 @@ const Profile = () => {
   };
 
   return (
-    <div className="container mx-auto mt-8">
+    <Box className="container" sx={{ maxWidth: "lg", marginTop: 8 }}>
       {/* Page Header */}
-      <div className="flex justify-between mb-8">
-        <h1 className="text-2xl font-bold font-serif">Admin Profile</h1>
-        <p className="text-sm text-gray-500">
-          <span className="text-blue-500 hover:underline">Home</span> /
+      <Box display="flex" justifyContent="space-between" mb={4}>
+        <Typography variant="h4" fontWeight="bold">
+          Admin Profile
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          <span className="text-blue-500 hover:underline">Home</span> /{" "}
           <span> Profile</span>
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       {/* Profile Information Section */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+      <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box display="flex" alignItems="center" gap={2}>
             {/* Profile Image */}
-            <img
-              src={user.profile.url}
+            <Avatar
               alt="Profile"
-              className="rounded-full w-24 h-24 object-cover"
+              src={user.profile.url}
+              sx={{ width: 96, height: 96 }}
             />
             {/* User Details */}
-            <div>
-              <h2 className="text-xl font-semibold">
+            <Box>
+              <Typography variant="h6" fontWeight="semibold">
                 {user.fname + " " + user.lname}
-              </h2>
-              <p className="text-gray-600">
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
                 {user?.email || "admin@example.com"}
-              </p>
-              <p className="text-gray-600 font-semibold capitalize">
-                Role: {user?.role || "admin"}
-              </p>
-            </div>
-          </div>
-          {/* Action Buttons */}
-          <div className="flex space-x-4">
-            <button
-              onClick={handleEditProfile}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center space-x-1"
-            >
-              <EditOutlinedIcon /> <span>Edit Profile</span>
-            </button>
-          </div>
-        </div>
-      </div>
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontWeight="bold"
+              >
+                Administrator
+              </Typography>
+            </Box>
+          </Box>
+          {/* Edit Profile Button */}
+          <IconButton onClick={handleEditProfile} color="primary">
+            <EditOutlined />
+          </IconButton>
+        </Box>
+      </Paper>
 
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">Profile Details</h3>
-          <div className="text-gray-600 space-y-2">
-            <p>
+      <Grid container spacing={4} mt={4}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight="semibold" gutterBottom>
+              Profile Details
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
               <strong>Name:</strong> {user.fname + " " + user.lname || "N/A"}
-            </p>
-            <p>
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
               <strong>Date of Birth:</strong>{" "}
               {user?.dob ? formatDate(user.dob) : "N/A"}
-            </p>
-            <p>
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
               <strong>Email:</strong> {user?.email || "N/A"}
-            </p>
-            <p>
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
               <strong>Phone:</strong> {user?.phoneNumber || "N/A"}
-            </p>
-          </div>
-          {/* Change Password Button */}
-          <div className="mt-10 flex justify-center">
-            <button
-              onClick={handleOpenPasswordModal}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
-            >
-              Change Password
-            </button>
-          </div>
-        </div>
+            </Typography>
+
+            {/* Change Password Button */}
+            <Box display="flex" justifyContent="center" mt={4}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleOpenPasswordModal}
+              >
+                Change Password
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
 
         {/* Linked Accounts Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold mb-4">Linked Accounts</h3>
-          <div className="text-gray-600 space-y-2">
-            <p>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight="semibold" gutterBottom>
+              Linked Accounts
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
               <strong>Facebook:</strong>{" "}
               {user?.linkedAccounts?.facebook || "Not Linked"}
               {!user?.linkedAccounts?.facebook && (
-                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 ml-4 rounded-md">
+                <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
                   Link Facebook
-                </button>
+                </Button>
               )}
-            </p>
-            <p>
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
               <strong>Google:</strong>{" "}
               {user?.linkedAccounts?.google || "Not Linked"}
               {!user?.linkedAccounts?.google && (
-                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 ml-4 rounded-md">
+                <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
                   Link Google
-                </button>
+                </Button>
               )}
-            </p>
-            <p>
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
               <strong>Twitter:</strong>{" "}
               {user?.linkedAccounts?.twitter || "Not Linked"}
               {!user?.linkedAccounts?.twitter && (
-                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 ml-4 rounded-md">
+                <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
                   Link Twitter
-                </button>
+                </Button>
               )}
-            </p>
-          </div>
-        </div>
-      </div>
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-      <ToastContainer />
       {isModalOpen && (
         <ProfileModal
           isOpen={isModalOpen}
@@ -152,7 +166,7 @@ const Profile = () => {
           onClose={handleClosePasswordModal}
         />
       )}
-    </div>
+    </Box>
   );
 };
 
