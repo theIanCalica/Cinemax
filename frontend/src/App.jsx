@@ -41,7 +41,7 @@ import EmailCrew from "./pages/crew/Email";
 
 // Auth Provider
 import { AuthProvider } from "./contexts/authContext";
-
+import { ToastContainer } from "react-toastify";
 function App() {
   return (
     <AuthProvider>
@@ -96,6 +96,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
+      <ToastContainer />
     </AuthProvider>
   );
 }
