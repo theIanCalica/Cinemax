@@ -10,17 +10,21 @@ import { delay } from "../../Utils/helpers";
 import { formatDate } from "../../Utils/FormatDate";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CircularProgress from "@mui/material/CircularProgress"; // Import CircularProgress
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box"; // MUI Box for layout control
+import Container from "@mui/material/Container"; // MUI Container
+import Grid from "@mui/material/Grid"; // MUI Grid
+import Button from "@mui/material/Button"; // MUI Button
 
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
 
   const fetchCategories = async () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     try {
       const [response] = await Promise.all([
         axios.get(`${process.env.REACT_APP_API_LINK}/categories`),
@@ -31,7 +35,7 @@ const FoodCategory = () => {
       notifyError("Error Fetching Categories");
       console.error("Error fetching categories:", err);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -108,15 +112,19 @@ const FoodCategory = () => {
       options: {
         customBodyRenderLite: (dataIndex) => (
           <>
-            <button onClick={() => openModal(categories[dataIndex])}>
+            <Button
+              onClick={() => openModal(categories[dataIndex])}
+              color="primary"
+              sx={{ marginRight: 1 }}
+            >
               <EditOutlinedIcon />
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => handleDelete([categories[dataIndex]._id])}
-              className="text-red-500"
+              color="error"
             >
               <DeleteOutlineOutlinedIcon />
-            </button>
+            </Button>
           </>
         ),
       },
@@ -124,47 +132,86 @@ const FoodCategory = () => {
   ];
 
   return (
-    <div className="px-3 mt-8 relative">
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 bg-black opacity-50 z-40"
-          onClick={closeModal}
-        ></div>
-      )}
-
-      <div className="flex justify-between">
-        <h1 className="font-bold font-serif text-2xl">Food Categories</h1>
-      </div>
-
-      <button
-        onClick={() => openModal()}
-        className="my-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
-      >
-        Add Category
-      </button>
-
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <CategoryModal
-            categoryToEdit={currentCategory}
-            isEditing={isEditing}
-            onClose={closeModal}
-            notifySuccess={notifySuccess}
-            notifyError={notifyError}
-            refresh={fetchCategories}
+    <Container maxWidth="xl">
+      <Box sx={{ mt: 4 }} className="relative">
+        {isModalOpen && (
+          <Box
+            position="fixed"
+            top="0"
+            left="0"
+            right="0"
+            bottom="0"
+            bgcolor="rgba(0, 0, 0, 0.5)"
+            zIndex="40"
+            onClick={closeModal}
           />
-        </div>
-      )}
+        )}
 
-      {/* Spinner loading state */}
-      {loading ? (
-        <div className="flex justify-center mt-10">
-          <CircularProgress size={50} color="success" />
-        </div>
-      ) : (
-        <MUIDataTable data={categories} columns={columns} />
-      )}
-    </div>
+        <Grid
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 3 }}
+        >
+          <Grid item>
+            <h1 className="font-bold font-serif text-2xl">Food Categories</h1>
+          </Grid>
+          <Grid item>
+            <Button
+              onClick={() => openModal()}
+              variant="outlined"
+              color="success"
+              sx={{ fontSize: { xs: "0.75rem", sm: "1rem" } }}
+            >
+              Add Category
+            </Button>
+          </Grid>
+        </Grid>
+
+        {isModalOpen && (
+          <Box
+            position="fixed"
+            top="0"
+            left="0"
+            right="0"
+            bottom="0"
+            zIndex="50"
+          >
+            <CategoryModal
+              categoryToEdit={currentCategory}
+              isEditing={isEditing}
+              onClose={closeModal}
+              notifySuccess={notifySuccess}
+              notifyError={notifyError}
+              refresh={fetchCategories}
+            />
+          </Box>
+        )}
+
+        {/* Loading Spinner */}
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="60vh"
+          >
+            <CircularProgress size={50} color="success" />
+          </Box>
+        ) : (
+          <MUIDataTable
+            data={categories}
+            columns={columns}
+            options={{
+              filter: false,
+              search: true,
+              responsive: "standard",
+              selectableRows: "multiple",
+            }}
+          />
+        )}
+      </Box>
+    </Container>
   );
 };
 
