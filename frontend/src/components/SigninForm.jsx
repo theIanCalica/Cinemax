@@ -36,29 +36,38 @@ const SigninForm = ({ onSwitchMode }) => {
       password: "",
     },
   });
-
-  const onSubmit = (data) => {
-    axios
-      .post(`${process.env.REACT_APP_API_LINK}/auth/login`, data, {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then((response) => {
-        console.log("Response:", response.data);
-        const user = response.data.user;
-        const { role } = user;
-        const targetPath = role === "admin" ? "/admin" : "/";
-        authenticate(response.data, () => navigate(targetPath));
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.error("Error response:", error.response.data);
-          console.error("Error status:", error.response.status);
-        } else {
-          console.error("Error message:", error.message);
-        }
-      });
+  const onSubmit = async (data) => {
+    try {
+      const userCredential = await doSignInWithEmailAndPassword(
+        data.email,
+        data.password
+      );
+      console.log(userCredential); // Log the result or handle it as needed
+    } catch (error) {
+      console.error("Error signing in:", error);
+      // Handle the error (e.g., show an error message to the user)
+    }
   };
 
+  // axios
+  //   .post(`${process.env.REACT_APP_API_LINK}/auth/login`, data, {
+  //     headers: { "Content-Type": "application/json" },
+  //   })
+  //   .then((response) => {
+  //     console.log("Response:", response.data);
+  //     const user = response.data.user;
+  //     const { role } = user;
+  //     const targetPath = role === "admin" ? "/admin" : "/";
+  //     authenticate(response.data, () => navigate(targetPath));
+  //   })
+  //   .catch((error) => {
+  //     if (error.response) {
+  //       console.error("Error response:", error.response.data);
+  //       console.error("Error status:", error.response.status);
+  //     } else {
+  //       console.error("Error message:", error.message);
+  //     }
+  //   });
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse?.credential);
     console.log(decoded);

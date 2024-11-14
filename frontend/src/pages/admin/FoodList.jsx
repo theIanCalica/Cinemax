@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import MUIDataTable from "mui-datatables";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-import { notifySuccess, notifyError } from "../../Utils/notification";
 import FoodModal from "../../components/admin/Modal/Food";
 import FoodImagesModal from "../../components/admin/Modal/FoodImages";
 import axios from "axios";
-import { delay } from "../../Utils/helpers";
+import { delay, notifySuccess, notifyError } from "../../Utils/helpers";
 
 const FoodList = () => {
   const [foods, setFoods] = useState([]);
@@ -213,8 +211,6 @@ const FoodList = () => {
       )}
 
       <MUIDataTable data={foods} columns={columns} options={options} />
-
-      <ToastContainer />
     </div>
   );
 };

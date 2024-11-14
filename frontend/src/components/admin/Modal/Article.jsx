@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { getBorderColor } from "../../../Utils/borderColor";
+import {
+  getBorderColor,
+  notifySuccess,
+  notifyError,
+} from "../../../Utils/helpers";
 import Select from "react-select";
 import axios from "axios";
 
@@ -9,8 +13,6 @@ const Article = ({
   isEditing,
   onClose,
   onArticleCreated,
-  notifySuccess,
-  notifyError,
   refersh,
 }) => {
   const {

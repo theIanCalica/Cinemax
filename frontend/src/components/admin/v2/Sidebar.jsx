@@ -8,13 +8,14 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import TheatersIcon from "@mui/icons-material/Theaters";
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
-import EmailIcon from "@mui/icons-material/Email";
-import MessageIcon from "@mui/icons-material/Message";
+// import EmailIcon from "@mui/icons-material/Email";
+// import MessageIcon from "@mui/icons-material/Message";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ArticleIcon from "@mui/icons-material/Article";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../../Utils/helpers";
 import Swal from "sweetalert2";
+
 const Sidebar = ({ isMinimized }) => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);

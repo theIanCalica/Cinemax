@@ -4,9 +4,12 @@ import Hero from "../../components/customer/Hero/Hero";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getBorderColor } from "../../Utils/borderColor";
+import {
+  getBorderColor,
+  notifyError,
+  notifySuccess,
+} from "../../Utils/helpers";
 
 const ContactPage = () => {
   const {
@@ -26,24 +29,12 @@ const ContactPage = () => {
       );
       if (response.status === 201) {
         reset();
-        toast.success("Message sent successfully!", {
-          position: "top-right",
-          autoClose: 5000,
-          theme: "light",
-        });
+        notifySuccess("Message sent successfully");
       } else {
-        toast.error("There was an error submitting the form.", {
-          position: "top-right",
-          autoClose: 5000,
-          theme: "light",
-        });
+        notifyError("There was an error submitting the form.");
       }
     } catch (error) {
-      toast.error("There was an error submitting the form.", {
-        position: "top-right",
-        autoClose: 5000,
-        theme: "light",
-      });
+      notifyError("There was an error submitting the form.");
     }
   };
 
@@ -185,15 +176,6 @@ const ContactPage = () => {
           alt=""
         />
       </div>
-
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        closeOnClick
-        draggable
-        theme="light"
-      />
     </div>
   );
 };

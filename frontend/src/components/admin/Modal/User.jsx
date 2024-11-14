@@ -5,20 +5,17 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import TextField from "@mui/material/TextField";
-import { getBorderColor } from "../../../Utils/borderColor";
 import { Box } from "@mui/material";
 import axios from "axios";
 import dayjs from "dayjs";
-import { getUser } from "../../../Utils/helpers";
-
-const User = ({
-  onClose,
+import {
+  getUser,
+  getBorderColor,
   notifySuccess,
   notifyError,
-  userToEdit,
-  isEditing,
-  refresh,
-}) => {
+} from "../../../Utils/helpers";
+
+const User = ({ onClose, userToEdit, isEditing, refresh }) => {
   const user = getUser();
 
   const checkEmail = async (email) => {

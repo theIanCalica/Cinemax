@@ -4,12 +4,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useForm, Controller } from "react-hook-form";
 import TextField from "@mui/material/TextField";
-import { getBorderColor } from "../../../Utils/borderColor";
-import { checkUnique } from "../../../Utils/checkUnique";
+import { getBorderColor } from "../../../Utils/helpers";
 import { Box } from "@mui/material";
 import axios from "axios";
 import dayjs from "dayjs";
-import { debounce } from "lodash";
 
 const Profile = ({
   onClose,

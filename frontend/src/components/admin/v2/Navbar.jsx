@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Menu } from "@mui/icons-material";
-import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
+// import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import { getUser } from "../../../Utils/helpers";
+import { getUser, logout } from "../../../Utils/helpers";
 import { useNavigate, NavLink } from "react-router-dom";
-import { logout } from "../../../Utils/helpers";
 import Swal from "sweetalert2";
 
 const Navbar = ({ toggleSidebar }) => {

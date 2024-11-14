@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import axios from "axios";
-import { getBorderColor } from "../../../Utils/borderColor";
+import { getBorderColor } from "../../../Utils/helpers";
 import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const Food = ({

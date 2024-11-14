@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import axios from "axios";
-import { notifyError, notifySuccess } from "../../Utils/notification";
+import { notifyError, notifySuccess } from "../../Utils/helpers";
 
 const Calendar = () => {
   const [tasks, setTasks] = useState([]);

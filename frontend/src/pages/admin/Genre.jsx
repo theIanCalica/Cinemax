@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import GenreModal from "../../components/admin/Modal/Genre";
-import { formatDate } from "../../Utils/FormatDate";
-import { notifyError, notifySuccess } from "../../Utils/notification";
+import { notifyError, notifySuccess, formatDate } from "../../Utils/helpers";
 import axios from "axios";
-import ReactLoading from "react-loading";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 import "./Genre.scss";
 import { delay } from "../../Utils/helpers";
 
@@ -38,7 +45,6 @@ const Genre = () => {
     }
   };
 
-  // Open and close modal
   const openModal = (genre = null) => {
     setCurrentGenre(genre);
     setIsEditing(!!genre);
@@ -93,123 +99,110 @@ const Genre = () => {
   };
 
   return (
-    <div className="px-3 mt-8">
-      <div className="flex justify-between">
-        <h1 className="font-bold font-serif text-2xl">Genres</h1>
-        <p style={{ fontSize: "13.5px" }}>
-          <span className="text-blue-500 hover:underline">Movie</span> /
+    <Box className="px-3 mt-8">
+      <Box display="flex" justifyContent="space-between">
+        <Typography
+          variant="h4"
+          component="h1"
+          fontWeight="bold"
+          fontFamily="serif"
+        >
+          Genres
+        </Typography>
+        <Typography variant="body2" sx={{ fontSize: "13.5px" }}>
+          <span className="text-blue-500 hover:underline">Movie</span> /{" "}
           <span className="text-gray-500">Genre</span>
-        </p>
-      </div>
-      <button
+        </Typography>
+      </Box>
+      <Button
         onClick={() => openModal()}
-        className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+        variant="outlined"
+        color="success"
+        sx={{
+          mt: 2,
+          px: 4,
+          py: 2,
+          borderColor: "success.main",
+          "&:hover": {
+            backgroundColor: "success.main",
+            color: "white",
+          },
+        }}
       >
         Add Genre
-      </button>
+      </Button>
 
       {isLoading ? (
-        <div>
-          <div className="loading-wrapper">
-            <ReactLoading
-              type="spin"
-              color="#33C92D"
-              height={50}
-              width={50}
-              className="z-50"
-            />
-          </div>
-          <SkeletonTheme
-            baseColor="#e5e7eb"
-            highlightColor="#f3f4f6"
-            borderRadius="0.5rem"
-            duration={5}
-          >
-            <table className="min-w-full bg-white border-collapse">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b text-left">ID</th>
-                  <th className="py-2 px-4 border-b text-left">Name</th>
-                  <th className="py-2 px-4 border-b text-left">Created</th>
-                  <th className="py-2 px-4 border-b text-left">Updated</th>
-                  <th className="py-2 px-4 border-b text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Generate skeleton rows */}
-                {Array(5)
-                  .fill()
-                  .map((_, index) => (
-                    <tr key={index}>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                      <td className="py-2 px-4 border-b">
-                        <Skeleton />
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </SkeletonTheme>
-        </div>
+        <Box
+          className="loading-wrapper"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          mt={6}
+        >
+          <CircularProgress color="success" />
+        </Box>
       ) : (
-        <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
-          <table className="min-w-full bg-white border-collapse">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b text-left">ID</th>
-                <th className="py-2 px-4 border-b text-left">Name</th>
-                <th className="py-2 px-4 border-b text-left">Created</th>
-                <th className="py-2 px-4 border-b text-left">Updated</th>
-                <th className="py-2 px-4 border-b text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {genres.map((genre) => (
-                <tr key={genre._id} className="hover:bg-slate-50">
-                  <td className="py-2 px-4 border-b">{genre._id}</td>
-                  <td className="py-2 px-4 border-b">{genre.name}</td>
-                  <td className="py-2 px-4 border-b">
-                    {formatDate(genre.createdAt)}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    {formatDate(genre.updatedAt)}
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    <button
-                      className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
-                      onClick={() => openModal(genre)}
-                    >
-                      <EditOutlinedIcon />
-                    </button>
-                    <button
-                      className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
-                      onClick={() => {
-                        handleDelete(genre._id);
-                      }}
-                    >
-                      <DeleteOutlineOutlinedIcon />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Box
+          mt={4}
+          sx={{ bgcolor: "white", p: 4, boxShadow: 2, borderRadius: 2 }}
+        >
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Created</TableCell>
+                  <TableCell>Updated</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {genres.map((genre) => (
+                  <TableRow key={genre._id} hover>
+                    <TableCell>{genre._id}</TableCell>
+                    <TableCell>{genre.name}</TableCell>
+                    <TableCell>{formatDate(genre.createdAt)}</TableCell>
+                    <TableCell>{formatDate(genre.updatedAt)}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        sx={{ mr: 1 }}
+                        onClick={() => openModal(genre)}
+                      >
+                        <EditOutlinedIcon />
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        onClick={() => handleDelete(genre._id)}
+                      >
+                        <DeleteOutlineOutlinedIcon />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       )}
 
-      <ToastContainer />
-    </div>
+      {/* Render GenreModal */}
+      {isModalOpen && (
+        <GenreModal
+          isOpen={isModalOpen}
+          closeModal={closeModal}
+          currentGenre={currentGenre}
+          isEditing={isEditing}
+          refresh={refresh}
+        />
+      )}
+    </Box>
   );
 };
 

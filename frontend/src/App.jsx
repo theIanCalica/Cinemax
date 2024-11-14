@@ -22,7 +22,7 @@ import User from "./pages/admin/UsersPage";
 import Contacts from "./pages/admin/Contact";
 import Article from "./pages/admin/Article";
 import Task from "./pages/admin/Task";
-import Message from "./pages/admin/Message";
+// import Message from "./pages/admin/Message";
 import Profile from "./pages/admin/Profile";
 import Movie from "./pages/admin/Movie";
 import Calendar from "./pages/admin/Calendar";

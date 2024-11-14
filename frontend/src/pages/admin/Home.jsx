@@ -7,8 +7,7 @@ import PieChart from "../../components/admin/Chart/PieChart";
 import Map from "../../components/admin/Map";
 import ContactWidget from "../../components/admin/ContactWidget";
 import TopMovies from "../../components/admin/TopMovies";
-import { notifySuccess } from "../../Utils/notification";
-import { ToastContainer } from "react-toastify";
+import { notifySuccess } from "../../Utils/helpers";
 import axios from "axios";
 import { Link } from "react-router-dom";
 const Home = () => {
@@ -100,7 +99,6 @@ const Home = () => {
       <div className="container mt-5 bg-white p-4 shadow-md rounded-lg">
         <Map />
       </div>
-      <ToastContainer />
     </div>
   );
 };

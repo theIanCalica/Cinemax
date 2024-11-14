@@ -48,7 +48,7 @@ exports.googleLogin = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    console.log(password);
     if (!email || !password) {
       return res.status(400).json({ error: "All fields are required!" });
     }
@@ -76,7 +76,7 @@ exports.login = async (req, res) => {
     console.error("Login error:", error);
     return res
       .status(500)
-      .json({ error: "Something went wrong. Please try again later.", user });
+      .json({ error: "Something went wrong. Please try again later." });
   }
 };
 

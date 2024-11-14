@@ -1,16 +1,13 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { getBorderColor } from "../../../Utils/borderColor";
-
-const Genre = ({
-  onClose,
-  refresh,
+import {
+  getBorderColor,
   notifySuccess,
   notifyError,
-  genreToEdit,
-  isEditing,
-}) => {
+} from "../../../Utils/helpers";
+
+const Genre = ({ onClose, refresh, genreToEdit, isEditing }) => {
   const {
     register,
     handleSubmit,

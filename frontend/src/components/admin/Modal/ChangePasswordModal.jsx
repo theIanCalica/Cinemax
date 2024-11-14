@@ -1,10 +1,12 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { getBorderColor } from "../../../Utils/borderColor";
-import { getUser } from "../../../Utils/helpers";
-import { ToastContainer } from "react-toastify";
-import { notifySuccess, notifyError } from "../../../Utils/notification";
+import {
+  notifySuccess,
+  notifyError,
+  getUser,
+  getBorderColor,
+} from "../../../Utils/helpers";
 
 const ChangePasswordModal = ({ onClose }) => {
   const {
@@ -127,7 +129,6 @@ const ChangePasswordModal = ({ onClose }) => {
           </div>
         </form>
       </div>
-      <ToastContainer />
     </div>
   );
 };

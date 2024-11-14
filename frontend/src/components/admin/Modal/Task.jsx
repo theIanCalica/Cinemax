@@ -6,17 +6,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TextField, Checkbox, FormControlLabel } from "@mui/material";
 import axios from "axios";
-import { getBorderColor } from "../../../Utils/borderColor";
-import { getUser } from "../../../Utils/helpers";
-
-const Task = ({
-  onClose,
+import {
+  getUser,
+  getBorderColor,
   notifySuccess,
   notifyError,
-  taskToEdit = {},
-  isEditing,
-  refresh,
-}) => {
+} from "../../../Utils/helpers";
+
+const Task = ({ onClose, taskToEdit = {}, isEditing, refresh }) => {
   const [users, setUsers] = useState([]);
   const [showEmployeeSelect, setShowEmployeeSelect] = useState(false);
   const user = getUser();

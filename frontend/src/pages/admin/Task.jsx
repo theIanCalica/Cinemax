@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-import { notifySuccess, notifyError } from "../../Utils/notification";
+import { notifySuccess, notifyError } from "../../Utils/helpers";
 import TaskModal from "../../components/admin/Modal/Task";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
@@ -247,7 +246,6 @@ const Task = () => {
           ))}
         </div>
       </DragDropContext>
-      <ToastContainer />
     </div>
   );
 };

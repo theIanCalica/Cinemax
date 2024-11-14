@@ -3,7 +3,7 @@ import MUIDataTable from "mui-datatables";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { notifySuccess, notifyError } from "../../Utils/notification";
+import { notifySuccess, notifyError } from "../../Utils/helpers";
 import ContactModal from "../../components/admin/Modal/Contact";
 import { formatDate } from "../../Utils/FormatDate";
 import axios from "axios";

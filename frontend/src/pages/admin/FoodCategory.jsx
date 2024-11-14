@@ -3,18 +3,20 @@ import MUIDataTable from "mui-datatables";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Swal from "sweetalert2";
-import { notifySuccess, notifyError } from "../../Utils/notification";
+import {
+  notifySuccess,
+  notifyError,
+  formatDate,
+  delay,
+} from "../../Utils/helpers";
 import CategoryModal from "../../components/admin/Modal/FoodCategory";
 import axios from "axios";
-import { delay } from "../../Utils/helpers";
-import { formatDate } from "../../Utils/FormatDate";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box"; // MUI Box for layout control
-import Container from "@mui/material/Container"; // MUI Container
-import Grid from "@mui/material/Grid"; // MUI Grid
-import Button from "@mui/material/Button"; // MUI Button
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);

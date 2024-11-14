@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-import { formatDate } from "../../Utils/FormatDate";
-import { notifySuccess, notifyError } from "../../Utils/notification";
+import { notifySuccess, notifyError, formatDate } from "../../Utils/helpers";
 import ArticleModal from "../../components/admin/Modal/Article";
 
 const Article = () => {
@@ -166,9 +164,6 @@ const Article = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Toastify container for notifications */}
-      <ToastContainer />
     </div>
   );
 };

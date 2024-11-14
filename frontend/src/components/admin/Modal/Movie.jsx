@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { getBorderColor } from "../../../Utils/borderColor";
+import { getBorderColor } from "../../../Utils/helpers";
 import Select from "react-select";
 import axios from "axios";
 import TextField from "@mui/material/TextField";

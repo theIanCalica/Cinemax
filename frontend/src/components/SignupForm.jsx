@@ -16,7 +16,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import GoogleIcon from "@mui/icons-material/Google";
 import { Box } from "@mui/material";
 import axios from "axios";
-import { notifySuccess, notifyError } from "../Utils/notification";
+import { notifySuccess, notifyError } from "../Utils/helpers";
 import { doCreateUserWithEmailAndPassword } from "../firebase/auth";
 import { useNavigate } from "react-router-dom";
 

@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Select from "react-select";
 import axios from "axios";
+import { notifyError, notifySuccess } from "../../../Utils/helpers";
 
-const Contact = ({
-  onContactCreated,
-  onClose,
-  notifySuccess,
-  notifyError,
-  contactToEdit,
-}) => {
+const Contact = ({ onContactCreated, onClose, contactToEdit }) => {
   const {
     register,
     handleSubmit,

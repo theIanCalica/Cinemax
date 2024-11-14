@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import MovieModal from "../../components/admin/Modal/Movie";
-import { formatDate } from "../../Utils/FormatDate";
-import { notifyError, notifySuccess } from "../../Utils/notification";
+import { notifyError, notifySuccess, formatDate } from "../../Utils/helpers";
 import axios from "axios";
 
 const Movie = () => {
@@ -143,9 +141,6 @@ const Movie = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Toastify container for notifications */}
-      <ToastContainer />
     </div>
   );
 };

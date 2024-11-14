@@ -10,8 +10,7 @@ import {
   IconButton,
 } from "@mui/material";
 import "react-toastify/dist/ReactToastify.css";
-import { getUser } from "../../Utils/helpers";
-import { formatDate } from "../../Utils/FormatDate";
+import { getUser, formatDate } from "../../Utils/helpers";
 import ProfileModal from "../../components/admin/Modal/Profile";
 import ChangePasswordModal from "../../components/admin/Modal/ChangePasswordModal";
 

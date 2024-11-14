@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { getBorderColor } from "../../../Utils/borderColor";
+import { getBorderColor } from "../../../Utils/helpers";
 import axios from "axios";
 
 const CreateCategory = ({

@@ -6,8 +6,9 @@ import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFileEncode from "filepond-plugin-file-encode";
+import { notifySuccess } from "../../Utils/helpers";
+import { TextField, Button, Box, Typography, Grid } from "@mui/material";
 
-// Register the plugins for FilePond
 registerPlugin(FilePondPluginImagePreview, FilePondPluginFileEncode);
 
 const Email = () => {
@@ -47,7 +48,7 @@ const Email = () => {
       );
 
       if (response.status === 200) {
-        alert("Email sent successfully!");
+        notifySuccess("Email sent successfully!");
         reset(); // Reset the form
         setFiles([]); // Clear the FilePond input
       }
@@ -59,61 +60,60 @@ const Email = () => {
 
   return (
     <>
-      <h2 className="text-2xl font-semibold mb-4 mt-5">Send Email</h2>
-      <div className="px-4 py-6 bg-white shadow-md rounded-lg">
+      <Typography variant="h4" gutterBottom align="center">
+        Send Email
+      </Typography>
+      <Box
+        sx={{
+          padding: { xs: 2, sm: 3 },
+          backgroundColor: "white",
+          borderRadius: 2,
+          boxShadow: 1,
+        }}
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex justify-between space-x-4">
-            <div className="mb-4 w-[48%]">
-              <label className="block text-gray-700 mb-2" htmlFor="to">
-                To:
-              </label>
-              <input
+          <Grid container spacing={2}>
+            {/* To Input */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="To"
                 type="email"
-                id="to"
+                fullWidth
                 {...register("to", { required: "Recipient email is required" })}
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="recipient@example.com"
+                error={Boolean(errors.to)}
+                helperText={errors.to?.message}
               />
-              {errors.to && (
-                <p className="text-red-500 text-sm">{errors.to.message}</p>
-              )}
-            </div>
+            </Grid>
 
-            <div className="mb-4 w-[48%]">
-              <label className="block text-gray-700 mb-2" htmlFor="subject">
-                Subject:
-              </label>
-              <input
-                type="text"
-                id="subject"
+            {/* Subject Input */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Subject"
+                fullWidth
                 {...register("subject", { required: "Subject is required" })}
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                placeholder="Subject of the email"
+                error={Boolean(errors.subject)}
+                helperText={errors.subject?.message}
               />
-              {errors.subject && (
-                <p className="text-red-500 text-sm">{errors.subject.message}</p>
-              )}
-            </div>
-          </div>
+            </Grid>
+          </Grid>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2" htmlFor="message">
-              Message:
-            </label>
-            <textarea
-              id="message"
-              {...register("message", { required: "Message is required" })}
-              className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-              rows="4"
-              placeholder="Your message here..."
-            ></textarea>
-            {errors.message && (
-              <p className="text-red-500 text-sm">{errors.message.message}</p>
-            )}
-          </div>
+          {/* Message Input */}
+          <TextField
+            label="Message"
+            fullWidth
+            multiline
+            rows={4}
+            {...register("message", { required: "Message is required" })}
+            error={Boolean(errors.message)}
+            helperText={errors.message?.message}
+            sx={{ marginTop: 2 }}
+          />
 
-          <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Attachments:</label>
+          {/* FilePond Component */}
+          <Box sx={{ marginTop: 2 }}>
+            <Typography variant="body1" gutterBottom>
+              Attachments:
+            </Typography>
             <FilePond
               files={files}
               onupdatefiles={setFiles}
@@ -124,16 +124,24 @@ const Email = () => {
               allowFileEncode={true}
               acceptedFileTypes={["image/*", "application/pdf"]}
             />
-          </div>
+          </Box>
 
-          <button
-            type="submit"
-            className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
-          >
-            Send Email
-          </button>
+          {/* Submit Button */}
+          <Box sx={{ marginTop: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{
+                padding: { xs: "10px", sm: "12px" }, // Adjust button padding for small screens
+              }}
+            >
+              Send Email
+            </Button>
+          </Box>
         </form>
-      </div>
+      </Box>
     </>
   );
 };
