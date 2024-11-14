@@ -1,11 +1,15 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import {
-  getBorderColor,
-  notifySuccess,
-  notifyError,
-} from "../../../Utils/helpers";
+  TextField,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+import { notifySuccess, notifyError } from "../../../Utils/helpers";
+import client from "../../../Utils/client";
 
 const Genre = ({ onClose, refresh, genreToEdit, isEditing }) => {
   const {
@@ -30,7 +34,7 @@ const Genre = ({ onClose, refresh, genreToEdit, isEditing }) => {
       : `${process.env.REACT_APP_API_LINK}/genres`;
     const method = isEditing ? "PUT" : "POST";
 
-    axios({
+    client({
       method,
       url,
       headers: {
@@ -39,7 +43,6 @@ const Genre = ({ onClose, refresh, genreToEdit, isEditing }) => {
       data: { name: data.name },
     })
       .then((response) => {
-        const genre = response.data;
         refresh();
         notifySuccess(
           isEditing
@@ -60,48 +63,37 @@ const Genre = ({ onClose, refresh, genreToEdit, isEditing }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 className="text-xl font-bold mb-4">
-          {isEditing ? "Edit Genre" : "Add Genre"}
-        </h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 mb-2">
-              Genre
-            </label>
-            <input
-              id="name"
-              type="text"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "name",
-                errors,
-                touchedFields
-              )}`}
-              {...register("name", { required: "Genre is required" })}
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-            )}
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-md text-gray-500 border border-gray-300 mr-2"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
-            >
-              {isEditing ? "Update" : "Create"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Dialog open onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>{isEditing ? "Edit Genre" : "Add Genre"}</DialogTitle>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent>
+          <TextField
+            id="name"
+            label="Genre"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            {...register("name", { required: "Genre is required" })}
+            error={!!errors.name}
+            helperText={errors.name?.message}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onClose}
+            className="border border-gray-300 text-gray-600 hover:bg-gray-100"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="border-2 border-green-500 text-green-500 font-semibold hover:bg-green-500 hover:text-white"
+          >
+            {isEditing ? "Update" : "Create"}
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

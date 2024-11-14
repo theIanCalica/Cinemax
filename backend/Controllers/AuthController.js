@@ -5,9 +5,9 @@ const cloudinary = require("../utils/Cloudinary");
 
 exports.googleLogin = async (req, res) => {
   try {
-    const { fname, lname, email, profile } = req.body;
+    const { fname, lname, email, profile, provider_id, provider } = req.body;
 
-    if (!profile || !fname || !lname || !email) {
+    if (!profile || !fname || !lname || !email || !provider_id) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -24,10 +24,16 @@ exports.googleLogin = async (req, res) => {
         lname,
         email,
         status: "activated",
-        profilePicture: {
+        profile: {
           public_id: uploadResult.public_id,
           url: uploadResult.secure_url,
-        }, // Save the uploaded image URL
+        },
+        socialAccounts: [
+          {
+            provider: "google",
+            provider_id, // Add the Google provider ID
+          },
+        ],
       });
       await user.save(); // Save the user to the database
     }

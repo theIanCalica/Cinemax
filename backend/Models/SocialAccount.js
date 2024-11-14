@@ -11,9 +11,6 @@ const SocialAccountSchema = new Schema({
     type: String,
     required: true,
   },
-  access_token: {
-    type: String,
-  },
 });
 
 module.exports = SocialAccountSchema;

@@ -196,7 +196,7 @@ const Genre = () => {
       {isModalOpen && (
         <GenreModal
           isOpen={isModalOpen}
-          closeModal={closeModal}
+          onClose={closeModal}
           currentGenre={currentGenre}
           isEditing={isEditing}
           refresh={refresh}
