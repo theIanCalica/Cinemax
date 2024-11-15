@@ -81,7 +81,6 @@ const SigninForm = ({ onSwitchMode }) => {
         provider: "google",
       })
       .then((response) => {
-        // console.log("Google login response:", response.data);
         const user = response.data.user;
         const { role } = user;
         let targetPath;
