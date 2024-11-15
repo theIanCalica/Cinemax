@@ -1,10 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import {
-  getBorderColor,
-  notifyError,
-  notifySuccess,
-} from "../../Utils/helpers";
+import { notifyError, notifySuccess } from "../../Utils/helpers";
 import { TextField, Button, Grid, Typography, Box, Paper } from "@mui/material";
 import { LocationOn, Info } from "@mui/icons-material";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -16,9 +12,8 @@ const ContactPage = () => {
   const {
     register,
     handleSubmit,
-    control,
     reset,
-    formState: { errors, touchedFields },
+    formState: { errors },
   } = useForm();
 
   // Handle form submission
