@@ -30,5 +30,5 @@ Cinemax is a web-based application built using the MERN stack (MongoDB, Express,
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/cinemax.git
+   git clone https://github.com/theIanCalica/Cinemax.git
    ```

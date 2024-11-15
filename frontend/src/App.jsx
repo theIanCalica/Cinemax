@@ -11,6 +11,7 @@ import ContactPage from "./pages/customer/ContactPage";
 import Email from "./pages/Emails/ContactUs";
 import FoodCategory from "./pages/customer/FoodCategory";
 import ProtectedRoute from "./Utils/authRoutes/ProtectedRoute";
+import BaseLayout from "./components/customer/Layout";
 
 // Admin Pages
 import Layout from "./components/admin/v2/Layout";
@@ -47,13 +48,15 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/articles" element={<Article />}></Route>
-          <Route path="/about" element={<AboutPage />}></Route>
-          <Route path="/contact" element={<ContactPage />}></Route>
-          <Route path="/email" element={<Email />} />
-          <Route path="/login" element={<SigninPage />}></Route>
-          <Route path="/food/category" element={<FoodCategory />}></Route>
+          <Route path="/" element={<BaseLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="/articles" element={<Article />}></Route>
+            <Route path="/about" element={<AboutPage />}></Route>
+            <Route path="/contact" element={<ContactPage />}></Route>
+            <Route path="/email" element={<Email />} />
+            <Route path="/login" element={<SigninPage />}></Route>
+            <Route path="/food/category" element={<FoodCategory />}></Route>
+          </Route>
 
           {/* Routes for crew */}
           <Route
