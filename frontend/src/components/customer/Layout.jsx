@@ -12,7 +12,7 @@ const Layout = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-grow p-4 bg-white">
+      <main className="flex-grow ">
         <Outlet /> {/* Renders the matched child route */}
       </main>
 

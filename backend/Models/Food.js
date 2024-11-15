@@ -52,6 +52,18 @@ const FoodSchema = new Schema(
         },
       },
     ],
+    flavor: {
+      type: String,
+      trim: true,
+    },
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    numberOfRatings: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

@@ -1,15 +1,17 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+
 import SigninPage from "./pages/SigninPage";
 import HomePage from "./pages/customer/index/index";
 import AboutPage from "./pages/customer/About/AboutPage";
 import ContactPage from "./pages/customer/ContactPage";
 import Email from "./pages/Emails/ContactUs";
 import FoodCategory from "./pages/customer/FoodCategory";
+import CustomerFoodList from "./pages/customer/FoodList";
 import ProtectedRoute from "./Utils/authRoutes/ProtectedRoute";
 import BaseLayout from "./components/customer/Layout";
 
@@ -48,13 +50,14 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          <Route path="/login" element={<SigninPage />}></Route>
           <Route path="/" element={<BaseLayout />}>
             <Route index element={<HomePage />} />
             <Route path="/articles" element={<Article />}></Route>
             <Route path="/about" element={<AboutPage />}></Route>
             <Route path="/contact" element={<ContactPage />}></Route>
             <Route path="/email" element={<Email />} />
-            <Route path="/login" element={<SigninPage />}></Route>
+            <Route path="/foods" element={<CustomerFoodList />}></Route>
             <Route path="/food/category" element={<FoodCategory />}></Route>
           </Route>
 

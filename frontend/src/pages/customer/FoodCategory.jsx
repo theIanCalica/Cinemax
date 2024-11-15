@@ -10,6 +10,7 @@ import {
 import { Link } from "react-router-dom"; // Import the Link component
 import client from "../../Utils/client";
 import { notifyError } from "../../Utils/helpers";
+import Hero from "../../components/customer/Hero/Hero";
 
 const FoodCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -59,10 +60,16 @@ const FoodCategory = () => {
 
   return (
     <>
+      <Hero type="FoodCategories" />
       {loading ? (
         <CircularProgress />
       ) : (
-        <Grid container spacing={3} justifyContent="center">
+        <Grid
+          container
+          spacing={3}
+          justifyContent="center"
+          sx={{ padding: "10px 10px" }}
+        >
           {categories.map((category) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={category.id}>
               <Link to={category.link} style={{ textDecoration: "none" }}>

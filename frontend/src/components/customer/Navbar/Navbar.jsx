@@ -48,6 +48,7 @@ const Navbar = () => {
     >
       <div className="flex container items-center justify-between mx-auto p-4">
         <h1 className="text-white">Cinemadine</h1>
+        {/* Mobile Menu Button */}
         <div className="md:hidden">
           <button onClick={toggleSidebar}>
             {isOpen ? (
@@ -57,6 +58,8 @@ const Navbar = () => {
             )}
           </button>
         </div>
+
+        {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-4 items-center">
           {["/", "/about", "/news", "/contact"].map((path) => (
             <NavLink
@@ -73,19 +76,60 @@ const Navbar = () => {
                 : path.substring(1).charAt(0).toUpperCase() + path.slice(2)}
             </NavLink>
           ))}
+          {/* Foods Dropdown for Desktop */}
+          <div className="relative">
+            <button
+              className="text-white font-bold hover:text-themeYellow flex items-center"
+              onMouseEnter={() => setDropdowns({ ...dropdowns, foods: true })}
+            >
+              Foods
+              <KeyboardArrowDownIcon />
+            </button>
+            {dropdowns["foods"] && (
+              <div
+                className="absolute bg-themeGrayExteral text-white rounded mt-2 shadow-lg z-10"
+                onMouseEnter={() => setDropdowns({ ...dropdowns, foods: true })}
+                onMouseLeave={() =>
+                  setDropdowns({ ...dropdowns, foods: false })
+                }
+              >
+                <ul className="p-2 space-y-2">
+                  <li>
+                    <NavLink
+                      to={`/food/category`}
+                      className="block hover:text-themeYellow px-4 py-2"
+                    >
+                      Categories
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to={`/foods/`}
+                      className="block hover:text-themeYellow px-4 py-2"
+                    >
+                      Foods
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Search and Profile Icons */}
         <div className="hidden md:flex space-x-4 items-center">
-          <button onClick={closeSidebar}>
+          <button>
             <SearchIcon className="text-white hover:text-themeYellow" />
           </button>
-          <NavLink to={"/login"}>
-            <button onClick={closeSidebar}>
+          <NavLink to={`/login`}>
+            <button>
               <PersonIcon className="text-white hover:text-themeYellow" />
             </button>
           </NavLink>
         </div>
       </div>
 
+      {/* Mobile Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-themeGrayExteral text-white z-50 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
@@ -114,85 +158,46 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          {["movies", "announcements", "food"].map((dropdown) => (
-            <div key={dropdown} className="w-full m-0 p-0">
-              <button
-                className="flex w-full justify-between items-center pb-2 font-bold border-b text-left border-themeBorderBottom hover:text-slate-400 text-white"
-                onClick={() => toggleDropdown(dropdown)}
-              >
-                <div>
-                  {dropdown.charAt(0).toUpperCase() + dropdown.slice(1)}
-                </div>
-                {dropdowns[dropdown] ? (
-                  <KeyboardArrowUpIcon />
-                ) : (
-                  <KeyboardArrowDownIcon />
-                )}
-              </button>
-
-              {dropdowns[dropdown] && (
-                <div className="dropdown-content mt-2">
-                  <ul className="text-white p-2 rounded">
-                    {dropdown === "movies" && (
-                      <>
-                        <li>
-                          <NavLink
-                            to={`/movies/action`}
-                            className="block p-2 hover:text-slate-400"
-                            onClick={closeSidebar}
-                          >
-                            Now Showing
-                          </NavLink>
-                        </li>
-                        <li>
-                          <NavLink
-                            to={`/movies/comedy`}
-                            className="block p-2 hover:text-slate-400"
-                            onClick={closeSidebar}
-                          >
-                            Coming Soon
-                          </NavLink>
-                        </li>
-                        <li>
-                          <NavLink
-                            to={`/movies/drama`}
-                            className="block p-2 hover:text-slate-400"
-                            onClick={closeSidebar}
-                          >
-                            All Movies
-                          </NavLink>
-                        </li>
-                      </>
-                    )}
-
-                    {dropdown === "food" && (
-                      <>
-                        <li>
-                          <NavLink
-                            to={`/food/category`}
-                            className="block p-2 hover:text-slate-400"
-                            onClick={closeSidebar}
-                          >
-                            Food Category
-                          </NavLink>
-                        </li>
-                        <li>
-                          <NavLink
-                            to={`/food/all`}
-                            className="block p-2 hover:text-slate-400"
-                            onClick={closeSidebar}
-                          >
-                            Foods
-                          </NavLink>
-                        </li>
-                      </>
-                    )}
-                  </ul>
-                </div>
+          {/* Foods Dropdown for Mobile */}
+          <div className="w-full m-0 p-0">
+            <button
+              className="flex w-full justify-between items-center pb-2 font-bold border-b text-left border-themeBorderBottom hover:text-slate-400 text-white"
+              onClick={() => toggleDropdown("foods")}
+            >
+              Foods
+              {dropdowns["foods"] ? (
+                <KeyboardArrowUpIcon />
+              ) : (
+                <KeyboardArrowDownIcon />
               )}
-            </div>
-          ))}
+            </button>
+            {dropdowns["foods"] && (
+              <div className="dropdown-content mt-2">
+                <ul className="text-white p-2 rounded">
+                  <li>
+                    <NavLink
+                      to={`/food/category`}
+                      className="block p-2 hover:text-slate-400"
+                      onClick={closeSidebar}
+                    >
+                      Categories
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to={`/food/all`}
+                      className="block p-2 hover:text-slate-400"
+                      onClick={closeSidebar}
+                    >
+                      Foods
+                    </NavLink>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
 
+          {/* Search and Profile Icons */}
           <div className="flex space-x-4 mt-4">
             <SearchIcon className="hover:text-themeYellow" />
             <NavLink to={`/login`}>
