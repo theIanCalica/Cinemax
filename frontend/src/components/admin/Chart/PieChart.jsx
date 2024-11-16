@@ -1,6 +1,7 @@
 import React from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
+import { Box, Typography, Button, Link } from "@mui/material";
 
 // Register necessary components with Chart.js
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
@@ -46,21 +47,54 @@ const PieChart = () => {
   };
 
   return (
-    <div className="bg-white p-4 shadow-md rounded-lg w-full max-w-sm">
-      <h2 className="text-xl font-semibold mb-4">Top 5 Foods</h2>
-      <Pie data={data} options={options} />
-      <div className="flex justify-between items-center mt-6">
-        {/* Left side: View More */}
-        <div className="text-blue-500 cursor-pointer hover:underline">
-          View More
-        </div>
+    <Box
+      sx={{
+        backgroundColor: "white",
+        padding: 4,
+        boxShadow: 2,
+        borderRadius: 2,
+        width: "100%",
+        maxWidth: 400,
+        margin: "auto",
+      }}
+    >
+      {/* Chart Title */}
+      <Typography variant="h6" fontWeight="600" mb={2} textAlign="center">
+        Top 5 Foods
+      </Typography>
 
-        {/* Right side: Download Report */}
-        <button className="bg-transparent border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">
+      {/* Pie Chart */}
+      <Pie data={data} options={options} />
+
+      {/* Footer Actions */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: 4,
+        }}
+      >
+        {/* View More */}
+        <Link underline="hover" color="primary" sx={{ cursor: "pointer" }}>
+          View More
+        </Link>
+
+        {/* Download Report */}
+        <Button
+          variant="outlined"
+          color="success"
+          sx={{
+            ":hover": {
+              backgroundColor: "success.main",
+              color: "white",
+            },
+          }}
+        >
           Download Report
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

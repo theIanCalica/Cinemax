@@ -227,7 +227,6 @@ const Index = () => {
         <div className="my-4 text-center">
           <NowPlaying />
         </div>
-        <Footer />
       </div>
     </div>
   );

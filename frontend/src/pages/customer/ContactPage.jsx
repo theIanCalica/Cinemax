@@ -33,8 +33,6 @@ const ContactPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-4">
-      {/* Your Navbar Component */}
-      <Navbar />
       {/* Your Hero Component */}
       <Hero type="Contact" />
       <hr className="broken-hr" />
