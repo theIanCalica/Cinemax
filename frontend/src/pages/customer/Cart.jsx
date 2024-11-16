@@ -67,6 +67,22 @@ const Cart = () => {
     });
   };
 
+  const handleDelete = (foodId) => {
+    const userId = user._id;
+    const data = {
+      userId,
+      foodId,
+    };
+
+    client.delete("/carts", { data }).then((response) => {
+      if (response.status === 200) {
+        fetchCartItems();
+        notifySuccess("Successfully removed");
+      } else {
+        notifySuccess("Something went wrong");
+      }
+    });
+  };
   useEffect(() => {
     fetchCartItems();
   }, []);
@@ -152,7 +168,13 @@ const Cart = () => {
                           <AddIcon />
                         </IconButton>
                       </Box>
-                      <Button size="small" color="secondary">
+                      <Button
+                        onClick={() => {
+                          handleDelete(item.food._id);
+                        }}
+                        size="small"
+                        color="secondary"
+                      >
                         Remove
                       </Button>
                     </CardActions>

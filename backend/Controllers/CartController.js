@@ -152,26 +152,46 @@ exports.updateCartItem = async (req, res) => {
 // Delete a cart item
 exports.deleteCartItem = async (req, res) => {
   try {
-    const { cartId } = req.params; // Get the cart ID from URL parameters
+    const { foodId, userId } = req.body;
 
-    // Find and delete the cart item
-    const cartItem = await Cart.findById(cartId);
+    // Fetch the cart item to update
+    const cartItem = await Cart.findOne({ user: userId });
 
     if (!cartItem) {
       return res.status(404).json({ msg: "Cart item not found" });
     }
 
     // Check if the user is the owner of the cart item
-    if (cartItem.user.toString() !== req.user.id) {
+    if (cartItem.user.toString() !== userId) {
       return res
         .status(403)
         .json({ msg: "Not authorized to delete this cart item" });
     }
 
-    // Delete the cart item
-    await cartItem.remove();
+    // Find the food item in the cart and update its quantity
+    const foodIndex = cartItem.items.findIndex(
+      (item) => item.food.toString() === foodId
+    );
 
-    res.status(200).json({ msg: "Cart item removed" }); // Confirm that the item was deleted
+    if (foodIndex === -1) {
+      return res.status(404).json({ msg: "Food item not found in cart" });
+    }
+
+    // Remove the food item from the items array
+    cartItem.items.splice(foodIndex, 1);
+
+    // Recalculate total price after removing the item
+    let totalPrice = 0;
+    cartItem.items.forEach((item) => {
+      totalPrice += item.price * item.quantity;
+    });
+
+    // Update total price of the cart
+    cartItem.totalPrice = totalPrice;
+
+    await cartItem.save();
+
+    res.status(200).json({ msg: "Food Item removed" });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
