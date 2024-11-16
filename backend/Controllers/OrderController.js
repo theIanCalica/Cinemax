@@ -1,6 +1,7 @@
 const Category = require("../Models/Category");
 const Order = require("../Models/Order");
 const Cart = require("../Models/Cart");
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 // Get all orders
 exports.getAllOrders = async (req, res) => {
@@ -44,6 +45,44 @@ exports.createOrder = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
+  }
+};
+
+// Create checkout session for stripe
+exports.createCheckoutSession = async (req, res) => {
+  try {
+    const { order } = req.body;
+
+    // Extract line items from the order
+    const lineItems = order[0].items.map((item) => {
+      return {
+        price_data: {
+          currency: "php",
+          product_data: {
+            name: item.food.name,
+            description: item.food.description,
+            images: item.food.images.map((image) => image.url), // Use URLs from images array
+          },
+          unit_amount: Math.round(item.food.price * 100), // Stripe uses cents
+        },
+        quantity: item.quantity,
+      };
+    });
+
+    // Create a Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: lineItems,
+      mode: "payment",
+      success_url: "http://localhost:3000/my-orders",
+      cancel_url: "http://localhost:3000/cancel-payment",
+    });
+
+    // Send session ID to the client
+    res.status(201).json({ id: session.id });
+  } catch (error) {
+    console.error("Error creating Stripe checkout session:", error.message);
+    res.status(500).json({ error: "Failed to create checkout session" });
   }
 };
 

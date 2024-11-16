@@ -20,6 +20,7 @@ import Hero from "../../components/customer/Hero/Hero";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Select from "react-select";
+import { loadStripe } from "@stripe/stripe-js";
 
 const Cart = () => {
   const user = getUser(); // Fetch the user details
@@ -38,6 +39,24 @@ const Cart = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const makePaymentStripe = async () => {
+    const stripe = await loadStripe(
+      `pk_test_51QLnky08haKxqIansxQffmZesDz36a2BrvHZ5h0UXo3aRaUZAJLPZYyULs4AZwXI6WXJ5rm5Ilmj9QWzxD4KHDyG00Zuo2WEs7`
+    );
+
+    const body = {
+      order: cartItems,
+    };
+
+    const response = await client.post("/orders/create-checkout-session", body);
+    const session = response.data;
+
+    // Redirect to Stripe checkout
+    const result = await stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
   };
 
   const handleAdd = (foodId, quantity) => {
@@ -124,19 +143,22 @@ const Cart = () => {
         // Add payment method to orderData
         orderData.paymentMethod = paymentMethod;
 
-        // Send order to the backend
-        client
-          .post("/orders", orderData)
-          .then((response) => {
-            if (response.status === 201) {
-              notifySuccess("Order confirmed successfully!");
-              fetchCartItems();
-            }
-          })
-          .catch((error) => {
-            console.error("Error confirming order:", error);
-            notifyError("Error confirming order.");
-          });
+        if (paymentMethod === "Cash") {
+          client
+            .post("/orders", orderData)
+            .then((response) => {
+              if (response.status === 201) {
+                notifySuccess("Order confirmed successfully!");
+                fetchCartItems();
+              }
+            })
+            .catch((error) => {
+              console.error("Error confirming order:", error);
+              notifyError("Error confirming order.");
+            });
+        } else {
+          makePaymentStripe();
+        }
       }
     });
   };

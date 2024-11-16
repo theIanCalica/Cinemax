@@ -15,6 +15,7 @@ import CustomerFoodList from "./pages/customer/FoodList";
 import ProtectedRoute from "./Utils/authRoutes/ProtectedRoute";
 import BaseLayout from "./components/customer/Layout";
 import CartPage from "./pages/customer/Cart";
+import CancelPaymentPage from "./pages/customer/PaymentCanceled";
 
 // Admin Pages
 import Layout from "./components/admin/v2/Layout";
@@ -52,6 +53,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<SigninPage />}></Route>
+          <Route path="/cancel-payment" element={<CancelPaymentPage />}></Route>
           <Route path="/" element={<BaseLayout />}>
             <Route index element={<HomePage />} />
             <Route path="/articles" element={<Article />}></Route>
@@ -61,6 +63,7 @@ function App() {
             <Route path="/foods" element={<CustomerFoodList />}></Route>
             <Route path="/food/category" element={<FoodCategory />}></Route>
             <Route path="/my-cart" element={<CartPage />}></Route>
+            <Route path="/my-orders" element={<CartPage />}></Route>
           </Route>
 
           {/* Routes for crew */}

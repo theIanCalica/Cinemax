@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { getUser } from "../../Utils/helpers";
+import { getUser } from "../helpers";
 
 const ProtectedRoute = ({ element, adminOnly = false }) => {
   const user = getUser();

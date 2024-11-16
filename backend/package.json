@@ -28,7 +28,7 @@
     "passport-google-oauth20": "^2.0.0",
     "slugify": "^1.6.6",
     "streamifier": "^0.1.1",
-    "stripe": "^16.9.0",
+    "stripe": "^16.12.0",
     "winston": "^3.14.2",
     "winston-mongodb": "^5.1.1"
   }

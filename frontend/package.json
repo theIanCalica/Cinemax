@@ -38,6 +38,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@sentry/react": "^8.30.0",
     "@sentry/tracing": "^7.114.0",
+    "@stripe/stripe-js": "^4.10.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
