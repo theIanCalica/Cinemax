@@ -29,7 +29,7 @@ import Task from "./pages/admin/Task";
 import Profile from "./pages/admin/Profile";
 import Movie from "./pages/admin/Movie";
 import Calendar from "./pages/admin/Calendar";
-import EmailAdmin from "./pages/admin/email";
+import EmailAdmin from "./pages/admin/Email";
 import "./main.css";
 
 // Crew protected route
