@@ -1,11 +1,46 @@
 const Category = require("../Models/Category");
 const Order = require("../Models/Order");
+const Cart = require("../Models/Cart");
 
 // Get all orders
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Category.find().sort({ order_date: 1 });
     res.status(200).json(orders);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+// Create order
+exports.createOrder = async (req, res) => {
+  try {
+    const { userId, foodItems, totalPrice, paymentMethod } = req.body;
+
+    // Validation
+    if (!userId || !foodItems || !totalPrice) {
+      return res.status(400).json({ message: "Invalid order data." });
+    }
+
+    const newOrder = new Order({
+      customer: userId,
+      items: foodItems.map((item) => ({
+        foodId: item.food._id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      totalAmount: totalPrice,
+      paymentMethod: paymentMethod,
+    });
+
+    const savedOrder = await newOrder.save();
+
+    await Cart.findOneAndDelete({ user: userId });
+    res.status(201).json({
+      message: "Order created successfully.",
+      order: savedOrder,
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

@@ -74,7 +74,7 @@ exports.createCartItem = async (req, res) => {
         0
       );
       await cart.save();
-      return res.status(200).json(cart);
+      return res.status(201).json(cart);
     }
 
     // If food item doesn't exist in the cart, create a new cart item

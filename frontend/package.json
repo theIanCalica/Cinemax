@@ -82,6 +82,7 @@
     "redux": "^5.0.1",
     "start": "^5.1.0",
     "sweetalert2": "^11.13.2",
+    "sweetalert2-react-content": "^5.0.7",
     "swiper": "^11.1.10",
     "underscore": "^1.13.7",
     "web-vitals": "^2.1.0"

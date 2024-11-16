@@ -34,6 +34,16 @@ const OrderSchema = new Schema(
       enum: ["pending", "completed", "cancelled"],
       default: "pending",
     },
+    paymentMethod: {
+      type: String,
+      enum: ["Credit Card", "Cash"],
+      required: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["unpaid", "paid", "refunded"],
+      default: "unpaid",
+    },
     // Ratings field for the order
     ratings: [
       {
@@ -44,7 +54,6 @@ const OrderSchema = new Schema(
         },
         rating: {
           type: Number,
-          required: true,
           min: 1,
           max: 5,
         },
