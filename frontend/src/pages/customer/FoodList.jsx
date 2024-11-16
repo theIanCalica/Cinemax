@@ -56,6 +56,7 @@ const FoodList = () => {
         setHasMore(false);
       } else {
         setFoods((prevFoods) => [...prevFoods, ...foods]);
+        console.log(foods);
         setFilteredFoods((prevFoods) => [...prevFoods, ...foods]);
       }
     } catch (error) {
@@ -194,7 +195,7 @@ const FoodList = () => {
                   sm={6}
                   md={4}
                   lg={3}
-                  key={food.id}
+                  key={food._id}
                   ref={lastFoodElementRef}
                 >
                   <Card sx={{ maxWidth: 345, height: "100%" }}>
@@ -232,7 +233,7 @@ const FoodList = () => {
                               cursor: "pointer",
                               fontSize: "14px",
                             }}
-                            onClick={() => handleAddToCart(food.id)}
+                            onClick={() => handleAddToCart(food._id)}
                           >
                             Add to Cart
                           </button>
@@ -244,7 +245,7 @@ const FoodList = () => {
               );
             } else {
               return (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={food.id}>
+                <Grid item xs={12} sm={6} md={4} lg={3} key={food._id}>
                   <Card sx={{ maxWidth: 345, height: "100%" }}>
                     <CardMedia
                       component="img"
@@ -278,7 +279,7 @@ const FoodList = () => {
                               cursor: "pointer",
                               fontSize: "14px",
                             }}
-                            onClick={() => handleAddToCart(food.id)}
+                            onClick={() => handleAddToCart(food._id)}
                           >
                             Add to Cart
                           </button>

@@ -1,4 +1,5 @@
 const Cart = require("../Models/Cart");
+const Food = require("../Models/Food");
 
 // Get all cart items for a user
 exports.getAllCart = async (req, res) => {
@@ -39,7 +40,7 @@ exports.getCartById = async (req, res) => {
 // Create a new cart item
 exports.createCartItem = async (req, res) => {
   try {
-    const { foodId, quantity, userId } = req.body; // Get product and quantity from the request body
+    const { foodId, quantity, userId } = req.body;
 
     // Check if the food item exists
     const food = await Food.findById(foodId);
@@ -47,27 +48,52 @@ exports.createCartItem = async (req, res) => {
       return res.status(404).json({ message: "Food item not found" });
     }
 
-    // Check if the product already exists in the user's cart
-    let cartItem = await Cart.findOne({ user: userId, food: foodId });
+    // Check if the food already exists in the user's cart
+    let cart = await Cart.findOne({ user: userId });
 
-    if (cartItem) {
-      // If it exists, update the quantity
-      cartItem.quantity += quantity; // You could also handle max quantity limit here
-      await cartItem.save();
-      return res.status(200).json(cartItem);
+    // If cart does not exist, create a new cart for the user
+    if (!cart) {
+      cart = new Cart({
+        user: userId,
+        items: [],
+        totalPrice: 0,
+      });
     }
 
-    // If it doesn't exist, create a new cart item
-    cartItem = new Cart({
-      user: userId,
-      product: productId,
+    // Check if the food item already exists in the cart
+    let cartItem = cart.items.find((item) => item.food.toString() === foodId);
+
+    if (cartItem) {
+      // If it exists, update the quantity and total price
+      cartItem.quantity += quantity;
+      cartItem.price = food.price * cartItem.quantity; // Update the price based on quantity
+
+      // Recalculate the total price of the cart
+      cart.totalPrice = cart.items.reduce(
+        (total, item) => total + item.price,
+        0
+      );
+      await cart.save();
+      return res.status(200).json(cart);
+    }
+
+    // If food item doesn't exist in the cart, create a new cart item
+    const newCartItem = {
+      food: foodId,
       quantity,
-    });
+      price: food.price * quantity, // Set the price based on the quantity
+    };
 
-    // Save the cart item to the database
-    await cartItem.save();
+    // Add the new cart item to the cart's items array
+    cart.items.push(newCartItem);
 
-    res.status(201).json(cartItem); // Return the created cart item
+    // Recalculate the total price of the cart
+    cart.totalPrice = cart.items.reduce((total, item) => total + item.price, 0);
+
+    // Save the cart to the database
+    await cart.save();
+
+    res.status(201).json(cart); // Return the updated cart
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
