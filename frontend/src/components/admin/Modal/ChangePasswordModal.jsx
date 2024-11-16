@@ -1,18 +1,22 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { notifySuccess, notifyError, getUser } from "../../../Utils/helpers";
 import {
-  notifySuccess,
-  notifyError,
-  getUser,
-  getBorderColor,
-} from "../../../Utils/helpers";
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Box,
+} from "@mui/material";
 
 const ChangePasswordModal = ({ onClose }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, touchedFields },
+    formState: { errors },
   } = useForm();
 
   const onSubmit = (data) => {
@@ -28,6 +32,8 @@ const ChangePasswordModal = ({ onClose }) => {
       })
       .then((response) => {
         console.log(response);
+        notifySuccess("Password updated successfully!");
+        onClose();
       })
       .catch((error) => {
         if (error.response) {
@@ -42,94 +48,87 @@ const ChangePasswordModal = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
-        <h2 className="text-xl font-bold mb-4">Change Password</h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 mb-2">
-              Current Password
-            </label>
-            <input
+    <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Change Password</DialogTitle>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent>
+          <Box mb={2}>
+            <TextField
               id="current"
+              label="Current Password"
               type="password"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "current",
-                errors,
-                touchedFields
-              )}`}
+              fullWidth
+              variant="outlined"
+              error={!!errors.current}
+              helperText={errors.current?.message}
               {...register("current", {
                 required: "Current Password is required",
               })}
             />
-            {errors.current && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.current.message}
-              </p>
-            )}
-          </div>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 mb-2">
-              New Password
-            </label>
-            <input
+          </Box>
+          <Box mb={2}>
+            <TextField
               id="newPassword"
+              label="New Password"
               type="password"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "newPassword",
-                errors,
-                touchedFields
-              )}`}
+              fullWidth
+              variant="outlined"
+              error={!!errors.newPassword}
+              helperText={errors.newPassword?.message}
               {...register("newPassword", {
                 required: "New Password is required",
               })}
             />
-            {errors.newPassword && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.newPassword.message}
-              </p>
-            )}
-          </div>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 mb-2">
-              Confirm Password
-            </label>
-            <input
+          </Box>
+          <Box mb={2}>
+            <TextField
               id="confirm"
+              label="Confirm Password"
               type="password"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "confirm",
-                errors,
-                touchedFields
-              )}`}
+              fullWidth
+              variant="outlined"
+              error={!!errors.confirm}
+              helperText={errors.confirm?.message}
               {...register("confirm", {
                 required: "Confirm Password is required",
               })}
             />
-            {errors.confirm && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.confirm.message}
-              </p>
-            )}
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-md text-gray-500 border border-gray-300 mr-2"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
-            >
-              Update
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onClose}
+            color="inherit"
+            variant="outlined"
+            sx={{
+              borderColor: "grey.400",
+              color: "grey.600",
+              "&:hover": {
+                borderColor: "grey.500",
+                backgroundColor: "grey.100",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            color="success"
+            variant="outlined"
+            sx={{
+              borderColor: "green.500",
+              color: "green.600",
+              "&:hover": {
+                borderColor: "green.600",
+                backgroundColor: "green.50",
+              },
+            }}
+          >
+            Update
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

@@ -3,6 +3,17 @@ import { useForm } from "react-hook-form";
 import Select from "react-select";
 import axios from "axios";
 import { notifyError, notifySuccess } from "../../../Utils/helpers";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Grid,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  MenuItem,
+} from "@mui/material";
 
 const Contact = ({ onContactCreated, onClose, contactToEdit }) => {
   const {
@@ -25,7 +36,6 @@ const Contact = ({ onContactCreated, onClose, contactToEdit }) => {
         status: contactToEdit.status,
       });
 
-      // Find the option object that matches the status
       const selectedStatus = options.find(
         (option) => option.value === contactToEdit.status
       );
@@ -38,28 +48,24 @@ const Contact = ({ onContactCreated, onClose, contactToEdit }) => {
     const method = "PUT";
 
     try {
-      // Make the axios request
       const response = await axios({
         method,
         url,
         headers: {
           "Content-Type": "application/json",
         },
-        data, // Pass the form data here
+        data,
       });
 
-      // Handle success
       if (response.status === 200 || response.status === 201) {
-        onContactCreated(response.data); // Pass the updated contact data to the callback
+        onContactCreated(response.data);
         notifySuccess("Contact updated successfully");
         onClose();
       } else {
-        // Handle unexpected status codes
         notifyError("Failed to update contact");
         console.error("Failed to update contact", response.statusText);
       }
     } catch (err) {
-      // Handle errors from axios
       notifyError("Error updating contact");
       console.error("Error updating contact", err);
     }
@@ -71,119 +77,130 @@ const Contact = ({ onContactCreated, onClose, contactToEdit }) => {
     { value: "resolved", label: "Resolved" },
   ];
 
-  // Watch status value
   const selectedStatus = watch("status");
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-xl font-bold mb-4">Edit Contact</h2>
+    <Dialog open={true} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogContent>
+        <Typography variant="h6" component="h2" gutterBottom>
+          Edit Contact
+        </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label htmlFor="name" className="block text-gray-700 mb-2">
-                Name
-              </label>
-              <input
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
                 id="name"
-                type="text"
-                readOnly
-                className="w-full px-3 py-2 border rounded-md"
+                label="Name"
+                variant="outlined"
+                fullWidth
+                InputProps={{ readOnly: true }}
                 {...register("name")}
               />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-gray-700 mb-2">
-                Email
-              </label>
-              <input
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
                 id="email"
-                type="email"
-                readOnly
-                className="w-full px-3 py-2 border rounded-md"
+                label="Email"
+                variant="outlined"
+                fullWidth
+                InputProps={{ readOnly: true }}
                 {...register("email")}
               />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label htmlFor="phone" className="block text-gray-700 mb-2">
-                Phone Number
-              </label>
-              <input
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
                 id="phone"
-                type="text"
-                readOnly
-                maxLength={11}
-                className="w-full px-3 py-2 border rounded-md"
+                label="Phone Number"
+                variant="outlined"
+                fullWidth
+                InputProps={{ readOnly: true }}
+                inputProps={{ maxLength: 11 }}
                 {...register("phone")}
               />
-            </div>
-            <div>
-              <label htmlFor="subject" className="block text-gray-700 mb-2">
-                Subject
-              </label>
-              <input
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
                 id="subject"
-                type="text"
-                readOnly
-                className="w-full px-3 py-2 border rounded-md"
+                label="Subject"
+                variant="outlined"
+                fullWidth
+                InputProps={{ readOnly: true }}
                 {...register("subject")}
               />
-            </div>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="body" className="block text-gray-700 mb-2">
-              Message
-            </label>
-            <textarea
-              {...register("body")}
-              id="body"
-              readOnly
-              className="w-full px-3 py-2 border rounded-md"
-            ></textarea>
-          </div>
-          <div className="mb-4">
-            <label htmlFor="status" className="block text-gray-700 mb-2">
-              Status
-            </label>
-            <Select
-              options={options}
-              id="status"
-              placeholder="Select status"
-              value={selectedStatus} // Set current value
-              onChange={(selectedOption) => setValue("status", selectedOption)} // Update form value on change
-              isClearable
-              isSearchable
-              styles={{
-                control: (base, state) => ({
-                  ...base,
-                  borderColor: errors.status ? "red" : base.borderColor,
-                  "&:hover": {
-                    borderColor: errors.status ? "red" : base.borderColor,
-                  },
-                }),
-              }}
-            />
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="body"
+                label="Message"
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={4}
+                InputProps={{ readOnly: true }}
+                {...register("body")}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                id="status"
+                select
+                label="Status"
+                fullWidth
+                value={selectedStatus ? selectedStatus.value : ""}
+                onChange={(event) =>
+                  setValue(
+                    "status",
+                    options.find(
+                      (option) => option.value === event.target.value
+                    )
+                  )
+                }
+                error={!!errors.status}
+                helperText={errors.status ? "Please select a status" : ""}
+              >
+                {options.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
+          <DialogActions>
+            <Button
               onClick={onClose}
-              className="px-4 py-2 rounded-md text-gray-500 border border-gray-300 mr-2"
+              color="inherit"
+              variant="outlined"
+              sx={{
+                borderColor: "grey.400",
+                color: "grey.600",
+                "&:hover": {
+                  borderColor: "grey.500",
+                  backgroundColor: "grey.100",
+                },
+              }}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+              color="success"
+              variant="outlined"
+              sx={{
+                borderColor: "green.500",
+                color: "green.600",
+                "&:hover": {
+                  borderColor: "green.600",
+                  backgroundColor: "green.50",
+                },
+              }}
             >
               Update
-            </button>
-          </div>
+            </Button>
+          </DialogActions>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

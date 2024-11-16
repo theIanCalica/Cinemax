@@ -5,12 +5,13 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { notifySuccess, notifyError } from "../../Utils/helpers";
 import ContactModal from "../../components/admin/Modal/Contact";
-import { formatDate } from "../../Utils/FormatDate";
+import { formatDate } from "../../Utils/helpers";
 import axios from "axios";
 import ReactLoading from "react-loading";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { delay } from "../../Utils/helpers";
+import { Box } from "@mui/material";
 
 const Contact = () => {
   const [contacts, setContacts] = useState([]);
@@ -174,15 +175,17 @@ const Contact = () => {
       </div>
 
       {isModalOpen && (
-        <ContactModal
-          contactToEdit={currentContact}
-          isEditing={isEditing}
-          onClose={closeModal}
-          onContactCreated={handleContactChange}
-          notifySuccess={notifySuccess}
-          notifyError={notifyError}
-          refresh={fetchContacts}
-        />
+        <Box position="fixed" top="0" left="0" right="0" bottom="0" zIndex="50">
+          <ContactModal
+            contactToEdit={currentContact}
+            isEditing={isEditing}
+            onClose={closeModal}
+            onContactCreated={handleContactChange}
+            notifySuccess={notifySuccess}
+            notifyError={notifyError}
+            refresh={fetchContacts}
+          />
+        </Box>
       )}
 
       {isLoading ? (

@@ -134,7 +134,6 @@ exports.updateContactById = async (req, res) => {
     }
 
     res.status(201).json({ success: true, contact });
-    console.log(req);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
