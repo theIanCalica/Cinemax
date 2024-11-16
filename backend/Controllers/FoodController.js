@@ -2,6 +2,7 @@ const Food = require("../Models/Food");
 const cloudinary = require("../utils/Cloudinary");
 const upload = require("../middleware/multer");
 const Category = require("../Models/Category");
+const streamifier = require("streamifier");
 
 // Get all foods
 exports.getAllFoods = async (req, res) => {
@@ -31,7 +32,7 @@ exports.getFoodById = async (req, res) => {
 
 // Add food
 exports.createFood = [
-  upload.array("images"), // No limit on number of files
+  upload.array("images"), // Allow multiple files
   async (req, res) => {
     try {
       const { category, name, price, description, availability, quantity } =
@@ -42,7 +43,9 @@ exports.createFood = [
           .status(400)
           .json({ msg: "Please provide all required fields" });
       }
+
       const categoryObj = await Category.findById(category);
+
       if (!req.files || req.files.length === 0) {
         return res
           .status(400)
@@ -50,15 +53,31 @@ exports.createFood = [
       }
 
       const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-      const imageUploads = await Promise.all(
-        req.files.map((file) => {
+
+      // Upload images to Cloudinary
+      const uploadToCloudinary = (file) => {
+        return new Promise((resolve, reject) => {
           if (!allowedTypes.includes(file.mimetype)) {
-            throw new Error(
-              "Invalid file type. Only JPEG, PNG, and GIF are allowed."
+            reject(
+              new Error(
+                "Invalid file type. Only JPEG, PNG, and GIF are allowed."
+              )
             );
           }
-          return cloudinary.uploader.upload(file.path, { folder: "foods" });
-        })
+
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: "foods" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          streamifier.createReadStream(file.buffer).pipe(uploadStream);
+        });
+      };
+
+      const imageUploads = await Promise.all(
+        req.files.map((file) => uploadToCloudinary(file))
       );
 
       const images = imageUploads.map((result) => ({
@@ -66,6 +85,7 @@ exports.createFood = [
         url: result.secure_url,
       }));
 
+      // Create new food entry
       const newFood = new Food({
         category: {
           id: categoryObj.id,
