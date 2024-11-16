@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 // Function to send email
 const sendEmail = (to, subject, text, attachments = []) => {
   const mailOptions = {
-    from: "cinemax_manila@gmail.com",
+    from: "cinemax.inc.manila@gmail.com",
     to: to,
     subject: subject,
     text: text,
@@ -31,4 +31,19 @@ const sendEmail = (to, subject, text, attachments = []) => {
   return transporter.sendMail(mailOptions);
 };
 
-module.exports = sendEmail;
+const sendEmailOrder = (to, subject, html) => {
+  console.log(to);
+  const mailOptions = {
+    from: "cinemax.inc.manila@gmail.com",
+    to: to,
+    subject: subject,
+    html: html,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+
+module.exports = {
+  sendEmail,
+  sendEmailOrder,
+};

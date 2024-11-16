@@ -1,7 +1,10 @@
 const Category = require("../Models/Category");
 const Order = require("../Models/Order");
 const Cart = require("../Models/Cart");
+const User = require("../Models/User");
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
+
+const { sendEmailOrder } = require("../utils/Mailtrap");
 
 // Get all orders
 exports.getAllOrders = async (req, res) => {
@@ -37,9 +40,69 @@ exports.createOrder = async (req, res) => {
 
     const savedOrder = await newOrder.save();
 
+    const user = await User.findById(userId);
+
+    // Prepare dynamic email content
+    const emailContent = `
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Transaction Details</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+          <div style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); width: 80%; margin: 0 auto;">
+            <h2 style="color: #333; margin-bottom: 10px;">Transaction Details</h2>
+            <p>Thank you for your purchase! Below are the details of your transaction:</p>
+
+            <div style="margin-bottom: 20px; display: flex; justify-content: space-between;">
+              <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+              <p><strong>Order Status:</strong> Pending</p>
+            </div>
+
+            <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+              <thead>
+                <tr>
+                  <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Foods</th>
+                  <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${foodItems
+                  .map(
+                    (item) => `
+                  <tr>
+                    <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${
+                      item.food.name
+                    } (x${item.quantity})</td>
+                    <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">PHP ${
+                      item.price * item.quantity
+                    }</td>
+                  </tr>
+                `
+                  )
+                  .join("")}
+                <tr style="background-color: #f9f9f9; font-weight: bold;">
+                  <td style="padding: 10px; text-align: left;">Grand Total</td>
+                  <td style="padding: 10px; text-align: right;">PHP ${totalPrice}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p>If you have any questions about your transaction, feel free to contact us at <a href="mailto:cinemax.inc.manila@gmail.com">cinemax.inc.manila@gmail.com</a> or call us at <a href="tel:+639123456789">+63 912 345 6789</a>.</p>
+          </div>
+        </body>
+      </html>
+    `;
+    console.log(user);
+    // Send email to the user
+    await sendEmailOrder(user.email, "Transaction Details", emailContent);
+
+    // Clear the user's cart after order
     await Cart.findOneAndDelete({ user: userId });
+
     res.status(201).json({
-      message: "Order created successfully.",
+      message: "Order created successfully and email sent.",
       order: savedOrder,
     });
   } catch (err) {
