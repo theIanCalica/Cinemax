@@ -30,6 +30,28 @@ exports.getFoodById = async (req, res) => {
   }
 };
 
+// Get paginated foods
+exports.getPaginatedFoods = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
+    const skip = (page - 1) * limit; // Calculate items to skip
+    const total = await Food.countDocuments(); // Total number of foods
+    const foods = await Food.find().sort({ name: 1 }).skip(skip).limit(limit);
+
+    res.status(200).json({
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      foods,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 // Add food
 exports.createFood = [
   upload.array("images"), // Allow multiple files

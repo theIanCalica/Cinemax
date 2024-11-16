@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const FoodController = require("../Controllers/FoodController");
 
+// Pagination for foods
+router.get("/paginated", FoodController.getPaginatedFoods);
+
 // Get all foods
 router.get("/", FoodController.getAllFoods);
 
