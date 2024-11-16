@@ -7,7 +7,7 @@ exports.getAllCart = async (req, res) => {
     const userId = req.user.id; // Extracted from the JWT token by authMiddleware
 
     // Fetch cart items from the database for the logged-in user
-    const carts = await Cart.find({ user: userId }).populate("product"); // Include product details if needed
+    const carts = await Cart.find({ user: userId }).populate("items.food"); // Populate the food details inside items
 
     res.status(200).json(carts);
   } catch (err) {
@@ -23,7 +23,7 @@ exports.getCartById = async (req, res) => {
     const cartId = req.params.id;
 
     // Fetch the cart item from the database
-    const cart = await Cart.findById(cartId).populate("product"); // Populate product details if needed
+    const cart = await Cart.findById(cartId).populate("foods"); // Populate product details if needed
 
     if (!cart) {
       return res.status(404).json({ msg: "Cart item not found" }); // Handle case where the cart is not found
@@ -103,29 +103,46 @@ exports.createCartItem = async (req, res) => {
 // Update a cart item
 exports.updateCartItem = async (req, res) => {
   try {
-    const { cartId, quantity } = req.body; // Get cart ID and new quantity from the request body
+    const { foodId, newQuantity, userId } = req.body;
 
     // Fetch the cart item to update
-    const cartItem = await Cart.findById(cartId);
+    const cartItem = await Cart.findOne({ user: userId });
 
     if (!cartItem) {
       return res.status(404).json({ msg: "Cart item not found" });
     }
 
     // Check if the user is the owner of the cart item
-    if (cartItem.user.toString() !== req.user.id) {
+    if (cartItem.user.toString() !== userId) {
       return res
         .status(403)
         .json({ msg: "Not authorized to update this cart item" });
     }
 
-    // Update the quantity (you could add validation for minimum or maximum quantity)
-    cartItem.quantity = quantity;
+    // Find the food item in the cart and update its quantity
+    const food = cartItem.items.find((item) => item.food.toString() === foodId);
+
+    if (!food) {
+      return res.status(404).json({ msg: "Food item not found in cart" });
+    }
+
+    // Update the quantity
+    food.quantity = newQuantity;
+
+    // Recalculate total price by summing up price * quantity for each item
+    let totalPrice = 0;
+    cartItem.items.forEach((item) => {
+      totalPrice += item.price * item.quantity;
+    });
+
+    // Update total price of the cart
+    cartItem.totalPrice = totalPrice;
 
     // Save the updated cart item
     await cartItem.save();
 
-    res.status(200).json(cartItem); // Return the updated cart item
+    // Return the updated cart item
+    res.status(200).json(cartItem);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");

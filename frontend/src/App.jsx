@@ -14,6 +14,7 @@ import FoodCategory from "./pages/customer/FoodCategory";
 import CustomerFoodList from "./pages/customer/FoodList";
 import ProtectedRoute from "./Utils/authRoutes/ProtectedRoute";
 import BaseLayout from "./components/customer/Layout";
+import CartPage from "./pages/customer/Cart";
 
 // Admin Pages
 import Layout from "./components/admin/v2/Layout";
@@ -59,6 +60,7 @@ function App() {
             <Route path="/email" element={<Email />} />
             <Route path="/foods" element={<CustomerFoodList />}></Route>
             <Route path="/food/category" element={<FoodCategory />}></Route>
+            <Route path="/my-cart" element={<CartPage />}></Route>
           </Route>
 
           {/* Routes for crew */}

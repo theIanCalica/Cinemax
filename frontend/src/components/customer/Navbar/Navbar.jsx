@@ -165,7 +165,7 @@ const Navbar = () => {
                     Profile
                   </NavLink>
                   <NavLink
-                    to="/cart"
+                    to="/my-cart"
                     className="block hover:text-themeYellow px-4 py-2"
                   >
                     Cart
