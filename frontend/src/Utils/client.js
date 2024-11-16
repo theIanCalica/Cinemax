@@ -1,5 +1,5 @@
 import axios from "axios";
-// import { getToken, setToken } from "./Helpers";
+import { getToken, setToken } from "./helpers";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 const myBaseUrl = isDevelopment
@@ -11,6 +11,7 @@ const client = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // Function to refresh the access token
@@ -41,20 +42,20 @@ const client = axios.create({
 //   }
 // };
 
-// Add a request interceptor to attach the access token to headers
-// client.interceptors.request.use(
-//   (config) => {
-//     const { accessToken } = getToken() || {};
-//     if (accessToken) {
-//       const cleanedToken = accessToken.replace(/^["']|["']$/g, "");
-//       config.headers["Authorization"] = `Bearer ${cleanedToken}`;
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+// A request interceptor to attach the access token to headers
+client.interceptors.request.use(
+  (config) => {
+    const token = getToken() || {};
+    if (token) {
+      const cleanedToken = token.replace(/^["']|["']$/g, "");
+      config.headers["Authorization"] = `Bearer ${cleanedToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // client.interceptors.response.use(
 //   (response) => response,

@@ -18,7 +18,7 @@ const FoodCategory = () => {
 
   const fetchFoodCategories = async () => {
     client
-      .get("/categories")
+      .get("/categories", { withCredentials: true })
       .then((response) => {
         // Assuming the response already has the category data, but we'll add image URLs here
         const categoriesWithImages = response.data.map((category) => ({

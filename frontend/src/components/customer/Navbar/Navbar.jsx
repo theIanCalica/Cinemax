@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { getUser, logout } from "../../../Utils/helpers";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
+  const user = getUser();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [profileDropdown, setProfileDropdown] = useState(false); // Added state for profile dropdown
   const [dropdowns, setDropdowns] = useState({
     movies: false,
     announcements: false,
-    food: false, // Added food dropdown
+    food: false,
   });
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -41,6 +46,28 @@ const Navbar = () => {
     };
   }, []);
 
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of your account!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log me out!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout(() => {
+          navigate("/");
+        });
+        Swal.fire(
+          "Logged Out!",
+          "You have been logged out successfully.",
+          "success"
+        );
+      }
+    });
+  };
   return (
     <nav
       className="bg-transparent absolute top-0 left-0 w-full z-10 border-b p-3 font-mono"
@@ -117,15 +144,50 @@ const Navbar = () => {
         </div>
 
         {/* Search and Profile Icons */}
-        <div className="hidden md:flex space-x-4 items-center">
+        <div className="hidden md:flex space-x-4 items-center relative">
           <button>
             <SearchIcon className="text-white hover:text-themeYellow" />
           </button>
-          <NavLink to={`/login`}>
-            <button>
-              <PersonIcon className="text-white hover:text-themeYellow" />
-            </button>
-          </NavLink>
+          <button
+            onClick={() => setProfileDropdown((prev) => !prev)}
+            className="relative"
+          >
+            <PersonIcon className="text-white hover:text-themeYellow" />
+          </button>
+          {profileDropdown && (
+            <div className="absolute top-full right-0 mt-2 w-48 bg-themeGrayExteral text-white rounded shadow-lg z-10">
+              <ul className="p-2 space-y-2">
+                <li>
+                  <NavLink
+                    to="/profile"
+                    className="block hover:text-themeYellow px-4 py-2"
+                  >
+                    Profile
+                  </NavLink>
+                  <NavLink
+                    to="/cart"
+                    className="block hover:text-themeYellow px-4 py-2"
+                  >
+                    Cart
+                  </NavLink>
+                  <NavLink
+                    to="/order"
+                    className="block hover:text-themeYellow px-4 py-2"
+                  >
+                    Order
+                  </NavLink>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleLogout()}
+                    className="block w-full text-left hover:text-themeYellow px-4 py-2"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
       </div>
 

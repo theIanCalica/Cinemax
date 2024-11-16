@@ -14,11 +14,18 @@ const MovieRoutes = require("./routes/MovieRoutes");
 const UserRoutes = require("./routes/UserRoutes");
 const TaskRoutes = require("./routes/TaskRoutes");
 const authRoutes = require("./routes/AuthRoutes");
+const CartRoutes = require("./routes/CartRoutes");
 const OrderRoutes = require("./routes/OrderRoutes");
+
+// Configure CORS options
+const corsOptions = {
+  origin: "http://localhost:3000", // Allow only your frontend domain
+  credentials: true, // Allow credentials (cookies, authorization headers)
+};
 
 // express app
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -32,6 +39,7 @@ app.use("/api/v1/movies", MovieRoutes);
 app.use("/api/v1/users", UserRoutes);
 app.use("/api/v1/tasks", TaskRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/carts", CartRoutes);
 app.use("/api/v1/orders", OrderRoutes);
 
 mongoose

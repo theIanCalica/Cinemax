@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { getBorderColor } from "../../../Utils/helpers";
-import axios from "axios";
+import client from "../../../Utils/client";
 
 const CreateCategory = ({
   onClose,
@@ -27,12 +27,10 @@ const CreateCategory = ({
   }, [isEditing, categoryToEdit]);
 
   const onSubmit = (data) => {
-    const url = isEditing
-      ? `${process.env.REACT_APP_API_LINK}/categories/${categoryToEdit._id}`
-      : `${process.env.REACT_APP_API_LINK}/categories`;
+    const url = isEditing ? `categories/${categoryToEdit._id}` : `/categories`;
     const method = isEditing ? "PUT" : "POST";
 
-    axios({
+    client({
       method,
       url,
       headers: {

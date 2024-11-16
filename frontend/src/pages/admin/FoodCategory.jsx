@@ -10,7 +10,7 @@ import {
   delay,
 } from "../../Utils/helpers";
 import CategoryModal from "../../components/admin/Modal/FoodCategory";
-import axios from "axios";
+import client from "../../Utils/client";
 import "react-toastify/dist/ReactToastify.css";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
@@ -29,7 +29,7 @@ const FoodCategory = () => {
     setLoading(true);
     try {
       const [response] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_API_LINK}/categories`),
+        client.get(`/categories`),
         delay(1000),
       ]);
       setCategories(response.data);
@@ -69,7 +69,7 @@ const FoodCategory = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         const deleteRequests = ids.map((id) =>
-          axios.delete(`${process.env.REACT_APP_API_LINK}/categories/${id}`)
+          client.delete(`/categories/${id}`)
         );
 
         Promise.all(deleteRequests)

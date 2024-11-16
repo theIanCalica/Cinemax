@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import client from "../../Utils/client";
-import { notifyError } from "../../Utils/helpers";
+import { notifyError, getUser, notifySuccess } from "../../Utils/helpers";
 import Hero from "../../components/customer/Hero/Hero";
 import {
   Grid,
@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 
 const FoodList = () => {
+  const user = getUser();
   const [foods, setFoods] = useState([]);
   const [filteredFoods, setFilteredFoods] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -73,6 +74,22 @@ const FoodList = () => {
         error.response?.data?.message || "Failed to fetch categories."
       );
     }
+  };
+
+  const handleAddToCart = (foodId) => {
+    const userId = user._id;
+    const cartData = {
+      userId, // Include the user ID
+      foodId, // Specify the food ID
+      quantity: 1,
+    };
+    client.post("/carts", cartData).then((response) => {
+      if (response.status === 201) {
+        notifySuccess("Successfully added to cart");
+      } else {
+        notifyError("Failed to add item to cart:", response.data.message);
+      }
+    });
   };
 
   const applyFilters = () => {
@@ -201,6 +218,26 @@ const FoodList = () => {
                       <Typography variant="body1">
                         Rating: {food.averageRating?.toFixed(1) || "N/A"} ⭐
                       </Typography>
+
+                      {/* Add to Cart Button */}
+                      {user && (
+                        <Box sx={{ mt: 2 }}>
+                          <button
+                            style={{
+                              backgroundColor: "#007BFF",
+                              color: "#fff",
+                              border: "none",
+                              padding: "10px 20px",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "14px",
+                            }}
+                            onClick={() => handleAddToCart(food.id)}
+                          >
+                            Add to Cart
+                          </button>
+                        </Box>
+                      )}
                     </CardContent>
                   </Card>
                 </Grid>
@@ -229,6 +266,24 @@ const FoodList = () => {
                       <Typography variant="body1">
                         Rating: {food.averageRating?.toFixed(1) || "N/A"} ⭐
                       </Typography>
+                      {user && (
+                        <Box sx={{ mt: 2 }}>
+                          <button
+                            style={{
+                              backgroundColor: "#007BFF",
+                              color: "#fff",
+                              border: "none",
+                              padding: "10px 20px",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "14px",
+                            }}
+                            onClick={() => handleAddToCart(food.id)}
+                          >
+                            Add to Cart
+                          </button>
+                        </Box>
+                      )}
                     </CardContent>
                   </Card>
                 </Grid>
