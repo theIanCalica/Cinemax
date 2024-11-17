@@ -149,12 +149,18 @@ const Navbar = () => {
             <SearchIcon className="text-white hover:text-themeYellow" />
           </button>
           <button
-            onClick={() => setProfileDropdown((prev) => !prev)}
+            onClick={() => {
+              if (user) {
+                setProfileDropdown((prev) => !prev);
+              } else {
+                navigate("/login");
+              }
+            }}
             className="relative"
           >
             <PersonIcon className="text-white hover:text-themeYellow" />
           </button>
-          {profileDropdown && (
+          {profileDropdown && user && (
             <div className="absolute top-full right-0 mt-2 w-48 bg-themeGrayExteral text-white rounded shadow-lg z-10">
               <ul className="p-2 space-y-2">
                 <li>
@@ -179,7 +185,7 @@ const Navbar = () => {
                 </li>
                 <li>
                   <button
-                    onClick={() => handleLogout()}
+                    onClick={handleLogout}
                     className="block w-full text-left hover:text-themeYellow px-4 py-2"
                   >
                     Logout

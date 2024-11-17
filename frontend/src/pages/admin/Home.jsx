@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import Widget from "../../components/admin/Widget";
+import { Typography, Box, Grid, Paper, Button, Link } from "@mui/material";
+import {
+  AccountCircle,
+  ShoppingCart,
+  Event,
+  Download,
+} from "@mui/icons-material";
 import BarChart from "../../components/admin/Chart/BarChart";
 import LineChart from "../../components/admin/Chart/LineChart";
 import PieChart from "../../components/admin/Chart/PieChart";
@@ -8,8 +14,8 @@ import Map from "../../components/admin/Map";
 import ContactWidget from "../../components/admin/ContactWidget";
 import TopMovies from "../../components/admin/TopMovies";
 import { notifySuccess } from "../../Utils/helpers";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import client from "../../Utils/client";
+
 const Home = () => {
   const user = useSelector((state) => state.user.user);
   const loggedIn = useSelector((state) => state.user.loggedIn);
@@ -19,10 +25,7 @@ const Home = () => {
 
   const getNumberofUsers = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_LINK}/users/count`
-      );
-      console.log(response);
+      const response = await client.get(`/users/count`);
       setUserCount(response.data.count);
     } catch (err) {
       console.error("Error fetching user count:", err);
@@ -31,10 +34,7 @@ const Home = () => {
 
   const getNumberOfOrder = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_LINK}/orders/count`
-      );
-      console.log(response);
+      const response = await client.get(`/orders/count`);
       setOrderCount(response.data.count);
     } catch (err) {
       console.error("Error fetching order count:", err);
@@ -43,10 +43,7 @@ const Home = () => {
 
   const getNumberOfBooking = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_LINK}/bookings/count`
-      );
-      console.log(response);
+      const response = await client.get(`/bookings/count`);
       setBookingCount(response.data.count);
     } catch (err) {
       console.error("Error fetching booking count:", err);
@@ -62,44 +59,94 @@ const Home = () => {
       notifySuccess("Successfully logged in");
     }
   }, [loggedIn, user]);
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-      <p className="mt-4">
+    <Box p={3}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom>
+        Admin Dashboard
+      </Typography>
+      <Typography variant="body1" color="textSecondary" gutterBottom>
         Welcome to the admin dashboard. Here you can manage all aspects of your
         application.
-      </p>
+      </Typography>
 
-      <div className="flex mt-5 justify-between items-center">
-        <Widget type="User" count={userCount}></Widget>
-        <Widget type="Order" count={orderCount}></Widget>
-        <Widget type="Booking" count={orderCount}></Widget>
-      </div>
-      <div className="container mt-5 bg-white p-4 shadow-md rounded-lg ">
-        <BarChart />
+      <Grid container spacing={3} mt={2}>
+        {/* Widget Cards */}
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
+            <AccountCircle color="primary" fontSize="large" />
+            <Typography variant="h6">Users</Typography>
+            <Typography variant="h4">{userCount}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
+            <ShoppingCart color="secondary" fontSize="large" />
+            <Typography variant="h6">Orders</Typography>
+            <Typography variant="h4">{orderCount}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
+            <Event color="success" fontSize="large" />
+            <Typography variant="h6">Bookings</Typography>
+            <Typography variant="h4">{bookingCount}</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
 
-        <div className="flex justify-between items-center mt-4">
-          <div className="text-blue-500 flex justify-between gap-6 cursor-pointer">
-            <Link className="hover:underline">View orders</Link>
-            <Link className="hover:underline">View bookings</Link>
-          </div>
+      {/* Charts and Reports */}
+      <Box mt={4}>
+        <Paper elevation={3} sx={{ p: 2 }}>
+          <BarChart />
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mt={2}
+          >
+            <Box display="flex" gap={2}>
+              <Link href="#" underline="hover" color="primary">
+                View Orders
+              </Link>
+              <Link href="#" underline="hover" color="primary">
+                View Bookings
+              </Link>
+            </Box>
+            <Button
+              variant="outlined"
+              color="success"
+              startIcon={<Download />}
+              sx={{
+                "&:hover": { backgroundColor: "green", color: "white" },
+              }}
+            >
+              Download Report
+            </Button>
+          </Box>
+        </Paper>
+      </Box>
 
-          <button className="bg-transparent border border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-white transition-colors duration-300">
-            Download Report
-          </button>
-        </div>
-      </div>
+      {/* Additional Widgets */}
+      <Grid container spacing={3} mt={4}>
+        <Grid item xs={12} sm={4}>
+          <PieChart />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TopMovies />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <ContactWidget />
+        </Grid>
+      </Grid>
 
-      <div className="flex justify-between gap-4 mt-5">
-        <PieChart />
-        <TopMovies />
-        <ContactWidget />
-      </div>
-
-      <div className="container mt-5 bg-white p-4 shadow-md rounded-lg">
-        <Map />
-      </div>
-    </div>
+      {/* Map */}
+      <Box mt={4}>
+        <Paper elevation={3} sx={{ p: 2 }}>
+          <Map />
+        </Paper>
+      </Box>
+    </Box>
   );
 };
 

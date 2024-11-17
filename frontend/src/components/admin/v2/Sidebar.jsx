@@ -10,6 +10,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 // import EmailIcon from "@mui/icons-material/Email";
 // import MessageIcon from "@mui/icons-material/Message";
+import LocalDiningIcon from "@mui/icons-material/LocalDining";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ArticleIcon from "@mui/icons-material/Article";
 import { Link, useNavigate } from "react-router-dom";
@@ -454,6 +455,52 @@ const Sidebar = ({ isMinimized }) => {
             </Link>
           </ul>
         )}
+
+        <Link to="/admin/orders">
+          <li
+            className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
+            onMouseOver={() => setHovered("orders")}
+            onMouseOut={() => setHovered(null)}
+            onClick={() => handleItemClick("orders")}
+            style={{
+              backgroundColor:
+                hovered === "orders" || selected === "orders"
+                  ? "#161621"
+                  : "transparent",
+            }}
+          >
+            {selected === "orders" && (
+              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-green-500" />
+            )}
+            <div
+              className="mr-5 rounded-md transition-colors duration-300 ease-in-out"
+              style={{ backgroundColor: "#2B3138" }}
+            >
+              <LocalDiningIcon
+                style={{
+                  color: "#33C92D",
+                  fontSize: "1.7rem",
+                  lineHeight: "1",
+                }}
+                className="p-1"
+              />
+            </div>
+            <span
+              className={`transition-all ease-in-out duration-500 ${
+                isMinimized ? "hidden" : "block"
+              }`}
+              style={{
+                fontSize: "16px",
+                color:
+                  hovered === "orders" || selected === "orders"
+                    ? "white"
+                    : "#9ca3af",
+              }}
+            >
+              Orders
+            </span>
+          </li>
+        </Link>
         <h1
           className={`text-gray-400 font-sans px-8 pt-1 ${
             isMinimized ? "hidden" : "block"

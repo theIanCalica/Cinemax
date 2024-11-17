@@ -32,6 +32,7 @@ import Profile from "./pages/admin/Profile";
 import Movie from "./pages/admin/Movie";
 import Calendar from "./pages/admin/Calendar";
 import EmailAdmin from "./pages/admin/Email";
+import OrderPage from "./pages/admin/Orders";
 import "./main.css";
 
 // Crew protected route
@@ -93,6 +94,7 @@ function App() {
             <Route path="calendar" element={<Calendar />}></Route>
             <Route path="email" element={<EmailAdmin />}></Route>
             <Route path="profile" element={<Profile />}></Route>
+            <Route path="orders" element={<OrderPage />}></Route>
             <Route path="emails"></Route>
             {/* <Route path="messages" element={<Message />}></Route> */}
             <Route path="contacts" element={<Contacts />}></Route>

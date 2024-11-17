@@ -31,7 +31,13 @@ const OrderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "completed", "cancelled"],
+      enum: [
+        "Pending",
+        "Processing",
+        "Ready to Pick up",
+        "Completed",
+        "Cancelled",
+      ],
       default: "pending",
     },
     paymentMethod: {
@@ -41,7 +47,7 @@ const OrderSchema = new Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["unpaid", "paid", "refunded"],
+      enum: ["unpaid", "paid"],
       default: "unpaid",
     },
     // Ratings field for the order

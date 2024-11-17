@@ -21,6 +21,6 @@ router.post(
 router.post("/", authenticateTokenAndUser, OrderController.createOrder);
 
 // Update a single order by ID
-router.put("/:id", authenticateTokenAndUser, OrderController.updateOrderById);
+router.put("/", authenticateTokenAndUser, OrderController.updateOrderById);
 
 module.exports = router;
