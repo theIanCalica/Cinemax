@@ -127,7 +127,7 @@ const Navbar = ({ toggleSidebar }) => {
               />
             </button>
             {isProfileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg">
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-50">
                 <NavLink to={"/admin/profile"}>
                   <button className="flex gap-4 px-4 py-3 text-gray-700 justify-between hover:bg-gray-100 w-full text-left">
                     <span className="text-gray-700">Profile</span>

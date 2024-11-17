@@ -177,7 +177,7 @@ const Navbar = () => {
                     Cart
                   </NavLink>
                   <NavLink
-                    to="/order"
+                    to="/my-orders"
                     className="block hover:text-themeYellow px-4 py-2"
                   >
                     Order

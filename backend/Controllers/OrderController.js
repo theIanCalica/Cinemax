@@ -19,6 +19,26 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
+// Get order based on userID
+exports.getOrdersBasedOnUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).send("User ID is required");
+    }
+
+    const orders = await Order.find({ customer: userId })
+      .populate("items.foodId", "name description price") // Populate foodId in items array
+      .sort({ createdAt: 1 }) // Sort by createdAt in descending order
+      .exec();
+    res.status(200).json(orders);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error: " + err.message);
+  }
+};
+
 // Create order
 exports.createOrder = async (req, res) => {
   try {

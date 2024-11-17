@@ -29,6 +29,11 @@ const Hero = ({ type }) => {
       subtitle: "Cart",
       image: "/images/food.png",
     },
+    Order: {
+      title: "My Order",
+      subtitle: "Order",
+      image: "/images/food.png",
+    },
   };
 
   // Fallback for invalid or missing type

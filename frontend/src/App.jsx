@@ -16,6 +16,7 @@ import ProtectedRoute from "./Utils/authRoutes/ProtectedRoute";
 import BaseLayout from "./components/customer/Layout";
 import CartPage from "./pages/customer/Cart";
 import CancelPaymentPage from "./pages/customer/PaymentCanceled";
+import CustomerOrderPage from "./pages/customer/Order";
 
 // Admin Pages
 import Layout from "./components/admin/v2/Layout";
@@ -64,7 +65,7 @@ function App() {
             <Route path="/foods" element={<CustomerFoodList />}></Route>
             <Route path="/food/category" element={<FoodCategory />}></Route>
             <Route path="/my-cart" element={<CartPage />}></Route>
-            <Route path="/my-orders" element={<CartPage />}></Route>
+            <Route path="/my-orders" element={<CustomerOrderPage />}></Route>
           </Route>
 
           {/* Routes for crew */}
