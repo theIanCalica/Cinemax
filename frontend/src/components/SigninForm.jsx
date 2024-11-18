@@ -49,40 +49,42 @@ const SigninForm = ({ onSwitchMode }) => {
       console.error("Error during Facebook authentication:", error);
     }
   };
-
   const onSubmit = async (data) => {
     try {
       const userCredential = await doSignInWithEmailAndPassword(
         data.email,
         data.password
       );
+      client
+        .post(`/auth/login`, data, {
+          headers: { "Content-Type": "application/json" },
+        })
+        .then((response) => {
+          console.log("Response:", response.data);
+          const user = response.data.user;
+          const { role } = user;
+          const targetPath = role === "admin" ? "/admin" : "/";
+          authenticate(response.data, () => navigate(targetPath));
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.error("Error response:", error.response.data);
+            console.error("Error status:", error.response.status);
+          } else {
+            console.error("Error message:", error.message);
+          }
+        });
+
       console.log(userCredential); // Log the result or handle it as needed
     } catch (error) {
-      console.error("Error signing in:", error);
-      notifyError(error);
-      // Handle the error (e.g., show an error message to the user)
+      if (error.code === "auth/invalid-credential") {
+        notifyError("Invalid credentials.");
+      } else {
+        notifyError("An error occurred. Please try again later.");
+      }
     }
   };
 
-  // axios
-  //   .post(`${process.env.REACT_APP_API_LINK}/auth/login`, data, {
-  //     headers: { "Content-Type": "application/json" },
-  //   })
-  //   .then((response) => {
-  //     console.log("Response:", response.data);
-  //     const user = response.data.user;
-  //     const { role } = user;
-  //     const targetPath = role === "admin" ? "/admin" : "/";
-  //     authenticate(response.data, () => navigate(targetPath));
-  //   })
-  //   .catch((error) => {
-  //     if (error.response) {
-  //       console.error("Error response:", error.response.data);
-  //       console.error("Error status:", error.response.status);
-  //     } else {
-  //       console.error("Error message:", error.message);
-  //     }
-  //   });
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse?.credential);
     client

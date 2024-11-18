@@ -19,13 +19,14 @@ import {
   DialogContent,
   DialogTitle,
   Button,
+  Rating,
+  TextField,
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import { getUser, notifyError, formatDate } from "../../Utils/helpers";
 import Hero from "../../components/customer/Hero/Hero";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useForm, Controller } from "react-hook-form";
 
 const Order = () => {
   const user = getUser();
@@ -35,12 +36,26 @@ const Order = () => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
-  const MySwal = withReactContent(Swal);
+  const [openChildDialog, setOpenChildDialog] = useState(false);
+  const { control, handleSubmit, setValue } = useForm();
+  const [rating, setRating] = useState(0);
 
-  const swalStyles = {
-    customClass: {
-      popup: "swal2-z-index-fix",
-    },
+  const handleRatingChange = (event, newValue) => {
+    setRating(newValue);
+    setValue("rating", newValue); // Update form value for rating
+  };
+
+  const onSubmit = (data) => {
+    data.orderId = selectedOrder._id;
+    console.log(data);
+    // Handle review submission logic here (e.g., API call)
+  };
+
+  const handleOpenChildDialog = () => setOpenChildDialog(true);
+  const handleCloseChildDialog = () => setOpenChildDialog(false);
+  const handleReview = (item) => {
+    handleCloseMenu();
+    handleOpenChildDialog();
   };
 
   const fetchOrders = async () => {
@@ -75,74 +90,9 @@ const Order = () => {
     setMenuAnchor(null);
   };
 
-  const handleReview = (item) => {
-    handleCloseMenu();
-
-    MySwal.fire({
-      title: "Leave a Review",
-      html: `
-        <textarea id="review-text" class="swal2-textarea" placeholder="Write your feedback here..." rows="4"></textarea>
-        <div style="margin-top: 10px;">
-          ${Array.from({ length: 5 })
-            .map(
-              (_, index) =>
-                `<span data-rating="${
-                  index + 1
-                }" style="cursor: pointer; font-size: 24px;">☆</span>`
-            )
-            .join("")}
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: "Submit",
-      cancelButtonText: "Cancel",
-      didOpen: () => {
-        const stars =
-          Swal.getHtmlContainer().querySelectorAll("span[data-rating]");
-        let selectedRating = 0;
-
-        stars.forEach((star) => {
-          star.addEventListener("click", () => {
-            selectedRating = parseInt(star.getAttribute("data-rating"), 10);
-            stars.forEach((s, i) => {
-              s.textContent = i < selectedRating ? "★" : "☆";
-            });
-          });
-        });
-      },
-      preConfirm: () => {
-        const reviewText = Swal.getPopup().querySelector("#review-text").value;
-        const stars = Swal.getPopup().querySelectorAll("span[data-rating]");
-        const selectedRating = Array.from(stars).filter(
-          (star) => star.textContent === "★"
-        ).length;
-
-        if (!reviewText || selectedRating === 0) {
-          Swal.showValidationMessage("Please provide feedback and a rating");
-        }
-
-        return { reviewText, selectedRating };
-      },
-      customClass: {
-        popup: "swal2-z-index-fix", // Ensures modal is above other UI elements
-      },
-      backdrop: `
-        rgba(0, 0, 0, 0.4)
-        center left
-        no-repeat
-      `,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const { reviewText, selectedRating } = result.value;
-        console.log("Feedback:", reviewText);
-        console.log("Rating:", selectedRating);
-        Swal.fire("Thank you!", "Your review has been submitted.", "success");
-      }
-    });
-  };
-
   const handleViewItems = (orderId) => {
     const order = orders.find((order) => order._id === orderId);
+    console.log(order);
     setSelectedOrder(order);
     setOpenModal(true); // Open modal when viewing items
     handleMenuClose();
@@ -376,6 +326,56 @@ const Order = () => {
         <DialogActions>
           <Button onClick={handleCloseModal} color="primary">
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Child Dialog */}
+      <Dialog
+        open={openChildDialog}
+        onClose={handleCloseChildDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Review Item</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" gutterBottom>
+            Review details or perform actions here.
+          </Typography>
+
+          {/* Star Rating */}
+          <Rating
+            name="rating"
+            value={rating}
+            onChange={handleRatingChange}
+            precision={0.5}
+            size="large"
+            sx={{ color: "gold", marginBottom: 2 }}
+          />
+
+          {/* Textarea for review */}
+          <Controller
+            name="reviewText"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Write a review"
+                multiline
+                rows={4}
+                fullWidth
+                variant="outlined"
+              />
+            )}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseChildDialog} color="primary">
+            Close
+          </Button>
+          <Button onClick={handleSubmit(onSubmit)} color="primary">
+            Submit
           </Button>
         </DialogActions>
       </Dialog>

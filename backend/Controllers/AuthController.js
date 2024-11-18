@@ -82,22 +82,16 @@ exports.UpdateFcmToken = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    console.log(password);
-    if (!email || !password) {
-      return res.status(400).json({ error: "All fields are required!" });
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
     }
 
-    let user = await User.findOne({ email }).select("+password");
+    let user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ error: "Invalid Email or Password" });
-    }
-
-    const isPasswordMatch = await user.comparePassword(password);
-
-    if (!isPasswordMatch) {
-      return res.status(400).json({ error: "Invalid Email or Password" });
+      return res.status(400).json({ error: "User not found" });
     }
 
     const token = user.getJwtToken();
