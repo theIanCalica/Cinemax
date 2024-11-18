@@ -117,7 +117,6 @@ exports.createOrder = async (req, res) => {
         </body>
       </html>
     `;
-    console.log(user);
     // Send email to the user
     await sendEmailOrder(user.email, "Transaction Details", emailContent);
 
@@ -308,7 +307,6 @@ exports.updateOrderById = async (req, res) => {
 
       try {
         await admin.messaging().send(message);
-        console.log("FCM notification sent successfully");
       } catch (error) {
         console.error("Error sending FCM notification:", error);
       }

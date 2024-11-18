@@ -38,17 +38,17 @@ const FoodCategory = () => {
     // You can add more cases based on your category names
     switch (categoryName) {
       case "Chips & Sweets":
-        return "https://images.pexels.com/photos/24868975/pexels-photo-24868975/free-photo-of-dishes-and-cocktails-standing-on-the-table-in-a-bar.jpeg";
+        return "/images/chips.jpeg";
       case "Burgers":
-        return "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2.jpg";
+        return "/images/burger.jpeg";
       case "Drinks":
-        return "https://images.pexels.com/photos/50593/coca-cola-cold-drink-soft-drink-coke-50593.jpeg";
+        return "/images/drinks.jpeg";
       case "Hotdogs":
-        return "https://images.pexels.com/photos/4518655/pexels-photo-4518655.jpeg";
+        return "/images/hotdogs.jpeg";
       case "Popcorn":
-        return "https://images.pexels.com/photos/33129/popcorn-movie-party-entertainment.jpg";
+        return "/images/popcorn.jpg";
       case "Snacks":
-        return "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg";
+        return "/images/snacks.jpeg";
       default:
         return "https://example.com/default-category-image.jpg"; // Default image for unknown categories
     }
@@ -68,7 +68,7 @@ const FoodCategory = () => {
           container
           spacing={3}
           justifyContent="center"
-          sx={{ padding: "10px 10px" }}
+          sx={{ padding: "10px 50px", marginTop: "50px" }}
         >
           {categories.map((category) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={category.id}>

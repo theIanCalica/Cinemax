@@ -142,6 +142,54 @@ const Footer = () => {
           </Box>
         </Grid>
 
+        <Grid item xs={12} md={6} lg={3}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "#FFA500",
+              position: "relative",
+              mb: 2,
+              display: "inline-block",
+            }}
+          >
+            Food Categories
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                left: "30%",
+                width: 16,
+                height: 2,
+                backgroundColor: "#FFA500",
+                borderRight: "2px solid orange",
+              }}
+            />
+          </Typography>
+          <Box>
+            {[
+              "Burgers",
+              "Chips & Sweets",
+              "Drinks",
+              "Hotdogs",
+              "Popcorn",
+              "Snacks",
+            ].map((category, index) => (
+              <Typography
+                key={index}
+                variant="body2"
+                sx={{
+                  color: "gray",
+                  mt: 1,
+                  cursor: "pointer",
+                  transition: "color 0.7s",
+                  "&:hover": { color: "orange" },
+                }}
+              >
+                {category}
+              </Typography>
+            ))}
+          </Box>
+        </Grid>
         {/* Links Section */}
         <Grid item xs={12} md={6} lg={3}>
           <Typography
@@ -188,7 +236,7 @@ const Footer = () => {
         </Grid>
 
         {/* Newsletter Section */}
-        <Grid item xs={12} md={6} lg={3}>
+        {/* <Grid item xs={12} md={6} lg={3}>
           <Typography variant="h6" sx={{ color: "#FFA500", mb: 2 }}>
             Newsletter
           </Typography>
@@ -241,7 +289,7 @@ const Footer = () => {
               }
             />
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
 
       {/* Footer Bottom */}
