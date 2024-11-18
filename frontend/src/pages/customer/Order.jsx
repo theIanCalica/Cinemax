@@ -21,9 +21,11 @@ import {
   Button,
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { getUser, notifyError, formatDate } from "../../Utils/helpers";
 import Hero from "../../components/customer/Hero/Hero";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const Order = () => {
   const user = getUser();
@@ -32,6 +34,14 @@ const Order = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const MySwal = withReactContent(Swal);
+
+  const swalStyles = {
+    customClass: {
+      popup: "swal2-z-index-fix",
+    },
+  };
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -55,6 +65,80 @@ const Order = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleOpenMenu = (event) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuAnchor(null);
+  };
+
+  const handleReview = (item) => {
+    handleCloseMenu();
+
+    MySwal.fire({
+      title: "Leave a Review",
+      html: `
+        <textarea id="review-text" class="swal2-textarea" placeholder="Write your feedback here..." rows="4"></textarea>
+        <div style="margin-top: 10px;">
+          ${Array.from({ length: 5 })
+            .map(
+              (_, index) =>
+                `<span data-rating="${
+                  index + 1
+                }" style="cursor: pointer; font-size: 24px;">☆</span>`
+            )
+            .join("")}
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      cancelButtonText: "Cancel",
+      didOpen: () => {
+        const stars =
+          Swal.getHtmlContainer().querySelectorAll("span[data-rating]");
+        let selectedRating = 0;
+
+        stars.forEach((star) => {
+          star.addEventListener("click", () => {
+            selectedRating = parseInt(star.getAttribute("data-rating"), 10);
+            stars.forEach((s, i) => {
+              s.textContent = i < selectedRating ? "★" : "☆";
+            });
+          });
+        });
+      },
+      preConfirm: () => {
+        const reviewText = Swal.getPopup().querySelector("#review-text").value;
+        const stars = Swal.getPopup().querySelectorAll("span[data-rating]");
+        const selectedRating = Array.from(stars).filter(
+          (star) => star.textContent === "★"
+        ).length;
+
+        if (!reviewText || selectedRating === 0) {
+          Swal.showValidationMessage("Please provide feedback and a rating");
+        }
+
+        return { reviewText, selectedRating };
+      },
+      customClass: {
+        popup: "swal2-z-index-fix", // Ensures modal is above other UI elements
+      },
+      backdrop: `
+        rgba(0, 0, 0, 0.4)
+        center left
+        no-repeat
+      `,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { reviewText, selectedRating } = result.value;
+        console.log("Feedback:", reviewText);
+        console.log("Rating:", selectedRating);
+        Swal.fire("Thank you!", "Your review has been submitted.", "success");
+      }
+    });
   };
 
   const handleViewItems = (orderId) => {
@@ -244,6 +328,7 @@ const Order = () => {
         onClose={handleCloseModal}
         maxWidth="md"
         fullWidth
+        disableEnforceFocus
       >
         <DialogTitle>Order Items</DialogTitle>
         <DialogContent>
@@ -260,17 +345,28 @@ const Order = () => {
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>₱{item.price}</TableCell>
                       <TableCell>₱{item.price * item.quantity}</TableCell>
+                      <TableCell>
+                        <IconButton onClick={handleOpenMenu}>
+                          <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                          anchorEl={menuAnchor}
+                          open={Boolean(menuAnchor)}
+                          onClose={handleCloseMenu}
+                          disablePortal
+                        >
+                          <MenuItem onClick={() => handleReview(item)}>
+                            Review
+                          </MenuItem>
+                        </Menu>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
               <Typography variant="h6" gutterBottom>
                 Grand Total: ₱
-                {calculateGrandTotal(
-                  calculateSubtotal(selectedOrder.items),
-                  selectedOrder.shippingFee || 0,
-                  selectedOrder.tax || 0
-                )}
+                {calculateGrandTotal(calculateSubtotal(selectedOrder.items))}
               </Typography>
             </>
           ) : (

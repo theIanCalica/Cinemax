@@ -51,6 +51,35 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
+// Update fcm registration token
+exports.UpdateFcmToken = async (req, res) => {
+  try {
+    const { _id, token } = req.body;
+    // Validate inputs
+    if (!_id || !token) {
+      return res
+        .status(400)
+        .json({ message: "userID and fcmToken are required" });
+    }
+
+    // Update the user's FCM token
+    const user = await User.findByIdAndUpdate(
+      _id,
+      { token },
+      { new: true } // Return the updated document
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "FCM token updated successfully", user });
+  } catch (error) {
+    console.error("Update fcm token error:", error.message); // Log the error for debugging
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;

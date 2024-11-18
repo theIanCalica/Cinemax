@@ -3,6 +3,7 @@ const Order = require("../Models/Order");
 const Cart = require("../Models/Cart");
 const User = require("../Models/User");
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
+const admin = require("../config/Firebase");
 
 const { sendEmailOrder } = require("../utils/Mailtrap");
 
@@ -295,6 +296,25 @@ exports.updateOrderById = async (req, res) => {
 
     // Send email to the user
     await sendEmailOrder(user.email, "Order Update", emailContent);
+
+    if (user.token) {
+      const message = {
+        notification: {
+          title: `Order ${orderId}`,
+          body: `Your order is now ${status}.`,
+        },
+        token: user.token, // The FCM token stored in your database
+      };
+
+      try {
+        await admin.messaging().send(message);
+        console.log("FCM notification sent successfully");
+      } catch (error) {
+        console.error("Error sending FCM notification:", error);
+      }
+    } else {
+      console.log("No FCM token available for the user.");
+    }
 
     // Respond to the client
     return res.status(200).json({ msg: "Successfully Updated and email sent" });

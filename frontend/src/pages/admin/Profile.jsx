@@ -139,15 +139,6 @@ const Profile = () => {
                 </Button>
               )}
             </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              <strong>Twitter:</strong>{" "}
-              {user?.linkedAccounts?.twitter || "Not Linked"}
-              {!user?.linkedAccounts?.twitter && (
-                <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
-                  Link Twitter
-                </Button>
-              )}
-            </Typography>
           </Paper>
         </Grid>
       </Grid>

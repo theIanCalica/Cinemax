@@ -105,24 +105,31 @@ exports.addUser = async (req, res, next) => {
 exports.register = [
   upload.single("file"),
   async (req, res) => {
-    try {
-      const { fname, lname, dob, email, phoneNumber, password } = req.body;
+    console.log(req.file); // Logs file info including buffer, mimetype, etc.
+    console.log("Body:", req.body); // Logs form fields like fname, lname, etc.
 
-      if ((!fname || !lname || !dob || !email || !phoneNumber, !password)) {
+    try {
+      const { fname, lname, dob, email, phoneNumber } = req.body;
+
+      // Validate input fields
+      if (!fname || !lname || !dob || !email || !phoneNumber) {
         return res
           .status(400)
           .json({ msg: "Please provide all required fields." });
       }
 
+      // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return res.status(400).json({ msg: "Invalid email format." });
       }
 
+      // Validate if file is provided
       if (!req.file) {
         return res.status(400).json({ msg: "File is required." });
       }
 
+      // Validate allowed file types
       const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
       if (!allowedTypes.includes(req.file.mimetype)) {
         return res.status(400).json({
@@ -130,15 +137,28 @@ exports.register = [
         });
       }
 
-      // Upload the file to Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.path);
+      // Upload the image buffer to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            { resource_type: "auto" }, // 'auto' will automatically detect the file type
+            (error, result) => {
+              if (error) {
+                return reject(error);
+              }
+              resolve(result);
+            }
+          )
+          .end(req.file.buffer); // Use the buffer directly for upload
+      });
 
-      // Check for existing user
+      // Check if user already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(409).json({ msg: "User already exists." });
       }
 
+      // Create new user
       const newUser = new User({
         fname,
         lname,
@@ -151,11 +171,13 @@ exports.register = [
         },
       });
 
-      const saveUser = await newUser.save();
+      // Save new user to the database
+      const user = await newUser.save();
+      const token = user.getJwtToken();
 
-      res.status(200).json(saveUser);
+      res.status(200).json({ user, token });
     } catch (err) {
-      console.log(err.message);
+      console.error(err.message);
       res.status(500).send("Server Error");
     }
   },

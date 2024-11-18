@@ -12,15 +12,13 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { authenticate } from "../Utils/helpers";
+import { authenticate, notifyError } from "../Utils/helpers";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import {
-  doSignInWithEmailAndPassword,
-  doSignInWithFacebook,
-} from "../firebase/auth";
+import { doSignInWithEmailAndPassword, FacebookAuth } from "../firebase/auth";
 import { useAuth } from "../contexts/authContext";
-
+import { generateToken } from "../firebase/auth";
+import client from "../Utils/client";
 const SigninForm = ({ onSwitchMode }) => {
   const { userLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -36,6 +34,22 @@ const SigninForm = ({ onSwitchMode }) => {
       password: "",
     },
   });
+
+  const FacebookAuthButtonClicked = async () => {
+    try {
+      const user = await FacebookAuth(); // Await the resolved data from the FacebookAuth function
+      console.log("Facebook user: ", user); // Display the user object, including name, email, photoURL, and uid
+
+      // Display specific details
+      console.log("User Name:", user.displayName);
+      console.log("User Email:", user.email);
+      console.log("Profile Picture URL:", user.photoURL);
+      console.log("User UID:", user.uid);
+    } catch (error) {
+      console.error("Error during Facebook authentication:", error);
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
       const userCredential = await doSignInWithEmailAndPassword(
@@ -45,6 +59,7 @@ const SigninForm = ({ onSwitchMode }) => {
       console.log(userCredential); // Log the result or handle it as needed
     } catch (error) {
       console.error("Error signing in:", error);
+      notifyError(error);
       // Handle the error (e.g., show an error message to the user)
     }
   };
@@ -70,9 +85,8 @@ const SigninForm = ({ onSwitchMode }) => {
   //   });
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse?.credential);
-    console.log(decoded);
-    axios
-      .post(`${process.env.REACT_APP_API_LINK}/auth/google-login`, {
+    client
+      .post(`/auth/google-login`, {
         fname: decoded.given_name,
         lname: decoded.family_name,
         email: decoded.email,
@@ -80,11 +94,16 @@ const SigninForm = ({ onSwitchMode }) => {
         provider_id: decoded.sub,
         provider: "google",
       })
-      .then((response) => {
+      .then(async (response) => {
+        const token = await generateToken();
         const user = response.data.user;
-        const { role } = user;
+        const { role, _id } = user;
+        const data = {
+          _id,
+          token,
+        };
+        client.put("/auth/fcm-token-update", data);
         let targetPath;
-        console.log(role);
         switch (role) {
           case "admin":
             targetPath = "/admin";
@@ -215,7 +234,10 @@ const SigninForm = ({ onSwitchMode }) => {
             },
           }}
         >
-          <FacebookIcon sx={{ color: colors.blue[600] }} />
+          <FacebookIcon
+            sx={{ color: colors.blue[600] }}
+            onClick={FacebookAuthButtonClicked}
+          />
         </Button>
         <GoogleLogin
           onSuccess={(credentialResponse) => {

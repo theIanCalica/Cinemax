@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "./firebase/firebase";
 
 import SigninPage from "./pages/SigninPage";
 import HomePage from "./pages/customer/index/index";
@@ -26,7 +28,7 @@ import FoodList from "./pages/admin/FoodList";
 import Genre from "./pages/admin/Genre";
 import User from "./pages/admin/UsersPage";
 import Contacts from "./pages/admin/Contact";
-import Article from "./pages/admin/Article";
+// import Article from "./pages/admin/Article";
 import Task from "./pages/admin/Task";
 // import Message from "./pages/admin/Message";
 import Profile from "./pages/admin/Profile";
@@ -49,7 +51,14 @@ import EmailCrew from "./pages/crew/Email";
 // Auth Provider
 import { AuthProvider } from "./contexts/authContext";
 import { ToastContainer } from "react-toastify";
+import { notifyFirebase } from "./Utils/helpers";
+
 function App() {
+  useEffect(() => {
+    onMessage(messaging, (payload) => {
+      notifyFirebase(payload.notification.title, payload.notification.body);
+    });
+  }, []);
   return (
     <AuthProvider>
       <Router>
@@ -58,7 +67,7 @@ function App() {
           <Route path="/cancel-payment" element={<CancelPaymentPage />}></Route>
           <Route path="/" element={<BaseLayout />}>
             <Route index element={<HomePage />} />
-            <Route path="/articles" element={<Article />}></Route>
+            {/* <Route path="/articles" element={<Article />}></Route> */}
             <Route path="/about" element={<AboutPage />}></Route>
             <Route path="/contact" element={<ContactPage />}></Route>
             <Route path="/email" element={<Email />} />

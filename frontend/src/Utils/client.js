@@ -11,7 +11,6 @@ const client = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
 });
 
 // Function to refresh the access token
@@ -45,11 +44,14 @@ const client = axios.create({
 // A request interceptor to attach the access token to headers
 client.interceptors.request.use(
   (config) => {
-    const token = getToken() || {};
+    const token = getToken(); // Get the token (could be from local storage, cookies, etc.)
+
+    // Check if token exists and is valid
     if (token) {
-      const cleanedToken = token.replace(/^["']|["']$/g, "");
-      config.headers["Authorization"] = `Bearer ${cleanedToken}`;
+      const cleanedToken = token.replace(/^["']|["']$/g, ""); // Clean token if it has extra quotes
+      config.headers["Authorization"] = `Bearer ${cleanedToken}`; // Add Authorization header
     }
+
     return config;
   },
   (error) => {

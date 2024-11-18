@@ -57,10 +57,12 @@ const UserSchema = new Schema(
       enum: ["activated", "deactivated", "unverified"],
       default: "unverified",
     },
-    password: {
-      type: String,
-    },
     socialAccounts: [SocialAccountSchema],
+    // Fcm token
+    token: {
+      type: String,
+      default: null, // You can set a default value if needed
+    },
   },
   {
     timestamps: true,

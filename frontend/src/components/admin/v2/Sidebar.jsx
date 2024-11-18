@@ -234,7 +234,7 @@ const Sidebar = ({ isMinimized }) => {
           </li>
         </Link>
         {/* Article */}
-        <Link to="/admin/articles">
+        {/* <Link to="/admin/articles">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"
             onMouseOver={() => setHovered("articles")}
@@ -278,7 +278,7 @@ const Sidebar = ({ isMinimized }) => {
               Article
             </span>
           </li>
-        </Link>
+        </Link> */}
         <Link to="/admin/contacts">
           <li
             className="mt-3 py-2 px-8 text-gray-400 cursor-pointer flex items-center w-full transition-colors duration-300 ease-in-out relative"

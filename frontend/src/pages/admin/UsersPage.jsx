@@ -9,6 +9,7 @@ import axios from "axios";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NoAccountsIcon from "@mui/icons-material/NoAccounts";
+import client from "../../Utils/client";
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -19,8 +20,8 @@ const UsersPage = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const fetchUsers = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/users`)
+    client
+      .get(`/users`, { withCredentials: true })
       .then((response) => {
         setUsers(response.data);
       })

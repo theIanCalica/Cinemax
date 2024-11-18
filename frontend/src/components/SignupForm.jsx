@@ -15,10 +15,14 @@ import FilePondPluginImageEdit from "filepond-plugin-image-edit";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GoogleIcon from "@mui/icons-material/Google";
 import { Box } from "@mui/material";
-import axios from "axios";
-import { notifySuccess, notifyError } from "../Utils/helpers";
-import { doCreateUserWithEmailAndPassword } from "../firebase/auth";
+import client from "../Utils/client";
+import { notifySuccess, notifyError, authenticate } from "../Utils/helpers";
+import {
+  doCreateUserWithEmailAndPassword,
+  doSignInWithEmailAndPassword,
+} from "../firebase/auth";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // Register FilePond plugins
 registerPlugin(
@@ -86,26 +90,37 @@ const SignupForm = ({ onSwitchMode }) => {
     for (const key in data) {
       completeData.append(key, data[key]); // Append other form data
     }
-    await doCreateUserWithEmailAndPassword(data.email, data.password);
     console.log(completeData);
     try {
+      // Send the API request to the backend
       const response = await axios.post(
-        `${process.env.REACT_APP_API_LINK}/users/registration`,
-        completeData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        `${process.env.REACT_APP_API_LINK}/users/registration/`,
+        completeData
       );
+      console.log(response.data);
+      authenticate(response.data);
+
+      // Create the user in Firebase
+      try {
+        await doCreateUserWithEmailAndPassword(data.email, data.password);
+        await doSignInWithEmailAndPassword(data.email, data.password);
+      } catch (firebaseError) {
+        console.error("Firebase error:", firebaseError);
+        notifyError("Failed to create user in Firebase");
+        return; // Exit the function if Firebase user creation and login fails
+      }
+
+      // Notify success and navigate to another page
+      notifySuccess("Successfully registered");
       navigate("/");
-      console.log("Server response:", response.data);
     } catch (error) {
+      // Handle errors
       if (error.response) {
         console.error("Error response:", error.response.data); // Server's response with details
       } else {
         console.error("Error uploading data:", error.message);
       }
+      notifyError("Failed to register", error.message);
     }
   };
 
