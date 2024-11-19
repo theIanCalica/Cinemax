@@ -11,16 +11,13 @@ import { ScreenMode } from "../pages/SigninPage";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { authenticate, notifyError } from "../Utils/helpers";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { doSignInWithEmailAndPassword, FacebookAuth } from "../firebase/auth";
-import { useAuth } from "../contexts/authContext";
 import { generateToken } from "../firebase/auth";
 import client from "../Utils/client";
 const SigninForm = ({ onSwitchMode }) => {
-  const { userLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -59,10 +56,17 @@ const SigninForm = ({ onSwitchMode }) => {
         .post(`/auth/login`, data, {
           headers: { "Content-Type": "application/json" },
         })
-        .then((response) => {
+        .then(async (response) => {
           console.log("Response:", response.data);
+          const token = await generateToken();
+
           const user = response.data.user;
-          const { role } = user;
+          const { role, _id } = user;
+          const data = {
+            _id,
+            token,
+          };
+          client.put("/auth/fcm-token-update", data);
           const targetPath = role === "admin" ? "/admin" : "/";
           authenticate(response.data, () => navigate(targetPath));
         })

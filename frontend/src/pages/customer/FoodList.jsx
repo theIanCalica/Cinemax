@@ -18,9 +18,11 @@ import {
   Rating,
   CircularProgress,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const FoodList = () => {
   const user = getUser();
+  const navigate = useNavigate();
   const [foods, setFoods] = useState([]);
   const [filteredFoods, setFilteredFoods] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -129,6 +131,10 @@ const FoodList = () => {
     });
 
     if (node) observer.current.observe(node);
+  };
+
+  const handleFoodClick = (foodId) => {
+    console.log(foodId);
   };
 
   return (
@@ -249,11 +255,15 @@ const FoodList = () => {
                   <Card sx={{ maxWidth: 345, height: "100%" }}>
                     <CardMedia
                       component="img"
-                      height="140"
-                      width="140"
                       image={food.images?.[0]?.url || "/placeholder.jpg"}
                       alt={food.name}
+                      sx={{
+                        height: 140, // Set consistent height
+                        width: "100%", // Full width of the card
+                        objectFit: "cover", // Maintain aspect ratio
+                      }}
                     />
+
                     <CardContent>
                       <Typography variant="h6" component="div" gutterBottom>
                         {food.name}

@@ -10,9 +10,18 @@ import {
   IconButton,
 } from "@mui/material";
 import "react-toastify/dist/ReactToastify.css";
-import { getUser, formatDate } from "../../Utils/helpers";
+import {
+  getUser,
+  formatDate,
+  notifySuccess,
+  notifyError,
+  setUser,
+} from "../../Utils/helpers";
 import ProfileModal from "../../components/admin/Modal/Profile";
 import ChangePasswordModal from "../../components/admin/Modal/ChangePasswordModal";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import client from "../../Utils/client";
 
 const Profile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,6 +42,23 @@ const Profile = () => {
 
   const handleClosePasswordModal = () => {
     setIsPasswordModalOpen(false);
+  };
+
+  const handleLinkGoogleAccount = (credentialResponse) => {
+    const decoded = jwtDecode(credentialResponse?.credential);
+    const clean_data = {
+      provider_id: decoded.sub,
+      user_id: user._id,
+    };
+    console.log(clean_data);
+    client.put("/auth/link-google", clean_data).then((response) => {
+      if (response.status === 200) {
+        notifySuccess("Successfully linked");
+        setUser(response.data);
+      } else {
+        notifyError("Something went wrong");
+      }
+    });
   };
 
   return (
@@ -132,11 +158,21 @@ const Profile = () => {
             </Typography>
             <Typography variant="body2" color="text.secondary" paragraph>
               <strong>Google:</strong>{" "}
-              {user?.linkedAccounts?.google || "Not Linked"}
-              {!user?.linkedAccounts?.google && (
+              {user?.socialAccounts?.find(
+                (account) => account.provider === "google"
+              ) ? (
                 <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
-                  Link Google
+                  Already Linked
                 </Button>
+              ) : (
+                <GoogleLogin
+                  onSuccess={handleLinkGoogleAccount}
+                  onError={() => {
+                    console.error("Google login failed");
+                    alert("Failed to authenticate with Google.");
+                  }}
+                  clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
+                />
               )}
             </Typography>
           </Paper>

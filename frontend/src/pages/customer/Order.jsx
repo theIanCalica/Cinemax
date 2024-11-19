@@ -35,6 +35,7 @@ const Order = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedFoodItem, setSelectedFoodItem] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [openChildDialog, setOpenChildDialog] = useState(false);
   const { control, handleSubmit, setValue } = useForm();
@@ -47,13 +48,14 @@ const Order = () => {
 
   const onSubmit = (data) => {
     data.orderId = selectedOrder._id;
+    data.foodId = selectedFoodItem._id;
     console.log(data);
-    // Handle review submission logic here (e.g., API call)
   };
 
   const handleOpenChildDialog = () => setOpenChildDialog(true);
   const handleCloseChildDialog = () => setOpenChildDialog(false);
   const handleReview = (item) => {
+    setSelectedFoodItem(item);
     handleCloseMenu();
     handleOpenChildDialog();
   };
@@ -66,6 +68,7 @@ const Order = () => {
       .then((response) => {
         setOrders(response.data);
         setLoading(false);
+        console.log(response.data);
       })
       .catch((error) => {
         notifyError("Something went wrong on fetching your orders");
@@ -91,11 +94,11 @@ const Order = () => {
   };
 
   const handleViewItems = (orderId) => {
-    const order = orders.find((order) => order._id === orderId);
-    console.log(order);
-    setSelectedOrder(order);
-    setOpenModal(true); // Open modal when viewing items
-    handleMenuClose();
+    console.log(orderId);
+    // const order = orders.find((order) => order._id === orderId);
+    // setSelectedOrder(order);
+    // setOpenModal(true); // Open modal when viewing items
+    // handleMenuClose();
   };
 
   const handleCloseModal = () => {

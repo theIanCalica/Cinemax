@@ -30,6 +30,12 @@ export const getUser = () => {
   }
 };
 
+export const setUser = (data) => {
+  if (window !== "undefined") {
+    sessionStorage.setItem("user", JSON.stringify(data.user));
+  }
+};
+
 export const logout = (next) => {
   if (window !== "undefined") {
     sessionStorage.removeItem("token");

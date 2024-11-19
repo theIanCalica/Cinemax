@@ -149,3 +149,45 @@ exports.changePassword = async (req, res) => {
       .json({ error: "Something went wrong. Please try again later." });
   }
 };
+
+exports.linkGoogle = async (req, res) => {
+  try {
+    const { provider_id, user_id } = req.body;
+    if (!provider_id || !user_id) {
+      return res
+        .status(400)
+        .json({ error: "Provider ID and User ID are required" });
+    }
+
+    const user = await User.findById(user_id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const existingSocialAccount = user.socialAccounts.find(
+      (account) => account.provider === "google"
+    );
+
+    if (existingSocialAccount) {
+      return res
+        .status(400)
+        .json({ error: "Google account is already linked" });
+    }
+
+    // Add the new social account
+    user.socialAccounts.push({ provider: "google", provider_id });
+
+    // Save the updated user document
+    await user.save();
+
+    return res.status(200).json({
+      message: "Google account linked successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res
+      .status(500)
+      .json({ error: "Something went wrong. Please try again later." });
+  }
+};
