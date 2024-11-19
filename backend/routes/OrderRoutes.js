@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const OrderController = require("../Controllers/OrderController");
 const authenticateTokenAndUser = require("../middleware/Auth");
+const Order = require("../Models/Order");
 
 // Get all orders
 router.get("/", authenticateTokenAndUser, OrderController.getAllOrders);
@@ -25,6 +26,9 @@ router.post(
   authenticateTokenAndUser,
   OrderController.createCheckoutSession
 );
+
+router.post("/webhook", OrderController.CheckoutCreditCard);
+
 router.post("/", authenticateTokenAndUser, OrderController.createOrder);
 
 // Update a single order by ID

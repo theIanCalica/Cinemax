@@ -42,12 +42,14 @@ const Cart = () => {
   };
 
   const makePaymentStripe = async () => {
+    const userId = user._id;
     const stripe = await loadStripe(
       `pk_test_51QLnky08haKxqIansxQffmZesDz36a2BrvHZ5h0UXo3aRaUZAJLPZYyULs4AZwXI6WXJ5rm5Ilmj9QWzxD4KHDyG00Zuo2WEs7`
     );
 
     const body = {
       order: cartItems,
+      userId,
     };
 
     const response = await client.post("/orders/create-checkout-session", body);

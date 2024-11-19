@@ -136,7 +136,7 @@ exports.createOrder = async (req, res) => {
 // Create checkout session for stripe
 exports.createCheckoutSession = async (req, res) => {
   try {
-    const { order } = req.body;
+    const { order, userId } = req.body;
 
     // Extract line items from the order
     const lineItems = order[0].items.map((item) => {
@@ -154,6 +154,7 @@ exports.createCheckoutSession = async (req, res) => {
       };
     });
 
+    const orderId = order[0]._id;
     // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -161,13 +162,138 @@ exports.createCheckoutSession = async (req, res) => {
       mode: "payment",
       success_url: "http://localhost:3000/my-orders",
       cancel_url: "http://localhost:3000/cancel-payment",
+      metadata: {
+        orderId,
+        userId,
+      },
     });
+    console.log("Created session:", session);
 
     // Send session ID to the client
     res.status(201).json({ id: session.id });
   } catch (error) {
     console.error("Error creating Stripe checkout session:", error.message);
     res.status(500).json({ error: "Failed to create checkout session" });
+  }
+};
+
+// Webhook for checkout in stripe
+exports.CheckoutCreditCard = async (req, res) => {
+  try {
+    const sig = req.headers["stripe-signature"];
+    const endpointSecret =
+      "whsec_933a3dbf2668e98615116cb73d92ac86410fce3833ae685d4fd39bce93af8f3a"; // Replace with your secret
+
+    let event;
+
+    // Validate the webhook signature
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    } catch (err) {
+      console.error("⚠️ Webhook signature verification failed:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    switch (event.type) {
+      case "checkout.session.completed":
+        const session = event.data.object; // Get the session object
+        const userId = session.metadata.userId;
+
+        const cart = await Cart.findOne({ user: userId }).populate(
+          "items.food"
+        );
+
+        if (!cart || cart.items.length === 0) {
+          return res.status(404).send({ error: "Cart is empty or not found." });
+        }
+
+        const newOrder = new Order({
+          customer: userId,
+          items: cart.items.map((item) => ({
+            foodId: item.food._id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          totalAmount: cart.totalPrice,
+          paymentMethod: "Credit Card",
+          paymentStatus: "paid", // Mark as paid
+          status: "Processing",
+        });
+
+        await newOrder.save();
+
+        // Step 3: Clear the user's cart
+        await Cart.deleteOne({ user: userId });
+
+        const user = await User.findById(userId);
+        const foodItems = cart.items.map((item) => ({
+          name: item.food.name,
+          quantity: item.quantity,
+          price: item.price,
+        }));
+        const totalPrice = cart.totalPrice;
+
+        const emailContent = `
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Transaction Details</title>
+          </head>
+          <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+            <div style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); width: 80%; margin: 0 auto;">
+              <h2 style="color: #333; margin-bottom: 10px;">Transaction Details</h2>
+              <p>Thank you for your purchase! Below are the details of your transaction:</p>
+        
+              <div style="margin-bottom: 20px; display: flex; justify-content: space-between;">
+                <p><strong>Payment Method:</strong> Credit Card </p>
+                <p><strong>Order Status:</strong> Pending</p>
+              </div>
+        
+              <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Foods</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd; background-color: #f9f9f9; font-weight: bold;">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${foodItems
+                    .map(
+                      (item) => `
+                      <tr>
+                        <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">${
+                          item.name
+                        } (x${item.quantity})</td>
+                        <td style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">PHP ${
+                          item.price * item.quantity
+                        }</td>
+                      </tr>
+                    `
+                    )
+                    .join("")}
+                  <tr style="background-color: #f9f9f9; font-weight: bold;">
+                    <td style="padding: 10px; text-align: left;">Grand Total</td>
+                    <td style="padding: 10px; text-align: right;">PHP ${totalPrice}</td>
+                  </tr>
+                </tbody>
+              </table>
+        
+              <p>If you have any questions about your transaction, feel free to contact us at <a href="mailto:cinemax.inc.manila@gmail.com">cinemax.inc.manila@gmail.com</a> or call us at <a href="tel:+639123456789">+63 912 345 6789</a>.</p>
+            </div>
+          </body>
+        </html>
+        `;
+
+        await sendEmailOrder(user.email, "Transaction Details", emailContent);
+
+        break;
+    }
+
+    res.status(200).send({ received: true });
+  } catch (err) {
+    console.error("Error handling webhook:", err.message);
+    res.status(500).send(`Server Error: ${err.message}`);
   }
 };
 

@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 // Include routes
 const articleRoutes = require("./routes/ArticleRoutes");
@@ -27,6 +28,10 @@ const corsOptions = {
 const app = express();
 app.use(cors(corsOptions));
 app.use(morgan("dev"));
+app.use(
+  "/api/v1/orders/webhook",
+  bodyParser.raw({ type: "application/json" }) // Ensures raw body for Stripe webhook
+);
 app.use(express.json());
 
 // Routes
