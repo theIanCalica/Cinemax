@@ -13,11 +13,11 @@ const Movie = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMovie, setCurrentMovie] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const fetchMovies = () => {
     client.get(`/movies`).then((response) => {
       setMovies(response.data);
-      console.log(response.data);
     });
   };
 
@@ -47,16 +47,49 @@ const Movie = () => {
       if (result.isConfirmed) {
         client
           .delete(`/movies/${movieID}`)
-          .then((response) => {
-            if (response.status === 201) {
-              notifySuccess("Successfully Deleted");
-              setMovies((prevMovies) =>
-                prevMovies.filter((movie) => movie._id !== movieID)
-              );
-            } else {
-              notifyError("Deletion Unsuccessful");
-              console.error(response.statusText);
-            }
+          .then(() => {
+            notifySuccess("Successfully Deleted");
+            setMovies((prevMovies) =>
+              prevMovies.filter((movie) => movie._id !== movieID)
+            );
+          })
+          .catch((error) => {
+            notifyError("Deletion Unsuccessful");
+            console.error(error.message);
+          });
+      }
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedRows.length === 0) {
+      notifyError("No movies selected");
+      return;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will not be able to recover these movies!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete them!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const deletePromises = selectedRows.map((index) => {
+          const movieID = movies[index]._id;
+          return client.delete(`/movies/${movieID}`);
+        });
+
+        Promise.all(deletePromises)
+          .then(() => {
+            notifySuccess("Successfully Deleted Selected Movies");
+            setMovies((prevMovies) =>
+              prevMovies.filter((_, idx) => !selectedRows.includes(idx))
+            );
+            setSelectedRows([]);
           })
           .catch((error) => {
             notifyError("Deletion Unsuccessful");
@@ -122,7 +155,10 @@ const Movie = () => {
 
   const options = {
     responsive: "standard",
-    selectableRows: "none", // Disable checkboxes
+    selectableRows: "multiple",
+    onRowSelectionChange: (currentRowsSelected, allRowsSelected) => {
+      setSelectedRows(allRowsSelected.map((row) => row.dataIndex));
+    },
     elevation: 3,
     rowsPerPage: 10,
     rowsPerPageOptions: [10, 20, 50],
@@ -144,9 +180,24 @@ const Movie = () => {
         <Typography variant="h4" component="h1" fontWeight="bold">
           Movies
         </Typography>
-        <Button variant="outlined" color="success" onClick={() => openModal()}>
-          Add Movie
-        </Button>
+        <Box>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleBulkDelete}
+            disabled={selectedRows.length === 0}
+          >
+            Delete Selected
+          </Button>
+          <Button
+            variant="outlined"
+            color="success"
+            onClick={() => openModal()}
+            sx={{ ml: 2 }}
+          >
+            Add Movie
+          </Button>
+        </Box>
       </Box>
 
       {isModalOpen && (
