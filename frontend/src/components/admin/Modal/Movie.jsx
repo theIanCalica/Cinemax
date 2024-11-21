@@ -3,16 +3,26 @@ import { useForm, Controller } from "react-hook-form";
 import { getBorderColor } from "../../../Utils/helpers";
 import Select from "react-select";
 import axios from "axios";
-import TextField from "@mui/material/TextField";
+import {
+  TextField,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  Typography,
+  Box,
+} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Box } from "@mui/material";
 import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import client from "../../../Utils/client";
+
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const MovieModal = ({
@@ -33,8 +43,8 @@ const MovieModal = ({
   } = useForm();
 
   const fetchGenres = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/genres`)
+    client
+      .get(`/genres`)
       .then((response) => {
         const formattedGenres = response.data.map((genre) => ({
           value: genre._id,
@@ -51,253 +61,300 @@ const MovieModal = ({
   useEffect(() => {
     fetchGenres();
     if (isEditing && movieToEdit) {
-      reset({ title: movieToEdit.title });
+      reset({
+        title: movieToEdit.title,
+        producer: movieToEdit.producer || "",
+        writer: movieToEdit.writer || "",
+        director: movieToEdit.director || "",
+        mainCast: movieToEdit.mainCast || "",
+        release_date: movieToEdit.release_date || null,
+        duration: movieToEdit.duration || "",
+        rating: movieToEdit.rating || "",
+      });
     } else {
-      reset({ title: "" });
+      reset({
+        title: "",
+        producer: "",
+        writer: "",
+        director: "",
+        mainCast: "",
+        release_date: null,
+        duration: "",
+        rating: "",
+      });
     }
   }, [isEditing, movieToEdit]);
 
   const onSubmit = (data) => {
-    const url = isEditing
-      ? `http://localhost:4000/api/movies/${movieToEdit._id}`
-      : "http://localhost:4000/api/movies";
+    const url = isEditing ? `/movies/${movieToEdit._id}` : "/movies";
     const method = isEditing ? "PUT" : "POST";
 
-    axios({
+    // Create a FormData object
+    const formData = new FormData();
+
+    // Append regular fields
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("trailer", data.trailer);
+    formData.append("description", data.description);
+    formData.append("producer", data.producer);
+    formData.append("writer", data.writer);
+    formData.append("director", data.director);
+    formData.append("mainCast", data.mainCast);
+    formData.append("release_date", data.release_date);
+    formData.append("duration", data.duration);
+    formData.append("rating", JSON.stringify(data.rating)); // Convert objects to JSON if needed
+
+    // Append genres individually
+    if (data.genre && data.genre.length > 0) {
+      data.genre.forEach((id) => formData.append("genre[]", id)); // Append each genre ID
+    }
+    // Append files (if any)
+    if (data.image && data.image.length > 0) {
+      for (let i = 0; i < data.image.length; i++) {
+        formData.append("images", data.image[i]);
+      }
+    }
+
+    client({
       method,
       url,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data", // Indicate multipart form data
       },
-      data: {
-        title: data.title,
-      },
+      data: formData, // Use the FormData object
     })
       .then((response) => {
-        const movie = response.data;
         refresh();
         notifySuccess(
           isEditing
             ? "Movie updated successfully"
             : "Movie created successfully"
         );
-        refresh();
         onClose();
       })
       .catch((error) => {
         notifyError(
           isEditing ? "Error updating movie" : "Error creating movie"
         );
-        console.error(
-          isEditing ? "Error updating movie:" : "Error creating movie:",
-          error.response ? error.response.data : error.message
-        );
+        console.error(error.response ? error.response.data : error.message);
       });
   };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
-        <h2 className="text-xl font-bold mb-4">
-          {isEditing ? "Edit Movie" : "Add Movie"}
-        </h2>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
-          <div className="mb-4">
-            <label htmlFor="title" className="block text-gray-700 mb-2">
-              Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "title",
-                errors,
-                touchedFields
-              )}`}
-              {...register("title", { required: "Title is required" })}
-            />
-            {errors.title && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
+    <Dialog open onClose={onClose} maxWidth="lg" fullWidth>
+      <DialogTitle>{isEditing ? "Edit Movie" : "Add Movie"}</DialogTitle>
+      <DialogContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Title"
+                fullWidth
+                variant="outlined"
+                {...register("title", { required: "Title is required" })}
+                error={!!errors.title}
+                helperText={errors.title?.message}
+              />
+            </Grid>
 
-          {/* Genre */}
-          <div className="mb-4">
-            <label htmlFor="genre" className="block text-gray-700 mb-2">
-              Genre
-            </label>
-            <Controller
-              name="genre"
-              control={control}
-              rules={{ required: "Genre is required" }}
-              render={({ field }) => (
-                <Select
-                  id="category"
-                  options={genres}
-                  placeholder="Select Category"
-                  isClearable
-                  isSearchable
-                  {...field}
-                  onChange={(selectedOption) => field.onChange(selectedOption)}
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderColor: errors.genre ? "red" : base.borderColor,
-                      "&:hover": {
+            <Grid item xs={12}>
+              <Controller
+                name="genre"
+                control={control}
+                rules={{ required: "Genre is required" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    options={genres}
+                    placeholder="Select Genre"
+                    isMulti
+                    isClearable
+                    onChange={(selectedOptions) => {
+                      // Set value for React Hook Form
+                      field.onChange(
+                        selectedOptions
+                          ? selectedOptions.map((option) => option.value)
+                          : []
+                      );
+                    }}
+                    onBlur={field.onBlur}
+                    value={genres.filter((option) =>
+                      field.value?.includes(option.value)
+                    )}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
                         borderColor: errors.genre ? "red" : base.borderColor,
-                      },
-                    }),
-                  }}
-                />
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        zIndex: 9999, // Ensure the dropdown menu is above other elements
+                      }),
+                    }}
+                  />
+                )}
+              />
+              {errors.genre && (
+                <Typography color="error" variant="caption">
+                  {errors.genre.message}
+                </Typography>
               )}
-            />
-            {errors.genre && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.genre.message}
-              </p>
-            )}
-          </div>
-          {/* Release Date */}
-          <div className="mb-4">
-            <label htmlFor="dob" className="block text-gray-700 mb-2">
-              Release Date
-            </label>
-            <Controller
-              name="dob"
-              rules={{ required: "Date of Birth is required" }}
-              control={control}
-              render={({ field }) => (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <div className="w-full">
-                    <Box
-                      sx={{
-                        width: "100%", // Ensure Box takes full width of its container
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "8px", // Custom border radius
-                          width: "100%",
-                          "& fieldset": {
-                            borderColor: errors.dob ? "#f87171" : "#e5e7eb", // Conditional border color
-                          },
-                          "&:hover fieldset": {
-                            borderColor: errors.dob ? "#f87171" : "#0056b3", // Conditional border color on hover
-                          },
-                        },
-                      }}
-                    >
-                      <DatePicker
-                        {...field}
-                        className="MuiDayCalendar-header MuiDayCalendar-weekContainer"
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            fullWidth // Make the TextField take up all available space
-                            onBlur={() => field.onBlur()}
-                          />
-                        )}
-                      />
-                    </Box>
-                  </div>
-                </LocalizationProvider>
-              )}
-            />
+            </Grid>
 
-            {errors.dob && (
-              <p className="text-red-500 text-sm mt-1">{errors.dob.message}</p>
-            )}
-          </div>
-          {/* Movie Duration */}
-          <div className="mb-4">
-            <label htmlFor="duration" className="block text-gray-700 mb-2">
-              Duration
-            </label>
-            <input
-              id="duration"
-              type="text"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "duration",
-                errors,
-                touchedFields
-              )}`}
-              {...register("duration", { required: "Duration is required" })}
-            />
-            {errors.duration && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.duration.message}
-              </p>
-            )}
-          </div>
-          {/* Description */}
-          <div className="mb-4 col-span-2">
-            <label htmlFor="name" className="block text-gray-700 mb-2">
-              Description
-            </label>
-            <textarea
-              name="description"
-              id="description"
-              rows={2}
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "description",
-                errors,
-                touchedFields
-              )}`}
-              {...register("description", {
-                required: "Description is required",
-              })}
-            ></textarea>
-
-            {errors.description && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
-          {/* Image filepond */}
-          <div className="mb-4 col-span-2">
-            <label className="block text-gray-700 mb-2">Image</label>
-            <Controller
-              name="image"
-              rules={{ required: "Image is required" }}
-              control={control}
-              render={({ field }) => (
-                <FilePond
-                  {...field}
-                  files={field.value}
-                  onupdatefiles={(fileItems) => {
-                    field.onChange(fileItems.map((fileItem) => fileItem.file));
-                  }}
-                  allowMultiple={false}
-                  instantUpload={false}
-                  acceptedFileTypes={["image/png", "image/jpeg", "image/jpg"]}
-                  labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+            {[
+              { name: "producer", label: "Producer" },
+              { name: "writer", label: "Writer" },
+              { name: "director", label: "Director" },
+              { name: "mainCast", label: "Main Cast" },
+            ].map((field) => (
+              <Grid item xs={12} sm={6} key={field.name}>
+                <TextField
+                  label={field.label}
+                  fullWidth
+                  variant="outlined"
+                  {...register(field.name, {
+                    required: `${field.label} is required`,
+                  })}
+                  error={!!errors[field.name]}
+                  helperText={errors[field.name]?.message}
                 />
+              </Grid>
+            ))}
+
+            <Grid item xs={12} sm={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Controller
+                  name="release_date"
+                  control={control}
+                  render={({ field }) => (
+                    <DatePicker
+                      {...field}
+                      onChange={(newDate) => field.onChange(newDate)}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Duration (minutes)"
+                fullWidth
+                variant="outlined"
+                type="number"
+                {...register("duration", { required: "Duration is required" })}
+                error={!!errors.duration}
+                helperText={errors.duration?.message}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="rating"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    options={[
+                      { value: "G", label: "G" },
+                      { value: "PG", label: "PG" },
+                      { value: "PG-13", label: "PG-13" },
+                      { value: "R", label: "R" },
+                    ]}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: errors.genre ? "red" : base.borderColor,
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        zIndex: 9999, // Ensure the dropdown menu is above other elements
+                      }),
+                    }}
+                    placeholder="Select Rating"
+                    isClearable
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="YouTube Link"
+                fullWidth
+                variant="outlined"
+                {...register("trailer", {
+                  required: "Trailer is required",
+                  pattern: {
+                    value: /^(https?:\/\/)?(www\.)?(youtube\.(com|be))\/.+$/,
+                    message: "Please enter a valid YouTube URL",
+                  },
+                })}
+                error={!!errors.trailer}
+                helperText={errors.trailer?.message}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Description"
+                fullWidth
+                variant="outlined"
+                multiline
+                rows={4} // Set the number of rows for the textarea
+                {...register("description", {
+                  required: "Description is required",
+                })}
+                error={!!errors.description}
+                helperText={errors.description?.message}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Controller
+                name="image"
+                rules={{ required: "Image is required" }}
+                control={control}
+                render={({ field }) => (
+                  <FilePond
+                    {...field}
+                    files={field.value}
+                    onupdatefiles={(fileItems) =>
+                      field.onChange(fileItems.map((fileItem) => fileItem.file))
+                    }
+                    allowMultiple={true}
+                    instantUpload={false}
+                    acceptedFileTypes={["image/png", "image/jpeg", "image/jpg"]}
+                    labelIdle='Drag & Drop your image or <span class="filepond--label-action">Browse</span>'
+                  />
+                )}
+              />
+              {errors.image && (
+                <Typography color="error" variant="caption">
+                  Image is required
+                </Typography>
               )}
-            />
-            {errors.image && (
-              <p className="text-red-500 text-sm mt-1">Image is required</p>
-            )}
-          </div>
-          <div className="flex justify-end col-span-1 md:col-span-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-md text-gray-500 border border-gray-300 mr-2"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
-            >
-              {isEditing ? "Update" : "Create"}
-            </button>
-          </div>
+            </Grid>
+
+            <Grid item xs={12} container justifyContent="flex-end" spacing={1}>
+              <Grid item>
+                <Button variant="outlined" color="secondary" onClick={onClose}>
+                  Cancel
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button type="submit" variant="contained" color="primary">
+                  {isEditing ? "Update" : "Create"}
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

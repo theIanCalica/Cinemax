@@ -17,17 +17,22 @@ const MoviesSchema = new Schema(
       trim: true,
       maxlength: 255,
     },
-    storyLine: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     directorName: {
       type: String,
       required: true,
       trim: true,
     },
     writerName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    producerName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    mainCast: {
       type: String,
       required: true,
       trim: true,
@@ -40,17 +45,18 @@ const MoviesSchema = new Schema(
       type: Number,
       required: true,
     },
-    image: {
-      public_id: {
-        type: String,
-        required: true,
+    images: [
+      {
+        public_id: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
       },
-      url: {
-        type: String,
-        required: true,
-      },
-    },
-    cast: [CastSchema],
+    ],
     trailer: {
       type: String,
       required: true,
@@ -64,7 +70,6 @@ const MoviesSchema = new Schema(
     },
     starRating: {
       type: Number,
-      required: true,
       min: 1,
       max: 5,
     },

@@ -300,6 +300,7 @@ exports.CheckoutCreditCard = async (req, res) => {
 // Count orders
 exports.countOrder = async (req, res) => {
   try {
+    console.log("hi");
     const orderCount = await Order.countDocuments();
     res.status(200).json({ count: orderCount });
   } catch (err) {

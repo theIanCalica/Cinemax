@@ -1,6 +1,6 @@
 const Movie = require("../Models/Movie");
-const Genre = require("../Models/Genre");
-
+const streamifier = require("streamifier");
+const cloudinary = require("../utils/Cloudinary");
 // Get all movies
 exports.getAllMovies = async (req, res) => {
   try {
@@ -30,34 +30,89 @@ exports.getSingleMovieById = async (req, res) => {
 
 // Create a new movie
 exports.createMovie = async (req, res) => {
-  const { genre, title, description, release_date, duration, image } = req.body;
+  const {
+    genre,
+    title,
+    description,
+    release_date,
+    duration,
+    mainCast,
+    producer,
+    rating,
+    director,
+    writer,
+    trailer,
+  } = req.body;
 
+  // Validate required fields
   if (
-    !genre ||
+    !Array.isArray(genre) || // Ensure genre is an array
+    genre.length === 0 || // Ensure the array is not empty
     !title ||
     !description ||
     !release_date ||
+    !trailer ||
     !duration ||
-    !image
+    !req.files ||
+    !mainCast ||
+    !producer ||
+    !rating ||
+    !director ||
+    !writer
   ) {
-    res.status(400).json({ msg: "All fields are required" });
+    return res.status(400).json({
+      msg: "All fields are required and genre must be a non-empty array",
+    });
   }
 
   try {
-    const result = await cloudinary_js_config.uploader.upload(image, {
-      folder: "movies",
-    });
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
 
+    // Upload images to Cloudinary
+    const uploadToCloudinary = (file) => {
+      return new Promise((resolve, reject) => {
+        if (!allowedTypes.includes(file.mimetype)) {
+          reject(
+            new Error("Invalid file type. Only JPEG, PNG, and GIF are allowed.")
+          );
+        }
+
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "movies" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        streamifier.createReadStream(file.buffer).pipe(uploadStream);
+      });
+    };
+
+    const imageUploads = await Promise.all(
+      req.files.map((file) => uploadToCloudinary(file))
+    );
+
+    const images = imageUploads.map((result) => ({
+      public_id: result.public_id,
+      url: result.secure_url,
+    }));
+
+    const rating = JSON.parse(req.body.rating);
+
+    // Create movie document
     const newMovie = new Movie({
-      genre,
+      genre: Array.isArray(genre) ? genre : JSON.parse(genre), // Assuming genre is sent as a JSON string
       title,
       description,
-      release_date,
+      release_date: new Date(release_date),
       duration,
-      image: {
-        public_id: result.public_id,
-        url: result.secure_url,
-      },
+      images: images,
+      mainCast,
+      producerName: producer,
+      trailer,
+      rating: rating.value, // Assuming rating is an object
+      directorName: director,
+      writerName: writer,
     });
 
     const saveMovie = await newMovie.save();
@@ -70,43 +125,20 @@ exports.createMovie = async (req, res) => {
 
 // Update a movie by ID
 exports.updateMovieById = async (req, res) => {
+  const {
+    genre,
+    title,
+    description,
+    release_date,
+    duration,
+    mainCast,
+    producer,
+    rating,
+    director,
+    writer,
+    trailer,
+  } = req.body;
   try {
-    const currentMovie = await Movie.findById(req.params.id);
-
-    const data = {
-      genre: req.body.genre,
-      title: req.body.title,
-      description: req.body.description,
-      release_date: req.body.release_date,
-      duration: req.body.duration,
-    };
-
-    if (req.body.image !== "") {
-      const imgId = currentMovie.image.public_id;
-
-      if (imgId) {
-        await cloudinary.uploader.destroy(imgId);
-      }
-
-      const newImage = await cloudinary.uploader.upload(req.body.image, {
-        folder: "movies",
-      });
-
-      data.image = {
-        public_id: newImage.public_id,
-        url: newImage.secure_url,
-      };
-    }
-
-    const movie = await Movie.findByIdAndUpdate(req.params.id, data, {
-      new: true,
-    });
-
-    if (!movie) {
-      return res.status(404).json({ msg: "Movie not found" });
-    }
-
-    res.status(200).json({ movie, success: true });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -118,17 +150,19 @@ exports.deleteMovieById = async (req, res) => {
   try {
     const movie = await Movie.findByIdAndDelete(req.params.id);
 
-    // retrieve current img ID
-    const imgId = movie.image.public_id;
-    if (imgId) {
-      await cloudinary.uploader.destroy(imgId);
-    }
-
     if (!movie) {
       return res.status(404).json({ msg: "Movie not found" });
     }
 
-    res.status(200).json({ msg: "Movie deleted" });
+    // Loop through the array of images and delete each one
+    for (const image of movie.images) {
+      const imgId = image.public_id;
+      if (imgId) {
+        await cloudinary.uploader.destroy(imgId);
+      }
+    }
+
+    res.status(200).json({ msg: "Movie and associated images deleted" });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

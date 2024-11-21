@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { Box, Button, Typography, IconButton } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
+import MUIDataTable from "mui-datatables";
 import MovieModal from "../../components/admin/Modal/Movie";
 import { notifyError, notifySuccess, formatDate } from "../../Utils/helpers";
-import axios from "axios";
+import client from "../../Utils/client";
 
 const Movie = () => {
   const [movies, setMovies] = useState([]);
@@ -14,12 +15,12 @@ const Movie = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchMovies = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/movies`)
-      .then((response) => {});
+    client.get(`/movies`).then((response) => {
+      setMovies(response.data);
+      console.log(response.data);
+    });
   };
 
-  // Open and close modal
   const openModal = (movie = null) => {
     setCurrentMovie(movie);
     setIsEditing(!!movie);
@@ -44,8 +45,8 @@ const Movie = () => {
       cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .delete(`${process.env.REACT_APP_API_LINK}/movies/${movieID}`)
+        client
+          .delete(`/movies/${movieID}`)
           .then((response) => {
             if (response.status === 201) {
               notifySuccess("Successfully Deleted");
@@ -69,79 +70,98 @@ const Movie = () => {
     fetchMovies();
   }, []);
 
+  const columns = [
+    { name: "title", label: "Title" },
+    { name: "directorName", label: "Director Name" },
+    { name: "producerName", label: "Producer Name" },
+    { name: "writerName", label: "Writer Name" },
+    {
+      name: "createdAt",
+      label: "Created",
+      options: {
+        customBodyRender: (value) => formatDate(value),
+      },
+    },
+    {
+      name: "updatedAt",
+      label: "Updated",
+      options: {
+        customBodyRender: (value) => formatDate(value),
+      },
+    },
+    {
+      name: "actions",
+      label: "Actions",
+      options: {
+        customBodyRender: (value, tableMeta) => {
+          const movie = movies[tableMeta.rowIndex];
+          return (
+            <Box>
+              <IconButton
+                color="primary"
+                onClick={() => openModal(movie)}
+                aria-label="edit"
+              >
+                <EditOutlinedIcon />
+              </IconButton>
+              <IconButton
+                color="error"
+                onClick={() => handleDelete(movie._id)}
+                aria-label="delete"
+              >
+                <DeleteOutlineOutlinedIcon />
+              </IconButton>
+            </Box>
+          );
+        },
+        filter: false,
+        sort: false,
+      },
+    },
+  ];
+
+  const options = {
+    responsive: "standard",
+    selectableRows: "none", // Disable checkboxes
+    elevation: 3,
+    rowsPerPage: 10,
+    rowsPerPageOptions: [10, 20, 50],
+    download: false,
+    print: false,
+    search: true,
+    viewColumns: true,
+    filter: true,
+  };
+
   return (
-    <div className="px-3 mt-8">
-      <div className="flex justify-between">
-        <h1 className="font-bold font-serif text-2xl">Movies</h1>
-        <p style={{ fontSize: "13.5px" }}>
-          <span className="text-blue-500 hover:underline">Movie</span> /
-          <span className="text-gray-500">Movie List</span>
-        </p>
-      </div>
-      <button
-        onClick={() => openModal()} // Open modal for adding new genre
-        className="mt-5 px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
+    <Box sx={{ p: 3 }}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
       >
-        Add Movie
-      </button>
-      {/* Render the modal for creating or editing a genre */}
+        <Typography variant="h4" component="h1" fontWeight="bold">
+          Movies
+        </Typography>
+        <Button variant="outlined" color="success" onClick={() => openModal()}>
+          Add Movie
+        </Button>
+      </Box>
+
       {isModalOpen && (
         <MovieModal
-          movieToEdit={currentMovie} // Pass the current genre to the modal
-          isEditing={isEditing} // Pass editing state to the modal
+          movieToEdit={currentMovie}
+          isEditing={isEditing}
           onClose={closeModal}
-          notifySuccess={notifySuccess} // Pass success notification
-          notifyError={notifyError} // Pass error notification
-          refresh={fetchMovies} //Pass refresh function for the table
+          notifySuccess={notifySuccess}
+          notifyError={notifyError}
+          refresh={fetchMovies}
         />
       )}
 
-      {/* Display categories in a table */}
-      <div className="mt-4 bg-white p-4 shadow-md rounded-lg">
-        <table className="min-w-full bg-white border-collapse">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b text-left">ID</th>
-              <th className="py-2 px-4 border-b text-left">Name</th>
-              <th className="py-2 px-4 border-b text-left">Created</th>
-              <th className="py-2 px-4 border-b text-left">Updated</th>
-              <th className="py-2 px-4 border-b text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {movies.map((movie) => (
-              <tr key={movie._id} className="hover:bg-slate-50">
-                <td className="py-2 px-4 border-b">{movie._id}</td>
-                <td className="py-2 px-4 border-b">{movie.name}</td>
-                <td className="py-2 px-4 border-b">
-                  {formatDate(movie.createdAt)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  {formatDate(movie.updatedAt)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  <button
-                    className="p-1 mr-2 rounded-full bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white transition duration-200 ease-in-out"
-                    onClick={() => openModal(movie)} // Pass the genre to be edited
-                  >
-                    <EditOutlinedIcon />
-                  </button>
-
-                  <button
-                    className="p-1 rounded-full bg-transparent text-red-500 hover:bg-red-500 hover:text-white transition duration-200 ease-in-out"
-                    onClick={() => {
-                      handleDelete(movie._id);
-                    }}
-                  >
-                    <DeleteOutlineOutlinedIcon />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <MUIDataTable data={movies} columns={columns} options={options} />
+    </Box>
   );
 };
 
