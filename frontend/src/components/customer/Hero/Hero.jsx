@@ -34,6 +34,18 @@ const Hero = ({ type }) => {
       subtitle: "Order",
       image: "/images/food.png",
     },
+    Movie: {
+      title: "Movies now playing",
+      subtitle: "Movies",
+      image:
+        "https://img.freepik.com/free-vector/film-strp-3d-background-with-roll-projector_1017-36680.jpg",
+    },
+    Book: {
+      title: "Book a ticket",
+      subtitle: "Booking",
+      image:
+        "https://img.freepik.com/free-vector/film-strp-3d-background-with-roll-projector_1017-36680.jpg",
+    },
   };
 
   // Fallback for invalid or missing type

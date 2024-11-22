@@ -19,6 +19,8 @@ import BaseLayout from "./components/customer/Layout";
 import CartPage from "./pages/customer/Cart";
 import CancelPaymentPage from "./pages/customer/PaymentCanceled";
 import CustomerOrderPage from "./pages/customer/Order";
+import MoviePage from "./pages/customer/Movie";
+import BookPage from "./pages/customer/Book";
 
 // Admin Pages
 import Layout from "./components/admin/v2/Layout";
@@ -37,6 +39,7 @@ import Calendar from "./pages/admin/Calendar";
 import EmailAdmin from "./pages/admin/Email";
 import OrderPage from "./pages/admin/Orders";
 import "./main.css";
+import ShowTimePage from "./pages/admin/Showtime";
 
 // Crew protected route
 import EmployeeProtectedRoute from "./Utils/authRoutes/EmployeeProtectedRoute";
@@ -73,6 +76,8 @@ function App() {
             <Route path="/email" element={<Email />} />
             <Route path="/foods" element={<CustomerFoodList />}></Route>
             <Route path="/food/category" element={<FoodCategory />}></Route>
+            <Route path="/movies" element={<MoviePage />}></Route>
+            <Route path="/book" element={<BookPage />}></Route>
             <Route path="/my-cart" element={<CartPage />}></Route>
             <Route path="/my-orders" element={<CustomerOrderPage />}></Route>
           </Route>
@@ -105,6 +110,7 @@ function App() {
             <Route path="email" element={<EmailAdmin />}></Route>
             <Route path="profile" element={<Profile />}></Route>
             <Route path="orders" element={<OrderPage />}></Route>
+            <Route path="showtime" element={<ShowTimePage />}></Route>
             <Route path="emails"></Route>
             {/* <Route path="messages" element={<Message />}></Route> */}
             <Route path="contacts" element={<Contacts />}></Route>

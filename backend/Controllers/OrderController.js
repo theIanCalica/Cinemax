@@ -1,4 +1,3 @@
-const Category = require("../Models/Category");
 const Order = require("../Models/Order");
 const Cart = require("../Models/Cart");
 const User = require("../Models/User");

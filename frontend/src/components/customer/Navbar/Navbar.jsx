@@ -27,9 +27,6 @@ const Navbar = () => {
     setDropdowns((prev) => ({
       ...prev,
       [dropdown]: !prev[dropdown],
-      movies: dropdown === "movies" ? !prev[dropdown] : false,
-      announcements: dropdown === "announcements" ? !prev[dropdown] : false,
-      food: dropdown === "food" ? !prev[dropdown] : false,
     }));
   };
 
@@ -88,7 +85,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-4 items-center">
-          {["/", "/about", "/news", "/contact"].map((path) => (
+          {["/", "/about", "/news", "/contact", "/movies"].map((path) => (
             <NavLink
               key={path}
               to={path}
@@ -108,6 +105,7 @@ const Navbar = () => {
             <button
               className="text-white font-bold hover:text-themeYellow flex items-center"
               onMouseEnter={() => setDropdowns({ ...dropdowns, foods: true })}
+              onMouseLeave={() => setDropdowns({ ...dropdowns, foods: false })}
             >
               Foods
               <KeyboardArrowDownIcon />
