@@ -11,14 +11,24 @@ const sendEmail = require("../utils/Mailtrap");
 // Check uniqueness
 exports.checkUnique = async (req, res) => {
   try {
-    const { email } = req.body;
-    const existingUser = await User.findOne({ email });
+    const { email, id } = req.body; // Destructure id from the request body
+
+    // Build the query: Check for email existence, excluding the user with the provided id
+    const query = id ? { email, _id: { $ne: id } } : { email };
+
+    const existingUser = await User.findOne(query);
+
     if (existingUser) {
-      return res.status(400).json({ message: "Email is already taken" });
+      return res
+        .status(400)
+        .json({ message: "Email is already taken", isUnique: false });
     }
-    return res.status(200).json({ message: "Email is available" });
+
+    return res
+      .status(200)
+      .json({ message: "Email is available", isUnique: true });
   } catch (err) {
-    console.log(err.message);
+    console.error(err.message);
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -186,8 +196,6 @@ exports.register = [
 // Update a user by ID
 exports.updateUserById = async (req, res) => {
   try {
-    const currentUser = await User.findById(req.params.id);
-
     const data = {
       fname: req.body.fname,
       lname: req.body.lname,
@@ -196,22 +204,6 @@ exports.updateUserById = async (req, res) => {
       phoneNumber: req.body.phoneNumber,
       role: req.body.role,
     };
-
-    if (req.body.profile !== "") {
-      const imgId = currentUser.profile.public_id;
-      if (ImgId) {
-        await cloudinary.uploader.destroy(ImgId);
-      }
-
-      const newProfile = await cloudinary.uploader.upload(req.body.profile, {
-        folder: "users",
-      });
-
-      data.profile = {
-        public_id: newProfile.public_id,
-        url: newProfile.secure_url,
-      };
-    }
 
     const user = await User.findByIdAndUpdate(req.params.id, data, {
       new: true,
@@ -228,6 +220,32 @@ exports.updateUserById = async (req, res) => {
   }
 };
 
+// update profile for both admin and user
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const data = {
+      fname: req.body.fname,
+      lname: req.body.lname,
+      dob: req.body.dob,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+    };
+
+    const user = await User.findByIdAndUpdate(userId, data, {
+      new: true,
+    });
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    res.status(200).json({ user, success: true });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
 // Send email
 exports.sendEmail = async (req, res) => {
   try {

@@ -28,6 +28,9 @@ router.post("/registration", userController.register);
 // Update a user by ID
 router.put("/:id", userController.updateUserById);
 
+// Update profile
+router.put("/update-profile/:id", userController.updateProfile);
+
 // Send email
 router.post("/send-email", upload.array("files"), userController.sendEmail);
 

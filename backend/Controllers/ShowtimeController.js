@@ -13,6 +13,49 @@ exports.GetShowtimes = async (req, res) => {
   }
 };
 
+// Get showtime based on movie Id
+exports.GetShowtimeBasedOnMovieId = async (req, res) => {
+  try {
+    // Get movie ID from the request params
+    const movieId = req.params.id;
+
+    // Query the database to find the showtimes for the given movie ID, only selecting required fields
+    const showtimes = await Showtime.find({ movie: movieId }).select(
+      "showDateRange showTime availableSeats"
+    );
+
+    // Check if showtime data exists for the given movie ID
+    if (!showtimes || showtimes.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No showtimes found for this movie.",
+      });
+    }
+
+    // Transform the showtimes data to include only relevant information (dates, times, and available seats)
+    const showtimesDetails = showtimes.map((showtime) => {
+      return {
+        dateRange: {
+          start: showtime.showDateRange.start,
+          end: showtime.showDateRange.end,
+        },
+        showtimes: showtime.showTime.map((time) => ({
+          time: time,
+          availableSeats: showtime.availableSeats.length, // Number of available seats
+        })),
+      };
+    });
+
+    // Return the showtimes details as a response
+    res.status(200).json({ success: true, data: showtimesDetails });
+  } catch (err) {
+    console.log(err.message);
+    res
+      .status(500)
+      .json({ success: false, message: "Server Error", error: err.message });
+  }
+};
+
 // Create a new showtime
 exports.CreateShowtime = async (req, res) => {
   try {

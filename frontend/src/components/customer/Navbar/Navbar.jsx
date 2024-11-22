@@ -85,7 +85,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-4 items-center">
-          {["/", "/about", "/news", "/contact", "/movies"].map((path) => (
+          {["/", "/about", "/contact", "/movies"].map((path) => (
             <NavLink
               key={path}
               to={path}
@@ -207,7 +207,7 @@ const Navbar = () => {
           </button>
         </div>
         <div className="flex flex-col space-y-4 px-5 py-2">
-          {["/", "/about", "/news", "/contact"].map((path) => (
+          {["/", "/about", "/contact", "/movies"].map((path) => (
             <NavLink
               key={path}
               to={path}
@@ -251,7 +251,7 @@ const Navbar = () => {
                   </li>
                   <li>
                     <NavLink
-                      to={`/food/all`}
+                      to={`/foods`}
                       className="block p-2 hover:text-slate-400"
                       onClick={closeSidebar}
                     >

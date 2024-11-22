@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Box,
@@ -13,6 +13,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import Hero from "../../components/customer/Hero/Hero";
+import client from "../../Utils/client";
 
 const Book = () => {
   const location = useLocation();
@@ -25,9 +26,8 @@ const Book = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [error, setError] = useState("");
-
-  const availableDates = ["2024-11-23", "2024-11-24", "2024-11-25"];
-  const availableTimes = ["12:00 PM", "3:00 PM", "6:00 PM", "9:00 PM"];
+  const [availableDates, setAvailableDates] = useState([]);
+  const [availableTimes, setAvailableTimes] = useState([]);
 
   const handleSeatClick = (seatNumber) => {
     if (selectedSeats.includes(seatNumber)) {
@@ -74,6 +74,49 @@ const Book = () => {
     );
     // Perform further actions, e.g., API call
   };
+
+  useEffect(() => {
+    const fetchShowtimeDetails = async () => {
+      if (movie && movie._id) {
+        try {
+          const id = movie._id;
+          const response = await client.get(`/showtimes/${id}`);
+          const { dateRange, showtimes } = response.data;
+
+          // Extract dates and times from the API response
+          const dates = [];
+          let times = [];
+
+          if (dateRange) {
+            const { start, end } = dateRange;
+            // Generate dates within the range (assuming start and end are in a format like YYYY-MM-DD)
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            let currentDate = startDate;
+
+            while (currentDate <= endDate) {
+              dates.push(currentDate.toISOString().split("T")[0]);
+              currentDate.setDate(currentDate.getDate() + 1);
+            }
+          }
+
+          if (showtimes) {
+            times = showtimes.map((showtime) => ({
+              time: showtime.time,
+              availableSeats: showtime.availableSeats,
+            }));
+          }
+
+          setAvailableDates(dates || []);
+          setAvailableTimes(times || []);
+        } catch (error) {
+          console.error("Error fetching showtime details:", error);
+        }
+      }
+    };
+
+    fetchShowtimeDetails();
+  }, [movie]);
 
   return (
     <>
