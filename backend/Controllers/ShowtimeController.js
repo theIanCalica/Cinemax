@@ -153,7 +153,6 @@ exports.deleteShowtime = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: deletedShowtime,
       message: "Showtime deleted successfully",
     });
   } catch (err) {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import MUIDataTable from "mui-datatables";
-import axios from "axios";
 import {
   Button,
   Modal,
@@ -8,6 +7,8 @@ import {
   Box,
   Typography,
   CircularProgress,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -15,7 +16,7 @@ import dayjs from "dayjs";
 import Select from "react-select";
 import { useForm, Controller } from "react-hook-form";
 import client from "../../Utils/client";
-import { formatDate, notifySuccess } from "../../Utils/helpers";
+import { formatDate, notifyError, notifySuccess } from "../../Utils/helpers";
 
 const Showtime = () => {
   const [showtimes, setShowtimes] = useState([]);
@@ -23,6 +24,9 @@ const Showtime = () => {
   const [openModal, setOpenModal] = useState(false);
   const [movies, setMovies] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [currentShowtime, setCurrentShowtime] = useState(null);
 
   const {
     handleSubmit,
@@ -37,20 +41,19 @@ const Showtime = () => {
       end_date: null,
     },
   });
+  const fetchShowtimes = async () => {
+    try {
+      const response = await client.get("showtimes");
+      setShowtimes(response.data.data);
+    } catch (error) {
+      console.error("Error fetching showtimes:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fetch movies and showtimes
   useEffect(() => {
-    const fetchShowtimes = async () => {
-      try {
-        const response = await client.get("showtimes");
-        setShowtimes(response.data.data);
-      } catch (error) {
-        console.error("Error fetching showtimes:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     const fetchMovies = async () => {
       try {
         const response = await client.get("/movies");
@@ -90,8 +93,51 @@ const Showtime = () => {
     }
   };
 
+  const handleClick = (event, rowData) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedRow(rowData);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSelectedRow(null);
+  };
+
+  const handleEdit = () => {
+    handleClose();
+    console.log("Edit clicked", selectedRow);
+  };
+
+  const handleDelete = async () => {
+    handleClose();
+    // console.log(selectedRow);
+    const id = selectedRow[0];
+    await client
+      .delete(`showtimes/${id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          notifySuccess("Successfully deleted");
+          fetchShowtimes();
+        }
+      })
+      .catch((error) => {
+        notifyError(error.data.message);
+      });
+  };
   // Table options
   const columns = [
+    {
+      name: "_id",
+      label: "",
+      options: {
+        filter: false,
+        display: false,
+        sort: false,
+        // customBodyRender: (value, tableMeta) => {
+        //   return tableMeta.rowIndex + 1; // Add 1 because rowIndex starts at 0
+        // },
+      },
+    },
     {
       name: "",
       label: "",
@@ -132,6 +178,36 @@ const Showtime = () => {
             return `${formatDate(startDate)} - ${formatDate(endDate)}`;
           }
           return "N/A";
+        },
+      },
+    },
+    {
+      name: "actions",
+      label: "Actions",
+      options: {
+        filter: false,
+        sort: false,
+        customBodyRender: (value, tableMeta) => {
+          return (
+            <div>
+              <Button
+                aria-controls="actions-menu"
+                aria-haspopup="true"
+                onClick={(event) => handleClick(event, tableMeta.rowData)}
+              >
+                •••
+              </Button>
+              <Menu
+                id="actions-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                <MenuItem onClick={handleDelete}>Delete</MenuItem>
+              </Menu>
+            </div>
+          );
         },
       },
     },
