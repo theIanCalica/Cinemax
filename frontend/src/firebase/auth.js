@@ -7,6 +7,7 @@ import {
   FacebookAuthProvider,
   signInWithPopup,
   signOut,
+  updateEmail,
   setPersistence,
   browserSessionPersistence,
 } from "firebase/auth";
@@ -79,5 +80,19 @@ export const generateToken = async () => {
   } catch (error) {
     console.error("Error generating token:", error);
     return null; // Return null in case of an error
+  }
+};
+
+export const doUpdateEmail = async (newEmail) => {
+  try {
+    if (auth.currentUser) {
+      await updateEmail(auth.currentUser, newEmail);
+      console.log("Email updated successfully in Firebase.");
+    } else {
+      throw new Error("No authenticated user found.");
+    }
+  } catch (error) {
+    console.error("Error updating email in Firebase:", error.message);
+    throw error; // Rethrow to handle it in the calling function
   }
 };

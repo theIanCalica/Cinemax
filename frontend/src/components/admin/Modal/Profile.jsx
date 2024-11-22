@@ -9,6 +9,7 @@ import {
   notifySuccess,
   setUser,
 } from "../../../Utils/helpers";
+import { doUpdateEmail } from "../../../firebase/auth";
 import { Grid, Box, Typography, TextField, Button, Paper } from "@mui/material";
 import client from "../../../Utils/client";
 import dayjs from "dayjs";
@@ -60,7 +61,7 @@ const Profile = ({ onClose, user, isEditing }) => {
 
   const [isEmailUnique, setIsEmailUnique] = useState(true);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (!isEmailUnique) {
       notifyError("Email must be unique");
       return;
@@ -73,6 +74,10 @@ const Profile = ({ onClose, user, isEditing }) => {
       phoneNumber: data.phoneNumber,
       dob: data.dob.toISOString(),
     };
+
+    if (data.email !== user.email) {
+      await doUpdateEmail(data.email); // Call the function to update email in Firebase
+    }
 
     const url = `/users/update-profile/${user._id}`;
     const method = "PUT";

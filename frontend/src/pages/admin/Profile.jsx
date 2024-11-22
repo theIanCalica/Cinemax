@@ -18,6 +18,7 @@ import {
   setUser,
 } from "../../Utils/helpers";
 import ProfileModal from "../../components/admin/Modal/Profile";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ChangePasswordModal from "../../components/admin/Modal/ChangePasswordModal";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
@@ -26,6 +27,7 @@ import client from "../../Utils/client";
 const Profile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null); // State to hold the selected file
   const user = getUser();
 
   const handleEditProfile = () => {
@@ -61,6 +63,42 @@ const Profile = () => {
     });
   };
 
+  // Handle file input change
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]; // Get the selected file
+    if (file) {
+      // Check if the file is an image
+      if (!file.type.startsWith("image/")) {
+        notifyError("Please select a valid image file."); // Show error if not an image
+        return; // Exit the function if the file is not an image
+      }
+
+      const userId = user._id;
+      const formData = new FormData();
+      formData.append("file", file); // Add the file to FormData
+
+      client
+        .put(`/users/update-profile-picture/${userId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data", // Specify the content type for file upload
+          },
+        })
+        .then((response) => {
+          setUser(response.data);
+          window.location.reload();
+          notifySuccess("Profile picture updated");
+          console.log("Profile picture updated", response);
+        })
+        .catch((error) => {
+          // Handle error
+          console.error("Error updating profile picture", error);
+          notifyError("Failed to update profile picture.");
+        });
+      setSelectedFile(file); // Update state with the selected file
+      console.log(file); // Log the file object
+    }
+  };
+
   return (
     <Box className="container" sx={{ maxWidth: "lg", marginTop: 8 }}>
       {/* Page Header */}
@@ -78,12 +116,54 @@ const Profile = () => {
       <Paper elevation={3} sx={{ padding: 3, borderRadius: 2 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" alignItems="center" gap={2}>
-            {/* Profile Image */}
-            <Avatar
-              alt="Profile"
-              src={user.profile.url}
-              sx={{ width: 96, height: 96 }}
-            />
+            {/* Profile Image with Camera Icon */}
+            <Box
+              sx={{
+                position: "relative",
+                width: 96,
+                height: 96,
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "2px solid #ccc",
+              }}
+            >
+              <Avatar
+                alt="Profile"
+                src={user.profile.url}
+                sx={{ width: "100%", height: "100%" }}
+              />
+              {/* Camera Icon */}
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                  },
+                }}
+              >
+                <CameraAltIcon />
+                {/* File Input to select images */}
+                <input
+                  type="file"
+                  accept="image/*" // Restrict file types to images
+                  onChange={handleFileChange} // Handle file change
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                  }}
+                />
+              </IconButton>
+            </Box>
             {/* User Details */}
             <Box>
               <Typography variant="h6" fontWeight="semibold">

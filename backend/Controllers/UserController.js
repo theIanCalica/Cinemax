@@ -246,6 +246,86 @@ exports.updateProfile = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
+exports.updateProfilePic = [
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      const userId = req.params.id;
+
+      // Check if a file is provided
+      if (!req.file) {
+        return res.status(400).send("No file uploaded.");
+      }
+
+      // Check if the uploaded file is an image
+      if (!req.file.mimetype.startsWith("image/")) {
+        return res.status(400).send("Please upload a valid image file.");
+      }
+
+      // Find the user by ID
+      const user = await User.findById(userId); // Make sure to await the database query
+      if (!user) {
+        return res.status(404).send("User not found.");
+      }
+
+      // Check if the profile field exists on the user
+      if (!user.profile) {
+        return res.status(400).send("User profile not found.");
+      }
+
+      const defaultPublicId = "r9fgjtxvl5p5p1iaui43";
+      const defaultUrl =
+        "https://res.cloudinary.com/dwmw3iig6/image/upload/v1726394807/users/r9fgjtxvl5p5p1iaui43.jpg";
+
+      const isDefaultProfilePic =
+        user.profile.public_id === defaultPublicId &&
+        user.profile.url === defaultUrl;
+
+      // Upload the new image to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            { resource_type: "auto" }, // 'auto' will automatically detect the file type
+            (error, result) => {
+              if (error) {
+                return reject(error);
+              }
+              resolve(result);
+            }
+          )
+          .end(req.file.buffer); // Use the buffer directly for upload
+      });
+
+      // If not default, delete the previous profile picture from Cloudinary
+      if (!isDefaultProfilePic) {
+        const previousPublicId = user.profile.public_id;
+        if (previousPublicId && previousPublicId !== defaultPublicId) {
+          // Delete the previous profile picture from Cloudinary
+          await cloudinary.uploader.destroy(previousPublicId, {
+            resource_type: "image",
+          });
+        }
+      }
+
+      // Update the user profile with the new image details
+      user.profile.public_id = result.public_id;
+      user.profile.url = result.secure_url; // Cloudinary URL
+
+      await user.save(); // Save the updated user document
+
+      res.status(200).json({
+        user,
+        success: true,
+        message: "Successfully updated profile picture",
+      });
+    } catch (error) {
+      console.error(error.message); // Log the error message
+      res.status(500).send("Server Error");
+    }
+  },
+];
+
 // Send email
 exports.sendEmail = async (req, res) => {
   try {

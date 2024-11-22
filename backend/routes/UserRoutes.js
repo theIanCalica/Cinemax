@@ -31,6 +31,9 @@ router.put("/:id", userController.updateUserById);
 // Update profile
 router.put("/update-profile/:id", userController.updateProfile);
 
+// Update profile picture
+router.put("/update-profile-picture/:id", userController.updateProfilePic);
+
 // Send email
 router.post("/send-email", upload.array("files"), userController.sendEmail);
 
