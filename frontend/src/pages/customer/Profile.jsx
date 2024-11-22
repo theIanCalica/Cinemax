@@ -26,6 +26,10 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import {
+  doPasswordChange,
+  reauthenticateAndChangePassword,
+} from "../../firebase/auth";
 
 const Profile = () => {
   const user = getUser();
@@ -39,7 +43,7 @@ const Profile = () => {
       fname: user.fname,
       lname: user.lname,
       email: user.email,
-      phone: user.phone,
+      phone: user.phoneNumber,
       dob: user.dob ? dayjs(user.dob) : null,
     },
   });
@@ -101,22 +105,21 @@ const Profile = () => {
 
   const handleSavePassword = async (data) => {
     const { currentPassword, newPassword, confirmPassword } = data;
-
     if (newPassword !== confirmPassword) {
       notifyError("New password and confirm password do not match.");
       return;
     }
-
     try {
-      await client.post(`/users/change-password/${user._id}`, {
+      await reauthenticateAndChangePassword(
+        user.email,
         currentPassword,
-        newPassword,
-      });
-      notifySuccess("Password updated successfully.");
+        newPassword
+      );
       setOpenChangePasswordDialog(false);
-    } catch (error) {
-      console.error("Error changing password:", error);
-      notifyError("Failed to update password.");
+      notifySuccess("Change password successfully");
+    } catch (err) {
+      notifyError("Something went wrong");
+      console.log(err);
     }
   };
 
@@ -162,7 +165,7 @@ const Profile = () => {
             <Typography variant="h6" sx={{ mt: 2 }}>
               Phone Number
             </Typography>
-            <Typography variant="body1">{user.phonenumber}</Typography>
+            <Typography variant="body1">{user.phoneNumber}</Typography>
           </Grid>
         </Grid>
 
@@ -222,7 +225,7 @@ const Profile = () => {
               )}
             />
             <Controller
-              name="phone"
+              name="phoneNumber"
               control={editControl}
               render={({ field }) => (
                 <TextField

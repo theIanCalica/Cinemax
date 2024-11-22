@@ -10,6 +10,8 @@ import {
   updateEmail,
   setPersistence,
   browserSessionPersistence,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
 } from "firebase/auth";
 import { getToken } from "firebase/messaging";
 import { auth, messaging } from "./firebase";
@@ -32,8 +34,31 @@ export const doPasswordReset = (email) => {
   return sendPasswordResetEmail(auth, email);
 };
 
-export const doPasswordChange = (password) => {
-  return updatePassword(auth.currentUser, password);
+export const reauthenticateAndChangePassword = async (
+  email,
+  currentPassword,
+  newPassword
+) => {
+  try {
+    // Step 1: Log in the user with the current password
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      currentPassword
+    );
+    const user = userCredential.user; // Get the user from the credential
+
+    console.log(user); // Log the authenticated user details for debugging
+
+    // Step 2: Change the password after successful login
+    await updatePassword(user, newPassword);
+    console.log("Password updated successfully!");
+
+    return "Password updated successfully!";
+  } catch (error) {
+    console.error("Error updating password:", error.message);
+    throw error; // Pass the error back to handle in the UI
+  }
 };
 
 export const doSendEmailVerification = () => {

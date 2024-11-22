@@ -231,7 +231,7 @@ exports.updateProfile = async (req, res) => {
       email: req.body.email,
       phoneNumber: req.body.phoneNumber,
     };
-
+    console.log(req.body);
     const user = await User.findByIdAndUpdate(userId, data, {
       new: true,
     });
