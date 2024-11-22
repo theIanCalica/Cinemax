@@ -46,6 +46,11 @@ const Hero = ({ type }) => {
       image:
         "https://img.freepik.com/free-vector/film-strp-3d-background-with-roll-projector_1017-36680.jpg",
     },
+    Profile: {
+      title: "My Profile",
+      subtitle: "Profile",
+      image: "/images/about.jpg",
+    },
   };
 
   // Fallback for invalid or missing type
