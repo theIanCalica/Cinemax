@@ -27,16 +27,18 @@ const Showtime = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [currentShowtime, setCurrentShowtime] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       movie_id: "",
-      theater_name: "Cinema 1", // Default
+      theater_name: "", // Default
       start_date: null,
       end_date: null,
     },
@@ -74,6 +76,8 @@ const Showtime = () => {
 
   // Submit handler
   const onSubmit = async (data) => {
+    const method = isEditMode ? "PUT" : "POST";
+    const url = isEditMode ? `/showtimes/${currentShowtime}` : "/showtimes";
     console.log(data);
     setIsSubmitting(true);
     try {
@@ -81,11 +85,20 @@ const Showtime = () => {
         ...data,
         show_date: dayjs(data.show_date).format("YYYY-MM-DD"), // Format date
       };
-      const response = await client.post("/showtimes", formattedData);
-      setShowtimes((prev) => [...prev, response.data]);
-      setOpenModal(false);
-      notifySuccess("Successfully added!");
-      reset(); // Reset form after successful submission
+      const response = await client({
+        method,
+        url,
+        data: formattedData,
+      }).then((response) => {
+        fetchShowtimes();
+        setOpenModal(false);
+        reset();
+        if (response.status === 201) {
+          notifySuccess("Successfully added!");
+        } else if (response.status === 200) {
+          notifySuccess("Successfully updated");
+        }
+      });
     } catch (error) {
       console.error("Error adding showtime:", error);
     } finally {
@@ -105,7 +118,25 @@ const Showtime = () => {
 
   const handleEdit = () => {
     handleClose();
-    console.log("Edit clicked", selectedRow);
+
+    // Extract values from selectedRow
+    const showtimeId = selectedRow[0];
+    const movie = selectedRow[2];
+    const theater = selectedRow[3];
+    const dates = selectedRow[4];
+    // Populate form fields
+    reset({
+      movie_id: movie?._id || "",
+      theater_name: theater,
+      start_date: dates?.start ? dayjs(dates.start) : null,
+      end_date: dates?.end ? dayjs(dates.end) : null,
+    });
+    setValue("movie_id", { label: movie.title, value: movie._id });
+    setValue("theater_name", { label: theater, value: theater });
+
+    setCurrentShowtime(showtimeId); // Store the ID for update
+    setIsEditMode(true); // Switch modal to edit mode
+    setOpenModal(true); // Open modal
   };
 
   const handleDelete = async () => {
@@ -313,6 +344,7 @@ const Showtime = () => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  value={field.value}
                   options={[
                     { label: "Cinema 1", value: "Cinema 1" },
                     { label: "Cinema 2", value: "Cinema 2" },

@@ -57,8 +57,8 @@ exports.CreateShowtime = async (req, res) => {
     // Create new ShowTime document
     try {
       const newShowTime = new Showtime({
-        movie: movie_id.value, // Referencing the movie
-        theater: theater_name.value, // Theater name
+        movie: movie_id.value,
+        theater: theater_name.value,
         showDateRange: {
           start: startDate,
           end: endDate,
@@ -91,29 +91,38 @@ exports.CreateShowtime = async (req, res) => {
 exports.UpdateShowtime = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const { movie_id, theater_name, start_date, end_date } = req.body;
 
-    // Validate date range if updated
-    if (updates.showDateRange) {
-      const { start, end } = updates.showDateRange;
-      if (!start || !end) {
-        return res.status(400).json({
-          success: false,
-          message: "Both start and end dates are required in showDateRange.",
-        });
-      }
-      if (new Date(end) < new Date(start)) {
-        return res.status(400).json({
-          success: false,
-          message: "End date cannot be earlier than start date.",
-        });
-      }
+    // Validate required fields
+    if (!movie_id || !theater_name || !start_date || !end_date) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "All fields (movie_id, theater_name, start_date, end_date) are required.",
+      });
     }
 
-    // Find and update the showtime
+    // Validate date range
+    if (new Date(end_date) < new Date(start_date)) {
+      return res.status(400).json({
+        success: false,
+        message: "End date cannot be earlier than start date.",
+      });
+    }
+
+    // Extract values for updates
+    const updates = {
+      movie: movie_id.value, // Use the `value` property
+      theater: theater_name.value,
+      showDateRange: {
+        start: start_date,
+        end: end_date,
+      },
+    };
+
+    // Update the showtime in the database
     const updatedShowtime = await Showtime.findByIdAndUpdate(id, updates, {
       new: true, // Return the updated document
-      runValidators: true, // Ensure model validations are applied
     });
 
     if (!updatedShowtime) {
@@ -129,6 +138,7 @@ exports.UpdateShowtime = async (req, res) => {
       message: "Showtime updated successfully",
     });
   } catch (err) {
+    console.error(err.message);
     res.status(500).json({
       success: false,
       message: "Server Error",
