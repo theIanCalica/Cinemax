@@ -25,7 +25,9 @@ const Home = () => {
 
   const getNumberofUsers = async () => {
     try {
-      const response = await client.get(`/users/count`);
+      const response = await client.get(`/users/count`, {
+        withCredentials: true,
+      });
       setUserCount(response.data.count);
     } catch (err) {
       console.error("Error fetching user count:", err);
@@ -34,7 +36,9 @@ const Home = () => {
 
   const getNumberOfOrder = async () => {
     try {
-      const response = await client.get(`/orders/count`);
+      const response = await client.get(`/orders/count-order`, {
+        withCredentials: true,
+      });
       setOrderCount(response.data.count);
     } catch (err) {
       console.error("Error fetching order count:", err);
@@ -43,7 +47,9 @@ const Home = () => {
 
   const getNumberOfBooking = async () => {
     try {
-      const response = await client.get(`/bookings/count`);
+      const response = await client.get(`/bookings/count`, {
+        withCredentials: true,
+      });
       setBookingCount(response.data.count);
     } catch (err) {
       console.error("Error fetching booking count:", err);
@@ -53,7 +59,7 @@ const Home = () => {
   useEffect(() => {
     getNumberofUsers();
     getNumberOfOrder();
-    getNumberOfBooking();
+    // getNumberOfBooking();
 
     if (loggedIn && user && user.role === "admin") {
       notifySuccess("Successfully logged in");

@@ -18,36 +18,25 @@ exports.GetShowtimeBasedOnMovieId = async (req, res) => {
   try {
     // Get movie ID from the request params
     const movieId = req.params.id;
-
+    const { theater } = req.body;
     // Query the database to find the showtimes for the given movie ID, only selecting required fields
-    const showtimes = await Showtime.find({ movie: movieId }).select(
-      "showDateRange showTime availableSeats"
-    );
+    const showtime = await Showtime.find({
+      movie: movieId,
+      theater: theater,
+    }).populate({
+      path: "movie", // Populate the `movie` field
+    });
 
     // Check if showtime data exists for the given movie ID
-    if (!showtimes || showtimes.length === 0) {
+    if (!showtime || showtime.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No showtimes found for this movie.",
       });
     }
 
-    // Transform the showtimes data to include only relevant information (dates, times, and available seats)
-    const showtimesDetails = showtimes.map((showtime) => {
-      return {
-        dateRange: {
-          start: showtime.showDateRange.start,
-          end: showtime.showDateRange.end,
-        },
-        showtimes: showtime.showTime.map((time) => ({
-          time: time,
-          availableSeats: showtime.availableSeats.length, // Number of available seats
-        })),
-      };
-    });
-
     // Return the showtimes details as a response
-    res.status(200).json({ success: true, data: showtimesDetails });
+    res.status(200).json({ success: true, showtime });
   } catch (err) {
     console.log(err.message);
     res

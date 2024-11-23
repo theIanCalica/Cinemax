@@ -111,6 +111,26 @@ exports.getContactById = async (req, res) => {
   }
 };
 
+exports.getPendingAndResolvedForCharts = async (req, res) => {
+  try {
+    // Get the count of 'pending' and 'resolved' contacts
+    const pendingCount = await Contact.countDocuments({ status: "pending" });
+    const resolvedCount = await Contact.countDocuments({ status: "resolved" });
+
+    // Send the response with the counts for the chart
+    res.status(200).json({
+      pending: pendingCount,
+      resolved: resolvedCount,
+    });
+  } catch (error) {
+    // Handle any errors
+    console.error(error);
+    res.status(500).json({
+      message: "Something went wrong while fetching the data",
+      error: error.message,
+    });
+  }
+};
 // Update a contact by ID
 exports.updateContactById = async (req, res) => {
   const { name, email, phone, subject, body, status } = req.body;

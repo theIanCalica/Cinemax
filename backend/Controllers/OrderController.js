@@ -300,10 +300,10 @@ exports.CheckoutCreditCard = async (req, res) => {
 // Count orders
 exports.countOrder = async (req, res) => {
   try {
-    console.log("hi");
-    const orderCount = await Order.countDocuments();
+    const orderCount = await Order.estimatedDocumentCount();
     res.status(200).json({ count: orderCount });
   } catch (err) {
+    console.error("Error in countOrder:", err);
     res.status(500).json({ error: "Failed to retrieve order count" });
   }
 };

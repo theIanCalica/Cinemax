@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
+import client from "../../Utils/client"; // Assuming client is configured for API calls
+import { notifyError } from "../../Utils/helpers"; // Assuming this shows an error message
+import { useNavigate } from "react-router-dom";
+import { Box, Typography, Button, Card } from "@mui/material";
 
 // Register necessary components with Chart.js
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
-const ContactWidget = ({ data }) => {
+const ContactWidget = () => {
+  const navigate = useNavigate();
   const [chartData, setChartData] = useState({
     labels: ["Resolved", "Received"],
     datasets: [
@@ -17,28 +22,37 @@ const ContactWidget = ({ data }) => {
       },
     ],
   });
-
   const [totalContacts, setTotalContacts] = useState(0);
 
-  useEffect(() => {
-    // Simulate data fetching or processing
-    if (data) {
-      const resolved = data.resolved || 0;
-      const received = data.received || 0;
+  // Fetch the pending and resolved counts for the chart
+  const fetchContactStats = async () => {
+    try {
+      const response = await client.get("/contacts/pending-resolved"); // API endpoint that gives counts
+      const { pending, resolved } = response.data;
+
+      // Update chart data with the received counts
       setChartData({
-        labels: ["Resolved", "Received"],
+        labels: ["Resolved", "Pending"],
         datasets: [
           {
-            data: [resolved, received],
+            data: [resolved, pending], // Assuming the data includes both pending and resolved counts
             backgroundColor: ["#4BC0C0", "#FF6384"],
             borderColor: ["#FFFFFF", "#FFFFFF"],
             borderWidth: 2,
           },
         ],
       });
-      setTotalContacts(resolved + received);
+
+      // Calculate the total contacts count
+      setTotalContacts(pending + resolved);
+    } catch (error) {
+      notifyError("Error fetching contacts");
     }
-  }, [data]);
+  };
+
+  useEffect(() => {
+    fetchContactStats();
+  }, []); // Fetch data only once when the component mounts
 
   const options = {
     responsive: true,
@@ -60,33 +74,43 @@ const ContactWidget = ({ data }) => {
     },
   };
 
+  const handleViewMore = () => {
+    navigate("/admin/contacts"); // Replace with the route you want to navigate to
+  };
+
   return (
-    <div className="bg-white p-6 shadow-md rounded-lg flex flex-col items-center w-full max-w-sm">
-      <h2 className="text-xl font-semibold mb-4">Contact Statistics</h2>
-      <div className="w-full h-64 flex items-center justify-center">
+    <Card sx={{ maxWidth: 345, padding: 3, boxShadow: 3 }}>
+      <Typography variant="h6" gutterBottom>
+        Contact Statistics
+      </Typography>
+      <Box
+        sx={{
+          width: "100%",
+          height: 240,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Doughnut data={chartData} options={options} />
-      </div>
-      <div className="mt-4 text-center">
-        <p className="text-lg font-medium">Total Contacts:</p>
-        <p className="text-xl font-bold">{totalContacts}</p>
-        {/* Total number of contacts */}
-      </div>
-      <div className="flex items-center mt-6">
-        {/* Left side: View More */}
-        <div className="text-blue-500 cursor-pointer hover:underline">
+      </Box>
+      <Box sx={{ textAlign: "center", marginTop: 2 }}>
+        <Typography variant="body1" color="textSecondary">
+          Total Contacts:
+        </Typography>
+        <Typography variant="h5" fontWeight="bold">
+          {totalContacts}
+        </Typography>
+      </Box>
+      <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
+        <Button variant="text" color="primary" onClick={handleViewMore}>
           View More
-        </div>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Card>
   );
 };
 
-// Example usage with dynamic data
-const sampleData = {
-  resolved: 80,
-  received: 120,
-};
-
 export default function App() {
-  return <ContactWidget data={sampleData} />;
+  return <ContactWidget />;
 }

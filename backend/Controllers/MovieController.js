@@ -4,7 +4,7 @@ const cloudinary = require("../utils/Cloudinary");
 // Get all movies
 exports.getAllMovies = async (req, res) => {
   try {
-    const movies = await Movie.find().sort({ title: 1 });
+    const movies = await Movie.find().populate("genre").sort({ title: 1 });
     res.status(200).json(movies);
   } catch (err) {
     console.error(err.message);

@@ -23,6 +23,7 @@ const Movie = () => {
     try {
       const response = await client.get("/movies");
       setMovies(response.data);
+      console.log(response.data);
     } catch (error) {
       notifyError(error?.response?.data?.message || "Failed to fetch movies");
     }
@@ -69,8 +70,15 @@ const Movie = () => {
                     {movie.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {movie.genre} / {movie.duration} Mins
+                    {movie.genre && movie.genre.length > 0
+                      ? movie.genre.map((g) => g.name).join(", ") // Extract and join genre names
+                      : "N/A"}{" "}
+                    /{" "}
+                    {movie.duration
+                      ? `${movie.duration} Mins`
+                      : "Duration not available"}
                   </Typography>
+
                   <Button
                     variant="contained"
                     color="primary"

@@ -115,9 +115,6 @@ exports.addUser = async (req, res, next) => {
 exports.register = [
   upload.single("file"),
   async (req, res) => {
-    console.log(req.file); // Logs file info including buffer, mimetype, etc.
-    console.log("Body:", req.body); // Logs form fields like fname, lname, etc.
-
     try {
       const { fname, lname, dob, email, phoneNumber } = req.body;
 

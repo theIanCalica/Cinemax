@@ -1,6 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const contactController = require("../Controllers/ContactController");
+const authenticateTokenAndUser = require("../middleware/Auth");
+
+router.get(
+  "/pending-resolved",
+  authenticateTokenAndUser,
+  contactController.getPendingAndResolvedForCharts
+);
 
 // Get all contacts
 router.get("/", contactController.getAllContacts);

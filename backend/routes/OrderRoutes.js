@@ -6,15 +6,15 @@ const authenticateTokenAndUser = require("../middleware/Auth");
 // Get all orders
 router.get("/", authenticateTokenAndUser, OrderController.getAllOrders);
 
+// Count order
+router.get("/count-order", OrderController.countOrder);
+
 // Get orders based on user Id
 router.get(
   "/:userId",
   authenticateTokenAndUser,
   OrderController.getOrdersBasedOnUser
 );
-
-// Count order
-router.get("/count", authenticateTokenAndUser, OrderController.countOrder);
 
 // Get a single order by ID
 router.get("/:id", authenticateTokenAndUser, OrderController.getSingleOrder);

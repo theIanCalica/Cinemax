@@ -211,11 +211,9 @@ const UsersPage = () => {
             <tr>
               <th className="py-2 px-4 border-b text-left">ID</th>
               <th className="py-2 px-4 border-b text-left">Name</th>
-              <th className="py-2 px-4 border-b text-left">Date of Birth</th>
               <th className="py-2 px-4 border-b text-left">Email</th>
               <th className="py-2 px-4 border-b text-left">Phone</th>
               <th className="py-2 px-4 border-b text-left">Role</th>
-              <th className="py-2 px-4 border-b text-left">Status</th>
               <th className="py-2 px-4 border-b text-left">Profile</th>
               <th className="py-2 px-4 border-b text-left">Actions</th>
             </tr>
@@ -227,16 +225,11 @@ const UsersPage = () => {
                 <td className="py-2 px-4 border-b">
                   {user.fname + " " + user.lname}
                 </td>
-                <td className="py-2 px-4 border-b">
-                  {user.dob ? formatDate(user.dob) : null}
-                </td>
 
                 <td className="py-2 px-4 border-b">{user.email}</td>
                 <td className="py-2 px-4 border-b">{user.phoneNumber}</td>
                 <td className="py-2 px-4 border-b">{formatRole(user.role)}</td>
-                <td className="py-2 px-4 border-b">
-                  {formatRole(user.status)}
-                </td>
+
                 <td>
                   {user.profile ? (
                     <img
