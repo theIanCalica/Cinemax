@@ -85,30 +85,21 @@ const SignupForm = ({ onSwitchMode }) => {
 
   // Final submit handler
   const onSubmitStep3 = async (data) => {
+    await doCreateUserWithEmailAndPassword(data.email, data.password);
+    await doSignInWithEmailAndPassword(data.email, data.password);
     const completeData = new FormData();
     completeData.append("file", file.length > 0 ? file[0].file : null); // Adding the file
     for (const key in data) {
       completeData.append(key, data[key]); // Append other form data
     }
-    console.log(completeData);
+
     try {
       // Send the API request to the backend
       const response = await axios.post(
         `${process.env.REACT_APP_API_LINK}/users/registration/`,
         completeData
       );
-      console.log(response.data);
       authenticate(response.data);
-
-      // Create the user in Firebase
-      try {
-        await doCreateUserWithEmailAndPassword(data.email, data.password);
-        await doSignInWithEmailAndPassword(data.email, data.password);
-      } catch (firebaseError) {
-        console.error("Firebase error:", firebaseError);
-        notifyError("Failed to create user in Firebase");
-        return; // Exit the function if Firebase user creation and login fails
-      }
 
       // Notify success and navigate to another page
       notifySuccess("Successfully registered");

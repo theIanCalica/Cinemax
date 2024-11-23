@@ -22,6 +22,8 @@ import CustomerOrderPage from "./pages/customer/Order";
 import MoviePage from "./pages/customer/Movie";
 import BookPage from "./pages/customer/Book";
 import ProfilePage from "./pages/customer/Profile";
+import FoodPage from "./pages/customer/FoodPage";
+
 // Admin Pages
 import Layout from "./components/admin/v2/Layout";
 import HomeAdmin from "./pages/admin/Home";
@@ -74,7 +76,7 @@ function App() {
             <Route path="/about" element={<AboutPage />}></Route>
             <Route path="/contact" element={<ContactPage />}></Route>
             <Route path="/profile" element={<ProfilePage />}></Route>
-
+            <Route path="/food/:foodName" element={<FoodPage />} />
             <Route path="/email" element={<Email />} />
             <Route path="/foods" element={<CustomerFoodList />}></Route>
             <Route path="/food/category" element={<FoodCategory />}></Route>

@@ -89,8 +89,9 @@ const SigninForm = ({ onSwitchMode }) => {
     }
   };
 
-  const handleGoogleLoginSuccess = (credentialResponse) => {
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse?.credential);
+    const token = await generateToken();
     client
       .post(`/auth/google-login`, {
         fname: decoded.given_name,
@@ -101,7 +102,6 @@ const SigninForm = ({ onSwitchMode }) => {
         provider: "google",
       })
       .then(async (response) => {
-        const token = await generateToken();
         const user = response.data.user;
         const { role, _id } = user;
         const data = {

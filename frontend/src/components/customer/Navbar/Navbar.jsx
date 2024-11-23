@@ -101,23 +101,16 @@ const Navbar = () => {
             </NavLink>
           ))}
           {/* Foods Dropdown for Desktop */}
-          <div className="relative">
-            <button
-              className="text-white font-bold hover:text-themeYellow flex items-center"
-              onMouseEnter={() => setDropdowns({ ...dropdowns, foods: true })}
-              onMouseLeave={() => setDropdowns({ ...dropdowns, foods: false })}
-            >
+          <div
+            className="relative"
+            onMouseEnter={() => setDropdowns({ ...dropdowns, foods: true })}
+          >
+            <button className="text-white font-bold hover:text-themeYellow flex items-center">
               Foods
               <KeyboardArrowDownIcon />
             </button>
             {dropdowns["foods"] && (
-              <div
-                className="absolute bg-themeGrayExteral text-white rounded mt-2 shadow-lg z-10"
-                onMouseEnter={() => setDropdowns({ ...dropdowns, foods: true })}
-                onMouseLeave={() =>
-                  setDropdowns({ ...dropdowns, foods: false })
-                }
-              >
+              <div className="absolute bg-themeGrayExteral text-white rounded mt-2 shadow-lg z-10">
                 <ul className="p-2 space-y-2">
                   <li>
                     <NavLink

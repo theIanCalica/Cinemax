@@ -38,7 +38,7 @@ const OrderSchema = new Schema(
         "Completed",
         "Cancelled",
       ],
-      default: "pending",
+      default: "Pending",
     },
     paymentMethod: {
       type: String,

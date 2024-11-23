@@ -167,7 +167,6 @@ exports.createCheckoutSession = async (req, res) => {
         userId,
       },
     });
-    console.log("Created session:", session);
 
     // Send session ID to the client
     res.status(201).json({ id: session.id });
@@ -470,14 +469,25 @@ exports.createReview = async (req, res) => {
         .json({ message: "Food item not found in this order" });
     }
 
-    // Add the review to the order's ratings array
-    order.ratings.push({
-      foodId: foodId,
-      rating: rating,
-      comment: reviewText,
-    });
+    // Check if the review already exists for this food item
+    const existingReviewIndex = order.ratings.findIndex(
+      (rating) => rating.foodId.toString() === foodId.toString()
+    );
 
-    // Update the order with the new rating
+    if (existingReviewIndex !== -1) {
+      // If the review exists, update it
+      order.ratings[existingReviewIndex].rating = rating;
+      order.ratings[existingReviewIndex].comment = reviewText;
+    } else {
+      // If the review doesn't exist, push a new one
+      order.ratings.push({
+        foodId: foodId,
+        rating: rating,
+        comment: reviewText,
+      });
+    }
+
+    // Save the updated order with the review
     await order.save();
 
     // Update the food item's average rating and number of ratings
@@ -487,16 +497,149 @@ exports.createReview = async (req, res) => {
     }
 
     // Update the average rating and number of ratings
-    food.numberOfRatings += 1;
+    food.numberOfRatings = order.ratings.filter(
+      (review) => review.foodId.toString() === foodId.toString()
+    ).length;
     food.averageRating =
-      (food.averageRating * (food.numberOfRatings - 1) + rating) /
-      food.numberOfRatings;
+      order.ratings
+        .filter((review) => review.foodId.toString() === foodId.toString())
+        .reduce((acc, review) => acc + review.rating, 0) / food.numberOfRatings;
 
     // Save the updated food document
     await food.save();
 
     return res.status(200).json({ message: "Review submitted successfully" });
   } catch (err) {
+    console.error(err.message);
+    return res.status(500).send("Server Error");
+  }
+};
+
+// Get all reviews based on foodId
+exports.getReviewaBasedonFoodId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Find all orders that have the given foodId in their ratings
+    const orders = await Order.find({
+      "ratings.foodId": id, // Filter orders where foodId is in ratings
+    })
+      .select("ratings customer")
+      .populate("customer"); // Only select the ratings field
+
+    // Extract reviews for the specific foodId
+    const reviews = [];
+    orders.forEach((order) => {
+      order.ratings.forEach((rating) => {
+        if (rating.foodId.toString() === id) {
+          reviews.push({
+            rating: rating.rating,
+            comment: rating.comment,
+            name: order.customer.fname + " " + order.customer.lname,
+            profilePicUrl: order.customer.profile.url,
+            _id: order.customer._id,
+            orderid: order._id,
+            foodId: rating.foodId,
+          });
+        }
+      });
+    });
+
+    if (reviews.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No reviews found for this food." });
+    }
+
+    // Return the reviews in the response
+    res.status(200).json({ reviews });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.updateReview = async (req, res) => {
+  try {
+    const { orderId, foodId, newComment, newRating } = req.body;
+
+    // Validate required fields
+    if (!orderId || !foodId || !newRating) {
+      return res.status(400).json({ msg: "Missing required fields" });
+    }
+
+    // Find the order by ID
+    const order = await Order.findOne({ _id: orderId });
+
+    if (!order) {
+      return res.status(404).json({ msg: "Order not found" });
+    }
+
+    // Check if the food item exists in the order
+    const foodExists = order.items.some(
+      (item) => item.foodId.toString() === foodId
+    );
+
+    if (!foodExists) {
+      return res.status(404).json({ msg: "Food item not found in the order" });
+    }
+
+    // Find the existing rating for the food item
+    const existingRating = order.ratings.find(
+      (rating) => rating.foodId.toString() === foodId
+    );
+
+    if (existingRating) {
+      // Update the existing rating and comment
+      existingRating.rating = newRating;
+      existingRating.comment = newComment || existingRating.comment;
+    } else {
+      // Add a new rating for the food item
+      order.ratings.push({
+        foodId,
+        rating: newRating,
+        comment: newComment || "",
+      });
+    }
+
+    // Save the updated order
+    await order.save();
+
+    return res.status(200).json({ msg: "Review updated successfully", order });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send("Server Error");
+  }
+};
+
+exports.deleteReview = async (req, res) => {
+  try {
+    const { orderId, foodId } = req.body;
+
+    // Find the order by orderId
+    const order = await Order.findOne({ _id: orderId });
+
+    if (!order) {
+      return res.status(404).json({ msg: "Order not found" });
+    }
+
+    // Find the rating for the specific foodId within the order's ratings
+    const reviewIndex = order.ratings.findIndex(
+      (review) => review.foodId.toString() === foodId.toString()
+    );
+
+    if (reviewIndex === -1) {
+      return res
+        .status(404)
+        .json({ msg: "Review not found for this food item" });
+    }
+
+    // Remove the review
+    order.ratings.splice(reviewIndex, 1);
+
+    // Save the updated order
+    await order.save();
+    return res.status(200).json({ msg: "Review deleted successfully" });
+  } catch (error) {
     console.error(err.message);
     return res.status(500).send("Server Error");
   }

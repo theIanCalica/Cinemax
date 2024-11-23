@@ -18,7 +18,8 @@ exports.GetShowtimeBasedOnMovieId = async (req, res) => {
   try {
     // Get movie ID from the request params
     const movieId = req.params.id;
-    const { theater } = req.body;
+    const { theater } = req.query;
+
     // Query the database to find the showtimes for the given movie ID, only selecting required fields
     const showtime = await Showtime.find({
       movie: movieId,

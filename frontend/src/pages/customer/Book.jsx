@@ -83,62 +83,49 @@ const Book = () => {
     );
   };
 
-  // useEffect(() => {
-  //   const fetchShowtimeDetails = async () => {
-  //     if (movie && movie._id) {
-  //       try {
-  //         const id = movie._id;
-  //         const response = await client.get(`/showtimes/${id}`);
-
-  //         const showtimeData = response.data.showtime;
-  //         if (showtimeData && showtimeData.length > 0) {
-  //           // Extract available dates and times
-  //           const dates = [];
-  //           const timesByDate = {};
-
-  //           showtimeData.forEach(({ showtimes }) => {
-  //             showtimes.forEach(({ date, times }) => {
-  //               const formattedDate = formatDate(
-  //                 new Date(date).toISOString().split("T")[0]
-  //               );
-
-  //               if (!dates.includes(formattedDate)) {
-  //                 dates.push(formattedDate);
-  //               }
-
-  //               timesByDate[formattedDate] = times.map(
-  //                 (timeSlot) => timeSlot.time
-  //               );
-  //             });
-  //           });
-
-  //           setAvailableDates(dates);
-  //           setAvailableTimes(
-  //             selectedDate ? timesByDate[selectedDate] || [] : []
-  //           );
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching showtime details:", error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchShowtimeDetails();
-  // }, [movie, selectedDate]); // Re-fetch available times when selectedDate changes
-
   const handleCinemaChange = async (event) => {
     const selectedCinema = event.target.value;
     console.log(selectedCinema);
-
-    client
-      .get(`/showtimes/${movie._id}`, {
-        data: { theater: selectedCinema },
-      })
-      .then((response) => {
-        console.log(response.data);
-      });
     setSelectedCinema(selectedCinema);
-    setSelectedSeats([]);
+
+    try {
+      const response = await client.get(`/showtimes/${movie._id}`, {
+        params: { theater: selectedCinema }, // Use `params` for query parameters
+      });
+
+      const showtimeData = response.data.showtime;
+      const dates = [];
+      const timesByDate = {};
+      const availableTimesByDate = {};
+
+      showtimeData.forEach(({ showtimes, availableSeats }) => {
+        showtimes.forEach(({ date, times }, idx) => {
+          const formattedDate = formatDate(
+            new Date(date).toISOString().split("T")[0]
+          );
+
+          if (!dates.includes(formattedDate)) {
+            dates.push(formattedDate);
+          }
+
+          // Filter times to only include those with available seats
+          const availableTimes = times.filter((timeSlot, index) => {
+            return availableSeats[index] > 0; // Only include time slots with available seats
+          });
+
+          timesByDate[formattedDate] = availableTimes.map(
+            (timeSlot) => timeSlot.time
+          );
+          availableTimesByDate[formattedDate] = availableTimes;
+        });
+      });
+
+      setAvailableDates(dates);
+      setTimesByDate(timesByDate); // Update the timesByDate state
+      setAvailableTimes(availableTimesByDate[selectedDate] || []); // Set available times for selected date
+    } catch (error) {
+      console.error("Error fetching showtimes:", error);
+    }
   };
 
   const handleDateChange = (event) => {

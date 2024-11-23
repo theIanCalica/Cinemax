@@ -42,4 +42,20 @@ router.put(
   OrderController.createReview
 );
 
+// Get reviews based on food id
+router.get(
+  "/get-review/:id",
+  authenticateTokenAndUser,
+  OrderController.getReviewaBasedonFoodId
+);
+
+router.put(
+  "/update-review",
+  authenticateTokenAndUser,
+  OrderController.updateReview
+);
+
+// Delete a review
+router.delete("/delete-review", OrderController.deleteReview);
+
 module.exports = router;

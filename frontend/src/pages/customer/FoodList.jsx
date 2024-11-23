@@ -17,6 +17,7 @@ import {
   Slider,
   Rating,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -49,7 +50,7 @@ const FoodList = () => {
     try {
       setLoading(true);
       const response = await client.get(
-        `/foods/paginated?page=${pageNumber}&limit=10`
+        `/foods/paginated?page=${pageNumber}&limit=4`
       );
 
       const { foods } = response.data; // Extract the foods array from the response
@@ -133,8 +134,9 @@ const FoodList = () => {
     if (node) observer.current.observe(node);
   };
 
-  const handleFoodClick = (foodId) => {
-    console.log(foodId);
+  const handleCardClick = (food) => {
+    const formattedFoodName = food.name.replace(/\s+/g, "+"); // Replace spaces with '+'
+    navigate(`/food/${formattedFoodName}`, { state: { selectedFood: food } });
   };
 
   return (
@@ -204,13 +206,24 @@ const FoodList = () => {
                   key={food._id}
                   ref={lastFoodElementRef}
                 >
-                  <Card sx={{ maxWidth: 345, height: "100%" }}>
+                  <Card
+                    sx={{
+                      maxWidth: 345,
+                      height: "100%",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                        boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
+                      },
+                    }}
+                  >
                     <CardMedia
                       component="img"
-                      height="140"
-                      width="140"
+                      height="200" // Set a fixed height (e.g., 200px)
+                      width="200"
                       image={food.images?.[0]?.url || "/placeholder.jpg"}
                       alt={food.name}
+                      sx={{ objectFit: "cover", borderRadius: "8px" }}
                     />
                     <CardContent>
                       <Typography variant="h6" component="div" gutterBottom>
@@ -226,44 +239,88 @@ const FoodList = () => {
                         Rating: {food.averageRating?.toFixed(1) || "N/A"} ⭐
                       </Typography>
 
-                      {/* Add to Cart Button */}
-                      {user && (
-                        <Box sx={{ mt: 2 }}>
-                          <button
-                            style={{
+                      {/* Buttons Section */}
+                      <Box sx={{ mt: 2, display: "flex", gap: "8px" }}>
+                        {/* View Food Button */}
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            height: "50px",
+                            color: "#007BFF",
+                            borderColor: "#007BFF",
+                            padding: "10px 20px",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                            mb: user ? 0 : 2, // Margin-bottom to separate if only View Food is shown
+                            "&:hover": {
+                              backgroundColor: "rgba(0, 123, 255, 0.1)",
+                            },
+                          }}
+                          onClick={() => handleCardClick(food)}
+                        >
+                          View Food
+                        </Button>
+
+                        {/* Show Add to Cart Button only if the user is logged in */}
+                        {user && (
+                          <Button
+                            sx={{
+                              height: "50px",
                               backgroundColor: "#007BFF",
                               color: "#fff",
-                              border: "none",
                               padding: "10px 20px",
                               borderRadius: "4px",
                               cursor: "pointer",
-                              fontSize: "14px",
+                              fontSize: "12px",
+                              flex: 1,
+                              "&:hover": {
+                                backgroundColor: "#0056b3",
+                              },
                             }}
-                            onClick={() => handleAddToCart(food._id)}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent handleCardClick from being triggered
+                              handleAddToCart(food._id);
+                            }}
                           >
                             Add to Cart
-                          </button>
-                        </Box>
-                      )}
+                          </Button>
+                        )}
+                      </Box>
                     </CardContent>
                   </Card>
                 </Grid>
               );
             } else {
               return (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={food._id}>
-                  <Card sx={{ maxWidth: 345, height: "100%" }}>
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  md={4}
+                  lg={3}
+                  key={food._id}
+                  ref={lastFoodElementRef}
+                >
+                  <Card
+                    sx={{
+                      maxWidth: 345,
+                      height: "100%",
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                        boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)",
+                      },
+                    }}
+                  >
                     <CardMedia
                       component="img"
+                      height="200" // Set a fixed height (e.g., 200px)
+                      width="200"
                       image={food.images?.[0]?.url || "/placeholder.jpg"}
                       alt={food.name}
-                      sx={{
-                        height: 140, // Set consistent height
-                        width: "100%", // Full width of the card
-                        objectFit: "cover", // Maintain aspect ratio
-                      }}
+                      sx={{ objectFit: "cover", borderRadius: "8px" }}
                     />
-
                     <CardContent>
                       <Typography variant="h6" component="div" gutterBottom>
                         {food.name}
@@ -277,24 +334,55 @@ const FoodList = () => {
                       <Typography variant="body1">
                         Rating: {food.averageRating?.toFixed(1) || "N/A"} ⭐
                       </Typography>
-                      {user && (
-                        <Box sx={{ mt: 2 }}>
-                          <button
-                            style={{
+
+                      {/* Buttons Section */}
+                      <Box sx={{ mt: 2, display: "flex", gap: "8px" }}>
+                        {/* View Food Button */}
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            height: "50px",
+                            color: "#007BFF",
+                            borderColor: "#007BFF",
+                            padding: "10px 20px",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                            mb: user ? 0 : 2, // Margin-bottom to separate if only View Food is shown
+                            "&:hover": {
+                              backgroundColor: "rgba(0, 123, 255, 0.1)",
+                            },
+                          }}
+                          onClick={() => handleCardClick(food)}
+                        >
+                          View Food
+                        </Button>
+
+                        {/* Show Add to Cart Button only if the user is logged in */}
+                        {user && (
+                          <Button
+                            sx={{
+                              height: "50px",
                               backgroundColor: "#007BFF",
                               color: "#fff",
-                              border: "none",
                               padding: "10px 20px",
                               borderRadius: "4px",
                               cursor: "pointer",
-                              fontSize: "14px",
+                              fontSize: "12px",
+                              flex: 1,
+                              "&:hover": {
+                                backgroundColor: "#0056b3",
+                              },
                             }}
-                            onClick={() => handleAddToCart(food._id)}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent handleCardClick from being triggered
+                              handleAddToCart(food._id);
+                            }}
                           >
                             Add to Cart
-                          </button>
-                        </Box>
-                      )}
+                          </Button>
+                        )}
+                      </Box>
                     </CardContent>
                   </Card>
                 </Grid>

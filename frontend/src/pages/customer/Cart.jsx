@@ -207,7 +207,7 @@ const Cart = () => {
                 sx={{ color: "#F97316" }}
                 ml={1}
               >
-                ${cartItems[0].totalPrice.toFixed(2)}
+                ₱{cartItems[0].totalPrice.toFixed(2)}
               </Typography>
             </Box>
 

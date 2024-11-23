@@ -136,6 +136,24 @@ const Order = () => {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    if (selectedOrder && selectedFoodItem) {
+      // Find the review for the selected food item
+      const existingReview = selectedOrder.ratings.find(
+        (ratingItem) =>
+          ratingItem.foodId.toString() === selectedFoodItem._id.toString()
+      );
+
+      if (existingReview) {
+        setRating(existingReview.rating); // Set the rating
+        setValue("reviewText", existingReview.comment || ""); // Set the review text (if any)
+      } else {
+        setRating(0); // Reset rating if no review exists
+        setValue("reviewText", ""); // Clear review text if no review exists
+      }
+    }
+  }, [selectedOrder, selectedFoodItem, setValue]);
+
   return (
     <>
       <Hero type="Order" />
@@ -319,7 +337,7 @@ const Order = () => {
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>₱{item.price}</TableCell>
                       <TableCell>₱{item.price * item.quantity}</TableCell>
-                      {selectedOrder.status !== "pending" && (
+                      {selectedOrder.status === "Completed" && (
                         <TableCell>
                           <IconButton onClick={handleOpenMenu}>
                             <MoreVertIcon />
@@ -383,7 +401,13 @@ const Order = () => {
           <Controller
             name="reviewText"
             control={control}
-            defaultValue=""
+            defaultValue={
+              (selectedFoodItem &&
+                selectedOrder?.ratings?.find(
+                  (ratingItem) => ratingItem.foodId === selectedFoodItem._id
+                )?.comment) ||
+              ""
+            } // If no review found, default to an empty string
             render={({ field }) => (
               <TextField
                 {...field}
