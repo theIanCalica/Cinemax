@@ -23,7 +23,12 @@ import {
   TextField,
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { getUser, notifyError, formatDate } from "../../Utils/helpers";
+import {
+  getUser,
+  notifyError,
+  formatDate,
+  notifySuccess,
+} from "../../Utils/helpers";
 import Hero from "../../components/customer/Hero/Hero";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useForm, Controller } from "react-hook-form";
@@ -38,7 +43,7 @@ const Order = () => {
   const [selectedFoodItem, setSelectedFoodItem] = useState(null);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [openChildDialog, setOpenChildDialog] = useState(false);
-  const { control, handleSubmit, setValue } = useForm();
+  const { control, handleSubmit, setValue, reset } = useForm();
   const [rating, setRating] = useState(0);
 
   const handleRatingChange = (event, newValue) => {
@@ -46,15 +51,29 @@ const Order = () => {
     setValue("rating", newValue); // Update form value for rating
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     data.orderId = selectedOrder._id;
-    data.foodId = selectedFoodItem._id;
+    data.foodOrderItem = selectedFoodItem.foodId;
     console.log(data);
+    await client
+      .put("/orders/create-review", data)
+      .then((response) => {
+        if (response.status === 200) {
+          notifySuccess("Review submitted successfully");
+          reset();
+          handleCloseChildDialog();
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        notifyError("Something went wrong, please try again");
+      });
   };
 
   const handleOpenChildDialog = () => setOpenChildDialog(true);
   const handleCloseChildDialog = () => setOpenChildDialog(false);
   const handleReview = (item) => {
+    console.log(item);
     setSelectedFoodItem(item);
     handleCloseMenu();
     handleOpenChildDialog();
@@ -77,8 +96,10 @@ const Order = () => {
       });
   };
 
-  const handleMenuOpen = (event) => {
+  const handleMenuOpen = (event, order) => {
     setAnchorEl(event.currentTarget);
+    setSelectedOrder(order);
+    console.log(order);
   };
 
   const handleMenuClose = () => {
@@ -93,12 +114,9 @@ const Order = () => {
     setMenuAnchor(null);
   };
 
-  const handleViewItems = (orderId) => {
-    console.log(orderId);
-    // const order = orders.find((order) => order._id === orderId);
-    // setSelectedOrder(order);
-    // setOpenModal(true); // Open modal when viewing items
-    // handleMenuClose();
+  const handleViewItems = () => {
+    setOpenModal(true); // Open modal when viewing items
+    handleMenuClose();
   };
 
   const handleCloseModal = () => {
@@ -254,7 +272,10 @@ const Order = () => {
                         textAlign: "center",
                       }}
                     >
-                      <IconButton onClick={handleMenuOpen} size="small">
+                      <IconButton
+                        onClick={(event) => handleMenuOpen(event, order)}
+                        size="small"
+                      >
                         <MoreHorizIcon />
                       </IconButton>
                       <Menu
@@ -262,7 +283,7 @@ const Order = () => {
                         open={Boolean(anchorEl)}
                         onClose={handleMenuClose}
                       >
-                        <MenuItem onClick={() => handleViewItems(order._id)}>
+                        <MenuItem onClick={() => handleViewItems(order)}>
                           View Items
                         </MenuItem>
                       </Menu>
@@ -298,21 +319,23 @@ const Order = () => {
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>₱{item.price}</TableCell>
                       <TableCell>₱{item.price * item.quantity}</TableCell>
-                      <TableCell>
-                        <IconButton onClick={handleOpenMenu}>
-                          <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                          anchorEl={menuAnchor}
-                          open={Boolean(menuAnchor)}
-                          onClose={handleCloseMenu}
-                          disablePortal
-                        >
-                          <MenuItem onClick={() => handleReview(item)}>
-                            Review
-                          </MenuItem>
-                        </Menu>
-                      </TableCell>
+                      {selectedOrder.status !== "pending" && (
+                        <TableCell>
+                          <IconButton onClick={handleOpenMenu}>
+                            <MoreVertIcon />
+                          </IconButton>
+                          <Menu
+                            anchorEl={menuAnchor}
+                            open={Boolean(menuAnchor)}
+                            onClose={handleCloseMenu}
+                            disablePortal
+                          >
+                            <MenuItem onClick={() => handleReview(item)}>
+                              Review
+                            </MenuItem>
+                          </Menu>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>

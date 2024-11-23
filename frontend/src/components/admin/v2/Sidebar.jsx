@@ -16,6 +16,7 @@ import ArticleIcon from "@mui/icons-material/Article";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../../Utils/helpers";
 import Swal from "sweetalert2";
+import { doSignOut } from "../../../firebase/auth";
 
 const Sidebar = ({ isMinimized }) => {
   const navigate = useNavigate();
@@ -46,8 +47,9 @@ const Sidebar = ({ isMinimized }) => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, log me out!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
+        await doSignOut();
         logout(() => {
           navigate("/");
         });

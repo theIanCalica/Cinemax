@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const OrderController = require("../Controllers/OrderController");
 const authenticateTokenAndUser = require("../middleware/Auth");
-const Order = require("../Models/Order");
 
 // Get all orders
 router.get("/", authenticateTokenAndUser, OrderController.getAllOrders);
@@ -27,11 +26,20 @@ router.post(
   OrderController.createCheckoutSession
 );
 
+// Webhook for listening to success checkout in stripe
 router.post("/webhook", OrderController.CheckoutCreditCard);
 
+// Create order
 router.post("/", authenticateTokenAndUser, OrderController.createOrder);
 
 // Update a single order by ID
 router.put("/", authenticateTokenAndUser, OrderController.updateOrderById);
+
+// Create review
+router.put(
+  "/create-review",
+  authenticateTokenAndUser,
+  OrderController.createReview
+);
 
 module.exports = router;

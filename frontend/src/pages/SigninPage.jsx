@@ -1,28 +1,36 @@
-import { Box, Grid, colors } from '@mui/material';
-import React, { useState } from 'react';
+import { Box, Grid, colors, useMediaQuery } from "@mui/material";
+import React, { useState } from "react";
 import assets from "../assets";
-import SigninForm from '../components/SigninForm';
-import SignupForm from '../components/SignupForm';
+import SigninForm from "../components/SigninForm";
+import SignupForm from "../components/SignupForm";
 
 export const ScreenMode = {
   SIGN_IN: "SIGN_IN",
-  SIGN_UP: "SIGN_UP"
+  SIGN_UP: "SIGN_UP",
 };
 
 const SigninPage = () => {
+  const isSmallScreen = useMediaQuery("(max-width:620px)");
   const [left, setLeft] = useState(0);
   const [right, setRight] = useState("unset");
   const [width, setWidth] = useState(0);
-
-  const [backgroundImage, setBackgroundImage] = useState(assets.images.signinBg);
+  const [backgroundImage, setBackgroundImage] = useState(
+    assets.images.signinBg
+  );
   const [currMode, setCurrMode] = useState(ScreenMode.SIGN_IN);
+
+  // Check if the screen width matches a small device (e.g., up to 600px wide)
 
   const onSwitchMode = (mode) => {
     setWidth(100);
 
     const timeout1 = setTimeout(() => {
       setCurrMode(mode);
-      setBackgroundImage(mode === ScreenMode.SIGN_IN ? assets.images.signinBg : assets.images.signupBg);
+      setBackgroundImage(
+        mode === ScreenMode.SIGN_IN
+          ? assets.images.signinBg
+          : assets.images.signupBg
+      );
     }, 1100);
 
     const timeout2 = setTimeout(() => {
@@ -45,43 +53,51 @@ const SigninPage = () => {
 
   return (
     <Grid container sx={{ height: "100vh" }}>
-      <Grid item xs={4} sx={{ position: "relative", padding: 3 }}>
-        {
-          currMode === ScreenMode.SIGN_IN ? (
-            <SigninForm onSwitchMode={onSwitchMode} />
-          ) : (
-            <SignupForm onSwitchMode={onSwitchMode} />
-          )
-        }
-        <Box sx={{
-          position: "absolute",
-          top: 0,
-          left: left,
-          right: right,
-          width: `${width}%`,
-          height: "100%",
-          bgcolor: colors.grey[800],
-          transition: "all 1s ease-in-out"
-        }} />
+      <Grid item xs={12} sm={4} sx={{ position: "relative", padding: 3 }}>
+        {currMode === ScreenMode.SIGN_IN ? (
+          <SigninForm onSwitchMode={onSwitchMode} />
+        ) : (
+          <SignupForm onSwitchMode={onSwitchMode} />
+        )}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: left,
+            right: right,
+            width: `${width}%`,
+            height: "100%",
+            bgcolor: colors.grey[800],
+            transition: "all 1s ease-in-out",
+          }}
+        />
       </Grid>
-      <Grid item xs={8} sx={{
-        position: "relative",
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat"
-      }}>
-        <Box sx={{
-          position: "absolute",
-          top: 0,
-          left: left,
-          right: right,
-          width: `${width}%`,
-          height: "100%",
-          bgcolor: colors.common.white,
-          transition: "all 1s ease-in-out"
-        }} />
-      </Grid>
+      {!isSmallScreen && (
+        <Grid
+          item
+          sm={8}
+          sx={{
+            position: "relative",
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: left,
+              right: right,
+              width: `${width}%`,
+              height: "100%",
+              bgcolor: colors.common.white,
+              transition: "all 1s ease-in-out",
+            }}
+          />
+        </Grid>
+      )}
     </Grid>
   );
 };

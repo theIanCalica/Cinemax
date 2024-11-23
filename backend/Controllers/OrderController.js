@@ -3,6 +3,7 @@ const Cart = require("../Models/Cart");
 const User = require("../Models/User");
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const admin = require("../config/Firebase");
+const Food = require("../Models/Food");
 
 const { sendEmailOrder } = require("../utils/Mailtrap");
 
@@ -442,6 +443,59 @@ exports.updateOrderById = async (req, res) => {
 
     // Respond to the client
     return res.status(200).json({ msg: "Successfully Updated and email sent" });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send("Server Error");
+  }
+};
+
+exports.createReview = async (req, res) => {
+  try {
+    const { foodOrderItem, orderId, rating, reviewText } = req.body;
+    const foodId = foodOrderItem._id;
+
+    // Find the order by ID
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Check if the food item is in the order
+    const foodItem = order.items.find(
+      (item) => item.foodId.toString() === foodId.toString()
+    );
+    if (!foodItem) {
+      return res
+        .status(400)
+        .json({ message: "Food item not found in this order" });
+    }
+
+    // Add the review to the order's ratings array
+    order.ratings.push({
+      foodId: foodId,
+      rating: rating,
+      comment: reviewText,
+    });
+
+    // Update the order with the new rating
+    await order.save();
+
+    // Update the food item's average rating and number of ratings
+    const food = await Food.findById(foodId);
+    if (!food) {
+      return res.status(404).json({ message: "Food item not found" });
+    }
+
+    // Update the average rating and number of ratings
+    food.numberOfRatings += 1;
+    food.averageRating =
+      (food.averageRating * (food.numberOfRatings - 1) + rating) /
+      food.numberOfRatings;
+
+    // Save the updated food document
+    await food.save();
+
+    return res.status(200).json({ message: "Review submitted successfully" });
   } catch (err) {
     console.error(err.message);
     return res.status(500).send("Server Error");

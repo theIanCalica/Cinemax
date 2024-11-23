@@ -22,23 +22,27 @@ const ShowTimeSchema = new Schema(
       enum: ["Cinema 1", "Cinema 2"],
       required: true,
     }, // Fixed values for theaters
-    date: {
-      type: Date,
-      required: true,
-    }, // Specific date of the showtime
-    times: [
+    showtimes: [
       {
-        time: {
-          type: String,
+        date: {
+          type: Date,
           required: true,
-          enum: predefinedShowtimes, // Limit to default times
-        },
-        availableSeats: {
-          type: [Number],
-          default: Array.from({ length: 100 }, (_, i) => i + 1), // Seats 1-100 available by default
-        },
+        }, // Specific date for the showtime
+        times: [
+          {
+            time: {
+              type: String,
+              required: true,
+              enum: predefinedShowtimes, // Limit to default times
+            },
+            availableSeats: {
+              type: [Number],
+              default: Array.from({ length: 100 }, (_, i) => i + 1), // Seats 1-100 available by default
+            },
+          },
+        ], // Array of predefined times with seat availability
       },
-    ], // Array of predefined times with seat availability
+    ], // Array of dates, each with its own set of times and seat availability
   },
   {
     timestamps: true,
