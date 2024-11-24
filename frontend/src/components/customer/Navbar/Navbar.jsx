@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import { NavLink, useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { NavLink, useNavigate } from "react-router-dom";
 import { getUser, logout } from "../../../Utils/helpers";
 import Swal from "sweetalert2";
+import {
+  Button,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  Typography,
+  Divider,
+  Box,
+} from "@mui/material";
 
 const Navbar = () => {
   const user = getUser();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const [profileDropdown, setProfileDropdown] = useState(false); // Added state for profile dropdown
-  const [dropdowns, setDropdowns] = useState({
-    movies: false,
-    announcements: false,
-    food: false,
-  });
+  const [profileDropdown, setProfileDropdown] = useState(false);
+  const [dropdowns, setDropdowns] = useState({ foods: false });
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
@@ -65,26 +72,36 @@ const Navbar = () => {
       }
     });
   };
+
   return (
     <nav
-      className="bg-transparent absolute top-0 left-0 w-full z-10 border-b p-3 font-mono"
-      style={{ borderColor: "#FFFFFF26", borderBottomWidth: "1px" }}
+      style={{
+        background: "transparent",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 10,
+        padding: "16px",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
+      }}
     >
-      <div className="flex container items-center justify-between mx-auto p-4">
-        <h1 className="text-white">Cinemadine</h1>
-        {/* Mobile Menu Button */}
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h6" color="white">
+          Cinemadine
+        </Typography>
         <div className="md:hidden">
-          <button onClick={toggleSidebar}>
+          <IconButton onClick={toggleSidebar}>
             {isOpen ? (
-              <CloseIcon className="text-white" />
+              <CloseIcon style={{ color: "white" }} />
             ) : (
-              <MenuIcon className="text-themeYellow" />
+              <MenuIcon style={{ color: "#F1C40F" }} />
             )}
-          </button>
+          </IconButton>
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex space-x-4 items-center">
+        <Box className="hidden md:flex space-x-4 items-center">
           {["/", "/about", "/contact", "/movies"].map((path) => (
             <NavLink
               key={path}
@@ -100,46 +117,58 @@ const Navbar = () => {
                 : path.substring(1).charAt(0).toUpperCase() + path.slice(2)}
             </NavLink>
           ))}
+
           {/* Foods Dropdown for Desktop */}
-          <div
+          <Box
             className="relative"
             onMouseEnter={() => setDropdowns({ ...dropdowns, foods: true })}
           >
-            <button className="text-white font-bold hover:text-themeYellow flex items-center">
+            <Button
+              variant="text"
+              style={{ color: "white", fontWeight: "bold" }}
+              onClick={() => toggleDropdown("foods")}
+            >
               Foods
               <KeyboardArrowDownIcon />
-            </button>
+            </Button>
             {dropdowns["foods"] && (
-              <div className="absolute bg-themeGrayExteral text-white rounded mt-2 shadow-lg z-10">
-                <ul className="p-2 space-y-2">
-                  <li>
-                    <NavLink
-                      to={`/food/category`}
-                      className="block hover:text-themeYellow px-4 py-2"
-                    >
-                      Categories
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to={`/foods/`}
-                      className="block hover:text-themeYellow px-4 py-2"
-                    >
-                      Foods
-                    </NavLink>
-                  </li>
-                </ul>
-              </div>
+              <Box
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  backgroundColor: "#2E2E2E",
+                  borderRadius: "8px",
+                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                  zIndex: 10,
+                }}
+              >
+                <List>
+                  <ListItem button component={NavLink} to="/food/category">
+                    <ListItemText
+                      primary="Categories"
+                      sx={{ color: "white" }}
+                    />
+                  </ListItem>
+                  <ListItem button component={NavLink} to="/foods">
+                    <ListItemText primary="Foods" sx={{ color: "white" }} />
+                  </ListItem>
+                </List>
+              </Box>
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
 
         {/* Search and Profile Icons */}
-        <div className="hidden md:flex space-x-4 items-center relative">
-          <button>
-            <SearchIcon className="text-white hover:text-themeYellow" />
-          </button>
-          <button
+        <Box
+          display="flex"
+          alignItems="center"
+          className="hidden md:flex space-x-4 relative"
+        >
+          <IconButton>
+            <SearchIcon style={{ color: "white" }} />
+          </IconButton>
+          <IconButton
             onClick={() => {
               if (user) {
                 setProfileDropdown((prev) => !prev);
@@ -147,124 +176,117 @@ const Navbar = () => {
                 navigate("/login");
               }
             }}
-            className="relative"
           >
-            <PersonIcon className="text-white hover:text-themeYellow" />
-          </button>
+            <PersonIcon style={{ color: "white" }} />
+          </IconButton>
           {profileDropdown && user && (
-            <div className="absolute top-full right-0 mt-2 w-48 bg-themeGrayExteral text-white rounded shadow-lg z-10">
-              <ul className="p-2 space-y-2">
-                <li>
-                  <NavLink
-                    to="/profile"
-                    className="block hover:text-themeYellow px-4 py-2"
-                  >
-                    Profile
-                  </NavLink>
-                  <NavLink
-                    to="/my-cart"
-                    className="block hover:text-themeYellow px-4 py-2"
-                  >
-                    Cart
-                  </NavLink>
-                  <NavLink
-                    to="/my-orders"
-                    className="block hover:text-themeYellow px-4 py-2"
-                  >
-                    Order
-                  </NavLink>
-                </li>
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left hover:text-themeYellow px-4 py-2"
-                  >
-                    Logout
-                  </button>
-                </li>
-              </ul>
-            </div>
+            <Box
+              style={{
+                position: "absolute",
+                top: "100%",
+                right: 0,
+                backgroundColor: "#2E2E2E",
+                borderRadius: "8px",
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                zIndex: 10,
+                width: "200px",
+              }}
+            >
+              <List>
+                <ListItem button component={NavLink} to="/profile">
+                  <ListItemText primary="Profile" sx={{ color: "white" }} />
+                </ListItem>
+                <ListItem button component={NavLink} to="/my-cart">
+                  <ListItemText primary="Cart" sx={{ color: "white" }} />
+                </ListItem>
+                <ListItem button component={NavLink} to="/my-orders">
+                  <ListItemText primary="Order" sx={{ color: "white" }} />
+                </ListItem>
+                <ListItem button component={NavLink} to="/my-bookings">
+                  <ListItemText primary="Booking" sx={{ color: "white" }} />
+                </ListItem>
+                <ListItem button onClick={handleLogout}>
+                  <ListItemText primary="Logout" sx={{ color: "white" }} />
+                </ListItem>
+              </List>
+            </Box>
           )}
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       {/* Mobile Sidebar */}
-      <div
-        className={`fixed top-0 left-0 h-full w-64 bg-themeGrayExteral text-white z-50 transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out`}
-      >
-        <div className="flex justify-end items-end">
-          <button onClick={toggleSidebar}>
-            <CloseIcon className="mt-1" style={{ fontSize: "2rem" }} />
-          </button>
-        </div>
-        <div className="flex flex-col space-y-4 px-5 py-2">
+      <Drawer anchor="left" open={isOpen} onClose={closeSidebar}>
+        <Box display="flex" justifyContent="flex-end" p={2}>
+          <IconButton onClick={toggleSidebar}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <List>
           {["/", "/about", "/contact", "/movies"].map((path) => (
-            <NavLink
+            <ListItem
+              button
+              component={NavLink}
               key={path}
               to={path}
-              className={({ isActive }) =>
-                `${
-                  isActive ? "text-themeYellow" : "text-white"
-                } hover:text-slate-400 pb-2 font-bold border-b text-left border-themeBorderBottom`
-              }
               onClick={closeSidebar}
             >
-              {path === "/"
-                ? "Home"
-                : path.substring(1).charAt(0).toUpperCase() + path.slice(2)}
-            </NavLink>
+              <ListItemText
+                primary={
+                  path === "/"
+                    ? "Home"
+                    : path.substring(1).charAt(0).toUpperCase() + path.slice(2)
+                }
+              />
+            </ListItem>
           ))}
-
-          {/* Foods Dropdown for Mobile */}
-          <div className="w-full m-0 p-0">
-            <button
-              className="flex w-full justify-between items-center pb-2 font-bold border-b text-left border-themeBorderBottom hover:text-slate-400 text-white"
-              onClick={() => toggleDropdown("foods")}
-            >
+          <Box>
+            <Button onClick={() => toggleDropdown("foods")} fullWidth>
               Foods
               {dropdowns["foods"] ? (
                 <KeyboardArrowUpIcon />
               ) : (
                 <KeyboardArrowDownIcon />
               )}
-            </button>
+            </Button>
             {dropdowns["foods"] && (
-              <div className="dropdown-content mt-2">
-                <ul className="text-white p-2 rounded">
-                  <li>
-                    <NavLink
-                      to={`/food/category`}
-                      className="block p-2 hover:text-slate-400"
-                      onClick={closeSidebar}
-                    >
-                      Categories
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to={`/foods`}
-                      className="block p-2 hover:text-slate-400"
-                      onClick={closeSidebar}
-                    >
-                      Foods
-                    </NavLink>
-                  </li>
-                </ul>
-              </div>
+              <List>
+                <ListItem
+                  button
+                  component={NavLink}
+                  to="/food/category"
+                  onClick={closeSidebar}
+                >
+                  <ListItemText primary="Categories" />
+                </ListItem>
+                <ListItem
+                  button
+                  component={NavLink}
+                  to="/foods"
+                  onClick={closeSidebar}
+                >
+                  <ListItemText primary="Foods" />
+                </ListItem>
+              </List>
             )}
-          </div>
-
-          {/* Search and Profile Icons */}
-          <div className="flex space-x-4 mt-4">
-            <SearchIcon className="hover:text-themeYellow" />
-            <NavLink to={`/login`}>
-              <PersonIcon className="hover:text-themeYellow" />
+          </Box>
+          <Divider />
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            mt={2}
+          >
+            <IconButton>
+              <SearchIcon style={{ color: "#F1C40F" }} />
+            </IconButton>
+            <NavLink to="/login">
+              <IconButton>
+                <PersonIcon style={{ color: "#F1C40F" }} />
+              </IconButton>
             </NavLink>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </List>
+      </Drawer>
     </nav>
   );
 };

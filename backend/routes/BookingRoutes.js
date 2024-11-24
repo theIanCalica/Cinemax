@@ -8,7 +8,7 @@ router.get("/", authenticateTokenAndUser, BookingController.getBookings);
 
 // Get all bookings based on user Id
 router.get(
-  "/:userId/bookings",
+  "/:userId/userBookings",
   authenticateTokenAndUser,
   BookingController.getBookingsBasedOnUserId
 );

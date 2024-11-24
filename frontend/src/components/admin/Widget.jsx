@@ -1,13 +1,26 @@
 import React from "react";
-import { KeyboardArrowUp as KeyboardArrowUpIcon } from "@mui/icons-material";
-import { PersonOutlineOutlined as PersonOutlineOutlinedIcon } from "@mui/icons-material";
-import { ShoppingCartOutlined as ShoppingCartOutlinedIcon } from "@mui/icons-material";
-import { MonetizationOnOutlined as MonetizationOnOutlinedIcon } from "@mui/icons-material";
-import { ConfirmationNumberOutlined as ConfirmationNumberOutlinedIcon } from "@mui/icons-material";
+import { Box, Typography, IconButton } from "@mui/material";
+import {
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+  PersonOutlineOutlined as PersonOutlineOutlinedIcon,
+  ShoppingCartOutlined as ShoppingCartOutlinedIcon,
+  MonetizationOnOutlined as MonetizationOnOutlinedIcon,
+  ConfirmationNumberOutlined as ConfirmationNumberOutlinedIcon,
+} from "@mui/icons-material";
 
 const Widget = ({ type, count }) => {
   let data;
   const diff = 20;
+
+  const iconStyles = (color, backgroundColor) => ({
+    fontSize: "2rem",
+    color: color,
+    backgroundColor: backgroundColor,
+    borderRadius: "50%",
+    padding: "0.5rem",
+    width: "4rem",
+    height: "4rem",
+  });
 
   switch (type) {
     case "User":
@@ -18,14 +31,7 @@ const Widget = ({ type, count }) => {
         link: "See all users",
         icon: (
           <PersonOutlineOutlinedIcon
-            style={{
-              width: "4rem",
-              height: "4rem",
-              color: "crimson",
-              backgroundColor: "rgba(255,0,0,0.2)",
-              padding: "0.5rem",
-              borderRadius: "50%",
-            }}
+            sx={iconStyles("crimson", "rgba(255,0,0,0.2)")}
           />
         ),
       };
@@ -38,14 +44,7 @@ const Widget = ({ type, count }) => {
         link: "View all orders",
         icon: (
           <ShoppingCartOutlinedIcon
-            style={{
-              width: "4rem",
-              height: "4rem",
-              color: "goldenrod",
-              backgroundColor: "rgba(218,165,32,0.2)",
-              padding: "0.5rem",
-              borderRadius: "50%",
-            }}
+            sx={iconStyles("goldenrod", "rgba(218,165,32,0.2)")}
           />
         ),
       };
@@ -58,14 +57,7 @@ const Widget = ({ type, count }) => {
         link: "View all bookings",
         icon: (
           <ConfirmationNumberOutlinedIcon
-            style={{
-              width: "4rem",
-              height: "4rem",
-              color: "purple",
-              backgroundColor: "rgba(128,0,128,0.2)",
-              padding: "0.5rem",
-              borderRadius: "50%",
-            }}
+            sx={iconStyles("purple", "rgba(128,0,128,0.2)")}
           />
         ),
       };
@@ -74,17 +66,11 @@ const Widget = ({ type, count }) => {
       data = {
         title: "EARNINGS",
         isMoney: true,
+        count: count,
         link: "View net earnings",
         icon: (
           <MonetizationOnOutlinedIcon
-            style={{
-              width: "4rem",
-              height: "4rem",
-              color: "green",
-              backgroundColor: "rgba(0,128,0,0.2)",
-              padding: "0.5rem",
-              borderRadius: "50%",
-            }}
+            sx={iconStyles("green", "rgba(0,128,0,0.2)")}
           />
         ),
       };
@@ -94,28 +80,58 @@ const Widget = ({ type, count }) => {
   }
 
   return (
-    <div className="flex justify-between p-6 shadow-md rounded-lg w-96 h-40 bg-white">
-      <div className="flex flex-col justify-between">
-        <span className="font-bold text-lg text-gray-600">{data.title}</span>
-        <span className="text-4xl font-medium">
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: 2,
+        boxShadow: 2,
+        borderRadius: 2,
+        backgroundColor: "white",
+        width: "24rem",
+        height: "10rem",
+      }}
+    >
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <Typography variant="h6" color="textSecondary" fontWeight="bold">
+          {data.title}
+        </Typography>
+        <Typography variant="h4" fontWeight="medium">
           {data.isMoney && "₱"} {count}
-        </span>
-        <span className="text-sm border-b border-gray-400 w-max cursor-pointer">
-          {data.link}
-        </span>
-      </div>
-      <div className="flex flex-col justify-between items-end">
-        <div
-          className={`flex items-center text-lg ${
-            diff > 0 ? "text-green-500" : "text-red-500"
-          }`}
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            textDecoration: "underline",
+            cursor: "pointer",
+          }}
         >
-          <KeyboardArrowUpIcon className="text-3xl" />
-          {diff} %
-        </div>
-        {data.icon}
-      </div>
-    </div>
+          {data.link}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          gap: 1,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            color: diff > 0 ? "green" : "red",
+          }}
+        >
+          <KeyboardArrowUpIcon fontSize="large" />
+          <Typography variant="body1">{diff} %</Typography>
+        </Box>
+        <IconButton disableRipple>{data.icon}</IconButton>
+      </Box>
+    </Box>
   );
 };
 

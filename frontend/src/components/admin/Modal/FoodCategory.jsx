@@ -1,21 +1,24 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { getBorderColor } from "../../../Utils/helpers";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Box,
+  Typography,
+} from "@mui/material";
 import client from "../../../Utils/client";
+import { notifyError, notifySuccess } from "../../../Utils/helpers";
 
-const CreateCategory = ({
-  onClose,
-  notifySuccess,
-  notifyError,
-  categoryToEdit,
-  isEditing,
-  refresh,
-}) => {
+const CreateCategory = ({ onClose, categoryToEdit, isEditing, refresh }) => {
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, touchedFields },
+    formState: { errors },
   } = useForm();
 
   useEffect(() => {
@@ -47,8 +50,8 @@ const CreateCategory = ({
           isEditing
             ? "Category updated successfully"
             : "Category created successfully"
-        ); // Notify success
-        onClose(); // Close the modal
+        );
+        onClose();
       })
       .catch((error) => {
         notifyError(
@@ -62,48 +65,36 @@ const CreateCategory = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
-        <h2 className="text-xl font-bold mb-4">
-          {isEditing ? "Edit Category" : "Add Category"}
-        </h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700 mb-2">
-              Category Name
-            </label>
-            <input
+    <Dialog open onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>{isEditing ? "Edit Category" : "Add Category"}</DialogTitle>
+      <DialogContent>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <Box mb={3}>
+            <TextField
               id="name"
-              type="text"
-              className={`w-full px-3 py-2 border rounded-md ${getBorderColor(
-                "name",
-                errors,
-                touchedFields
-              )}`}
+              label="Category Name"
+              fullWidth
+              variant="outlined"
+              error={!!errors.name}
+              helperText={errors.name ? errors.name.message : ""}
               {...register("name", { required: "Category name is required" })}
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-            )}
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-md text-gray-500 border border-gray-300 mr-2"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md font-semibold border-2 text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
-            >
-              {isEditing ? "Update" : "Create"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary" variant="outlined">
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          color="primary"
+          variant="contained"
+        >
+          {isEditing ? "Update" : "Create"}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

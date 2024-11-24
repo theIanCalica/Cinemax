@@ -23,6 +23,7 @@ import MoviePage from "./pages/customer/Movie";
 import BookPage from "./pages/customer/Book";
 import ProfilePage from "./pages/customer/Profile";
 import FoodPage from "./pages/customer/FoodPage";
+import CustomerBookingpage from "./pages/customer/UserBookings";
 
 // Admin Pages
 import Layout from "./components/admin/v2/Layout";
@@ -84,6 +85,10 @@ function App() {
             <Route path="/book" element={<BookPage />}></Route>
             <Route path="/my-cart" element={<CartPage />}></Route>
             <Route path="/my-orders" element={<CustomerOrderPage />}></Route>
+            <Route
+              path="/my-bookings"
+              element={<CustomerBookingpage />}
+            ></Route>
           </Route>
 
           {/* Routes for crew */}

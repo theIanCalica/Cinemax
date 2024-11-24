@@ -201,16 +201,24 @@ const FoodCategory = () => {
             <CircularProgress size={50} color="success" />
           </Box>
         ) : (
-          <MUIDataTable
-            data={categories}
-            columns={columns}
-            options={{
-              filter: false,
-              search: true,
-              responsive: "standard",
-              selectableRows: "multiple",
-            }}
-          />
+          <Box sx={{ overflow: "auto", maxHeight: "80vh" }}>
+            <MUIDataTable
+              data={categories}
+              columns={columns}
+              options={{
+                filter: false,
+                search: true,
+                responsive: "standard",
+                selectableRows: "multiple",
+                onRowsDelete: (rowsDeleted) => {
+                  const idsToDelete = rowsDeleted.data.map(
+                    (row) => categories[row.dataIndex]._id
+                  );
+                  handleDelete(idsToDelete);
+                },
+              }}
+            />
+          </Box>
         )}
       </Box>
     </Container>

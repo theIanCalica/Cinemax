@@ -40,10 +40,12 @@ exports.getBookingsBasedOnUserId = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const bookings = Booking.find({ customer: userId }).populate(
-      "customer",
-      "showtime"
-    );
+    const bookings = await Booking.find({ customer: userId })
+      .populate("customer") // Populate customer with all fields
+      .populate({
+        path: "showtime", // Populate the showtime field
+        populate: { path: "movie" }, // Populate movie inside showtime
+      });
 
     if (bookings.length === 0) {
       return res
@@ -56,7 +58,7 @@ exports.getBookingsBasedOnUserId = async (req, res) => {
       bookings,
     });
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
     res.status(500).json({ message: "Server error." });
   }
 };
@@ -260,5 +262,32 @@ exports.createCheckoutSession = async (req, res) => {
   } catch (error) {
     console.error("Error creating Stripe checkout session:", error.message);
     res.status(500).json({ error: "Failed to create checkout session" });
+  }
+};
+
+// Webhook for checkout in movie booking
+exports.CheckoutCreditCard = async (req, res) => {
+  try {
+    const sig = req.headers["stripe-signature"];
+    const endpointSecret =
+      "whsec_933a3dbf2668e98615116cb73d92ac86410fce3833ae685d4fd39bce93af8f3a"; // Replace with your secret
+
+    let event;
+
+    // Validate the webhook signature
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    } catch (err) {
+      console.error("⚠️ Webhook signature verification failed:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    switch (event.type) {
+      case "checkout.session.completed":
+        break;
+    }
+  } catch (error) {
+    console.error("Error handling webhook:", err.message);
+    res.status(500).send(`Server Error: ${err.message}`);
   }
 };

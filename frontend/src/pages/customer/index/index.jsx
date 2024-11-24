@@ -1,5 +1,14 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  Box,
+  Typography,
+  Button,
+  Grid,
+  Divider,
+  Container,
+} from "@mui/material";
+import { styled } from "@mui/system";
 
 // Import Swiper styles
 import "swiper/css";
@@ -20,215 +29,189 @@ import Navbar from "../../../components/customer/Navbar/Navbar";
 import Widget from "../../../components/customer/Widgets/Widgets";
 import Footer from "../../../components/customer/Footer/Footer";
 import NowPlaying from "../../../components/customer/carousels/NowPlaying/NowPlaying";
-import "./Index.scss";
+
+const SlideContainer = styled(Box)(({ theme }) => ({
+  position: "relative",
+  height: "100vh",
+  width: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.3)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "column",
+  textAlign: "center",
+}));
+
+const Overlay = styled(Box)({
+  position: "absolute",
+  inset: 0,
+  backgroundColor: "rgba(0, 0, 0, 0.4)",
+  zIndex: 1,
+});
+
+const SlideContent = styled(Box)({
+  position: "relative",
+  zIndex: 2,
+  color: "white",
+});
+
+const ActionButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+  padding: theme.spacing(1.5, 4),
+  fontSize: "1rem",
+  borderRadius: theme.shape.borderRadius,
+  transition: "all 0.3s ease",
+  "&:hover": {
+    transform: "scale(1.05)",
+  },
+}));
+
 const Index = () => {
   return (
-    <div className="home">
-      <div className="homeContainer" style={{ overflow: "hidden" }}>
-        <Navbar />
-        <Swiper
-          spaceBetween={0}
-          slidesPerView={1}
-          modules={[Navigation, Scrollbar, A11y, Autoplay, Pagination]}
-          pagination={{
-            clickable: true,
-            dynamicBullets: true,
-          }}
-          autoplay={{
-            delay: 5000,
-            disableOnInteraction: false,
-          }}
-          loop={true}
-          onSlideChange={() => console.log("slide change")}
-          onSwiper={(swiper) => console.log(swiper)}
-          className="h-screen w-screen"
-        >
-          <SwiperSlide className="text-center">
-            <img
-              src="/images/dp.webp"
-              alt=""
-              className="h-screen w-screen object-cover"
-            />
-            <div class="absolute inset-0 bg-black opacity-30"></div>
-            <div className="absolute top-60 left-44 z-10">
-              <p className="text-themeYellow font-shadows-light font-bold text-4xl">
-                Action Movie
-              </p>
-              <h1
-                className="text-white font-bold text-8xl text-left mb-4 font-mono  hover:text-themeYellow"
-                style={{ transition: "color 0.3s ease-in-out", width: "550px" }}
-              >
-                Deadpool & Wolverine
-              </h1>
-              <p className="text-white text-left text-lg font-sans  ">
-                Written and Directed by Ian Calica / Phillipines 2024
-              </p>
-            </div>
-            <div className="flex justify-between items-center absolute bottom-36 left-44">
-              <button
-                className="bg-white mr-10 text-black px-12 py-3 text-lg  font-mono hover:bg-themeYellow hover:text-white"
+    <Box>
+      <Navbar />
+      <Swiper
+        spaceBetween={0}
+        slidesPerView={1}
+        modules={[Navigation, Scrollbar, A11y, Autoplay, Pagination]}
+        pagination={{
+          clickable: true,
+          dynamicBullets: true,
+        }}
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: false,
+        }}
+        loop
+        className="swiper-container"
+      >
+        {[
+          {
+            image: "/images/dp.webp",
+            category: "Action Movie",
+            title: "Deadpool & Wolverine",
+            description:
+              "Written and Directed by Ian Calica / Philippines 2024",
+          },
+          {
+            image: "/images/IO.jpg",
+            category: "Children's Film",
+            title: "Inside Out Part 2",
+            description:
+              "Written and Directed by Ian Calica / Philippines 2024",
+          },
+          {
+            image: "/images/min.jpg",
+            category: "Children's Film",
+            title: "Despicable Me Part 4",
+            description:
+              "Written and Directed by Ian Calica / Philippines 2024",
+          },
+        ].map((slide, index) => (
+          <SwiperSlide key={index}>
+            <SlideContainer>
+              <img
+                src={slide.image}
+                alt={slide.title}
                 style={{
-                  transition:
-                    "color 0.3s ease-in-out, background-color 0.3s ease-in-out",
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
                 }}
-              >
-                More Info
-              </button>
-
-              <button
-                className="bg-themeYellow text-white px-12 py-4 font-mono hover:bg-white hover:text-black text-sm"
-                style={{
-                  transition:
-                    "color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                }}
-              >
-                Buy Ticket
-              </button>
-            </div>
+              />
+              <Overlay />
+              <SlideContent>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontFamily: "'Pacifico', serif",
+                    fontWeight: "600",
+                    color: "darkorange",
+                  }}
+                  gutterBottom
+                >
+                  {slide.category}
+                </Typography>
+                <Typography
+                  variant="h2"
+                  component="h1"
+                  sx={{
+                    fontFamily: "'Pacifico', sans-serif",
+                    fontWeight: "bold",
+                    color: "darkorange",
+                  }}
+                  gutterBottom
+                >
+                  {slide.title}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontFamily: "'Roboto', sans-serif",
+                    fontWeight: "400",
+                    color: "white",
+                  }}
+                >
+                  {slide.description}
+                </Typography>
+                <Box mt={3}>
+                  <ActionButton
+                    variant="contained"
+                    sx={{
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontWeight: "600",
+                      color: "white",
+                      backgroundColor: "darkorange",
+                      "&:hover": {
+                        backgroundColor: "#cc5500", // Darker orange for hover
+                      },
+                    }}
+                  >
+                    More Info
+                  </ActionButton>
+                  <ActionButton
+                    variant="outlined"
+                    sx={{
+                      fontFamily: "'Lato', sans-serif",
+                      fontWeight: "500",
+                      color: "darkorange",
+                      borderColor: "darkorange",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 140, 0, 0.1)", // Light orange tint
+                      },
+                    }}
+                  >
+                    Buy Ticket
+                  </ActionButton>
+                </Box>
+              </SlideContent>
+            </SlideContainer>
           </SwiperSlide>
-          <SwiperSlide className="text-center">
-            <img
-              src="/images/IO.jpg"
-              alt=""
-              className="h-screen w-screen object-cover"
-            />
-            <div class="absolute inset-0 bg-black opacity-30"></div>
-            <div className="absolute top-60 right-44 z-10">
-              <p className="text-themeYellow font-shadows-light font-bold text-4xl">
-                Children's Film
-              </p>
-              <h1
-                className="text-white font-bold text-8xl text-left mb-4 font-mono  hover:text-themeYellow"
-                style={{ transition: "color 0.3s ease-in-out", width: "550px" }}
-              >
-                Inside Out Part 2
-              </h1>
-              <p className="text-white text-left text-lg font-sans  ">
-                Written and Directed by Ian Calica / Phillipines 2024
-              </p>
-            </div>
-            <div className="flex justify-between items-center absolute bottom-36 right-80">
-              <button
-                className="bg-white mr-10 text-black px-12 py-3 text-lg  font-mono hover:bg-themeYellow hover:text-white"
-                style={{
-                  transition:
-                    "color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                }}
-              >
-                More Info
-              </button>
+        ))}
+      </Swiper>
 
-              <button
-                className="bg-themeYellow text-white px-12 py-4 font-mono hover:bg-white hover:text-black text-sm"
-                style={{
-                  transition:
-                    "color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                }}
-              >
-                Buy Ticket
-              </button>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide className="text-center">
-            <img
-              src="/images/min.jpg"
-              alt=""
-              className="h-screen w-screen object-cover"
-            />
-            <div class="absolute inset-0 bg-black opacity-30"></div>
-            <div className="absolute top-60 left-44 z-10">
-              <p className="text-themeYellow font-shadows-light font-bold text-4xl">
-                Children's Film
-              </p>
-              <h1
-                className="text-white font-bold text-8xl text-left mb-4 font-mono  hover:text-themeYellow"
-                style={{ transition: "color 0.3s ease-in-out", width: "550px" }}
-              >
-                Despicable me Part 4
-              </h1>
-              <p className="text-white text-left text-lg font-sans  ">
-                Written and Directed by Ian Calica / Phillipines 2024
-              </p>
-            </div>
-            <div className="flex justify-between items-center absolute bottom-36 left-44">
-              <button
-                className="bg-white mr-10 text-black px-12 py-3 text-lg  font-mono hover:bg-themeYellow hover:text-white"
-                style={{
-                  transition:
-                    "color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                }}
-              >
-                More Info
-              </button>
+      <Divider variant="middle" sx={{ my: 4 }} />
 
-              <button
-                className="bg-themeYellow text-white px-12 py-4 font-mono hover:bg-white hover:text-black text-sm"
-                style={{
-                  transition:
-                    "color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                }}
-              >
-                Buy Ticket
-              </button>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide className="text-center">
-            <img
-              src="/images/q.jpg"
-              alt=""
-              className="h-screen w-screen object-cover"
-            />
-            <div class="absolute inset-0 bg-black opacity-30"></div>
-            <div className="absolute top-60 right-44 z-10">
-              <p className="text-themeYellow font-shadows-light font-bold text-4xl">
-                Children's Film
-              </p>
-              <h1
-                className="text-white font-bold text-8xl text-left mb-4 font-mono  hover:text-themeYellow"
-                style={{ transition: "color 0.3s ease-in-out", width: "550px" }}
-              >
-                Inside Out Part 2
-              </h1>
-              <p className="text-white text-left text-lg font-sans  ">
-                Written and Directed by Ian Calica / Phillipines 2024
-              </p>
-            </div>
-            <div className="flex justify-between items-center absolute bottom-36 right-80">
-              <button
-                className="bg-white mr-10 text-black px-12 py-3 text-lg  font-mono hover:bg-themeYellow hover:text-white"
-                style={{
-                  transition:
-                    "color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                }}
-              >
-                More Info
-              </button>
+      <Container>
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={4}>
+            <Widget type="Festival" />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Widget type="filmAward" />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <Widget type="unmissable" />
+          </Grid>
+        </Grid>
 
-              <button
-                className="bg-themeYellow text-white px-12 py-4 font-mono hover:bg-white hover:text-black text-sm"
-                style={{
-                  transition:
-                    "color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                }}
-              >
-                Buy Ticket
-              </button>
-            </div>
-          </SwiperSlide>
-        </Swiper>
-        {/* Film Strip */}
-        <hr class="broken-hr"></hr>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-11 mx-10 mb-48">
-          <Widget type="Festival" />
-          <Widget type="filmAward" />
-          <Widget type="unmissable" />
-        </div>
-        <div className="my-4 text-center">
+        <Box mt={6}>
           <NowPlaying />
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

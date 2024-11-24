@@ -17,6 +17,16 @@ const MoviesSchema = new Schema(
       trim: true,
       maxlength: 255,
     },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0, // Ensures price is non-negative
+    },
     directorName: {
       type: String,
       required: true,

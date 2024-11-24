@@ -7,18 +7,19 @@ import { notifySuccess, notifyError } from "../../Utils/helpers";
 import TaskModal from "../../components/admin/Modal/Task";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
+import client from "../../Utils/client";
 
 const Task = () => {
   const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [users, setUsers] = useState([]);
 
   const fetchTasks = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/tasks`)
+    client
+      .get(`/tasks`)
       .then((response) => {
+        console.log(response.data);
         setTasks(response.data);
       })
       .catch((error) => {
@@ -27,26 +28,9 @@ const Task = () => {
       });
   };
 
-  const fetchUsers = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/users`)
-      .then((response) => {
-        setUsers(response.data);
-      })
-      .catch((err) => {
-        console.error("Error fetching contacts:", err);
-      });
-  };
-
   useEffect(() => {
     fetchTasks();
-    fetchUsers();
   }, []);
-
-  const userMap = {};
-  users.forEach((user) => {
-    userMap[user._id] = " " + user.fname + " " + user.lname;
-  });
 
   const openModal = (task = null) => {
     setCurrentTask(task);
@@ -102,29 +86,49 @@ const Task = () => {
       source.droppableId === destination.droppableId &&
       source.index === destination.index
     ) {
-      return;
+      notifyError("No changes were made to the task's position.");
+      return; // No change
     }
 
-    const newTasks = Array.from(tasks);
-    const [removedTask] = newTasks.splice(source.index, 1);
-    const updatedTask = {
-      ...removedTask,
-      status: destination.droppableId,
-    };
-    newTasks.splice(destination.index, 0, updatedTask);
-    setTasks(newTasks);
+    // Save a deep copy of the original tasks for rollback
+    const originalTasks = JSON.parse(JSON.stringify(tasks));
+
+    // Create a copy of the tasks array for manipulation
+    const updatedTasks = Array.from(tasks);
+    console.log("Source:", source);
+    console.log("Destination:", destination);
+    console.log("Tasks after drag:", updatedTasks);
+
+    // Get the task being dragged and remove it from the source
+    const [movedTask] = updatedTasks.splice(source.index, 1);
+
+    // Update the task's status based on the destination droppable
+    const updatedTask = { ...movedTask, status: destination.droppableId };
+
+    // Insert the task at the destination index
+    updatedTasks.splice(destination.index, 0, updatedTask);
+
+    // Optimistically update the UI
+    setTasks(updatedTasks);
 
     try {
-      await axios.put(
-        `${process.env.REACT_APP_API_LINK}/tasks/update-status/${removedTask._id}`,
-        {
-          status: updatedTask.status,
-        }
+      // API request to update the task status
+      const response = await client.put(
+        `/tasks/update-status/${movedTask._id}`,
+        { status: updatedTask.status }
       );
-      notifySuccess("Successfully Updated");
+
+      if (response.status === 200) {
+        notifySuccess("Task status updated successfully");
+      } else {
+        throw new Error("Failed to update task status");
+      }
     } catch (error) {
       console.error("Error updating task status:", error);
-      setTasks(tasks);
+
+      // Revert to the original tasks array on failure
+      setTasks(originalTasks);
+      notifyError("Failed to update task status");
     }
   };
 
@@ -217,12 +221,6 @@ const Task = () => {
                             Priority:{" "}
                             {task.priority[0].toUpperCase() +
                               task.priority.slice(1).toLowerCase()}
-                          </p>
-                          <p className="text-sm text-gray-700">
-                            Assigned to:
-                            <span className="font-semibold">
-                              {userMap[task.user]}
-                            </span>
                           </p>
                           <div className="flex justify-end mt-4 border-t pt-2">
                             <button

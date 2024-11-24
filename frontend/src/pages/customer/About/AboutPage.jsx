@@ -7,7 +7,6 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import {
   Movie,
   MovieCreation,
@@ -17,25 +16,6 @@ import {
 } from "@mui/icons-material";
 import Navbar from "../../../components/customer/Navbar/Navbar";
 import Hero from "../../../components/customer/Hero/Hero";
-
-// Styled components for customization
-const StyledIconTitle = styled(Box)({
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  marginBottom: "16px",
-});
-
-const PartnerLogo = styled(Box)({
-  textAlign: "center",
-  "& img": { width: "80px", height: "auto", marginBottom: "8px" },
-});
-
-const TeamCard = styled(Box)({
-  textAlign: "center",
-  "& img": { width: "100%", borderRadius: "8px", marginBottom: "16px" },
-  "& h3": { marginTop: "8px" },
-});
 
 const AboutPage = () => {
   return (
@@ -49,16 +29,17 @@ const AboutPage = () => {
       <Grid container spacing={4} alignItems="center" sx={{ mb: 6 }}>
         <Grid item xs={12} md={6}>
           <Box sx={{ position: "relative" }}>
-            <img
+            <Box
+              component="img"
               src="/images/about-us.jpg"
               alt="About Us"
-              style={{ width: "100%", borderRadius: "8px" }}
+              sx={{ width: "100%", borderRadius: 2 }}
             />
             <Box
               sx={{
                 position: "absolute",
-                bottom: "16px",
-                left: "16px",
+                bottom: 16,
+                left: 16,
                 bgcolor: "white",
                 p: 2,
                 borderRadius: "50%",
@@ -73,26 +54,26 @@ const AboutPage = () => {
           </Box>
         </Grid>
         <Grid item xs={12} md={6}>
-          <StyledIconTitle>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
             <Movie fontSize="large" sx={{ color: "#F97316" }} />
             <Typography variant="h6">Get To Know</Typography>
-          </StyledIconTitle>
+          </Box>
           <Typography variant="h4" gutterBottom>
             Proving the Best Film Services
           </Typography>
           <Typography paragraph>
-            Lorem ipsum dolor sit amet consectetur adipiscing elit sed eiusmod
-            tempor incididunt labore dolore magna aliquaenim ad minim. Sed risus
-            commodo ornare felis non, eleifend molestie metus pharetra eleifend.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eiusmod
+            tempor incididunt labore dolore magna aliqua. Enim ad minim veniam,
+            quis nostrud exercitation.
           </Typography>
-          <StyledIconTitle>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
             <MovieCreation fontSize="large" sx={{ color: "#F97316" }} />
             <Typography>
               <strong>6 Years of Innovation</strong>
             </Typography>
-          </StyledIconTitle>
+          </Box>
           <Typography paragraph>
-            We’re here to look even you from start to finish.
+            We’re here to look after you from start to finish.
           </Typography>
           <Button variant="contained" size="large" color="primary">
             Discover More
@@ -108,12 +89,14 @@ const AboutPage = () => {
         <Grid container spacing={4} justifyContent="center">
           {[1, 2, 3, 4, 5].map((num) => (
             <Grid item xs={6} sm={4} md={2} key={num}>
-              <PartnerLogo>
-                <img
+              <Box sx={{ textAlign: "center" }}>
+                <Box
+                  component="img"
                   src={`/images/logo-${num}.png`}
                   alt={`Company Logo ${num}`}
+                  sx={{ width: 80, height: "auto", mb: 1 }}
                 />
-              </PartnerLogo>
+              </Box>
             </Grid>
           ))}
         </Grid>
@@ -143,18 +126,17 @@ const AboutPage = () => {
             },
           ].map((member, idx) => (
             <Grid item xs={12} sm={6} md={4} key={idx}>
-              <TeamCard
+              <Box
                 sx={{
                   textAlign: "center",
-                  "&:hover": {
-                    backgroundColor: "#F97316",
-                    transition:
-                      "background-color 0.3s ease, transform 0.3s ease",
-                    transform: "translateY(-5px)",
-                    boxShadow: "0 10px 20px rgba(0, 0, 0, 0.2)",
-                  },
-                  padding: 2,
+                  p: 2,
                   borderRadius: 2,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    bgcolor: "#F97316",
+                    transform: "translateY(-5px)",
+                    boxShadow: 3,
+                  },
                 }}
               >
                 <Box
@@ -166,7 +148,7 @@ const AboutPage = () => {
                     height: 350,
                     borderRadius: "50%",
                     objectFit: "cover",
-                    marginBottom: 2,
+                    mb: 2,
                     transition: "transform 0.3s ease",
                     "&:hover": {
                       transform: "scale(1.1)",
@@ -175,36 +157,30 @@ const AboutPage = () => {
                 />
                 <Typography
                   variant="h6"
-                  className="text-[#F97316] transition-colors duration-300 hover:text-red"
+                  sx={{
+                    color: "#F97316",
+                    transition: "color 0.3s ease",
+                    "&:hover": { color: "red" },
+                  }}
                 >
                   {member.name}
                 </Typography>
-
-                <Typography
-                  variant="body2"
-                  className="text-gray-200 transition-colors duration-300"
-                >
+                <Typography variant="body2" color="text.secondary">
                   {member.role}
                 </Typography>
-
                 <Box
                   sx={{
                     display: "flex",
                     justifyContent: "center",
                     gap: 2,
                     mt: 1,
-                    transition: "opacity 0.3s ease",
-                    opacity: 0,
-                    "&:hover": {
-                      opacity: 1,
-                    },
                   }}
                 >
                   <Twitter sx={{ color: "#1DA1F2" }} />
                   <Facebook sx={{ color: "#1877F2" }} />
                   <Instagram sx={{ color: "#E4405F" }} />
                 </Box>
-              </TeamCard>
+              </Box>
             </Grid>
           ))}
         </Grid>
