@@ -2,23 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 import axios from "axios";
-import { getBorderColor } from "../../../Utils/helpers";
+import {
+  getBorderColor,
+  notifyError,
+  notifySuccess,
+} from "../../../Utils/helpers";
 import { FilePond, registerPlugin } from "react-filepond";
 import "filepond/dist/filepond.min.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import client from "../../../Utils/client";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
-const Food = ({
-  onClose,
-  notifySuccess,
-  notifyError,
-  foodToEdit,
-  isEditing,
-  refresh,
-}) => {
+const Food = ({ onClose, foodToEdit, isEditing, refresh }) => {
   const {
     control,
     register,
@@ -31,7 +29,6 @@ const Food = ({
   const [categories, setCategories] = useState([]);
   const [image, setImage] = useState([]);
   const [foods, setFoods] = useState([]);
-  const [originalImageUrl, setOriginalImageUrl] = useState("");
 
   const fetchFoods = () => {
     axios
@@ -46,8 +43,8 @@ const Food = ({
   };
 
   const fetchFoodCategories = () => {
-    axios
-      .get(`${process.env.REACT_APP_API_LINK}/categories`)
+    client
+      .get(`/categories`)
       .then((response) => {
         const formattedCategories = response.data.map((category) => ({
           value: category._id,
@@ -67,6 +64,8 @@ const Food = ({
   }, []);
 
   useEffect(() => {
+    console.log("Categories:", categories);
+    console.log("Food to Edit:", foodToEdit);
     if (isEditing && foodToEdit) {
       reset({
         name: foodToEdit.name,
@@ -81,7 +80,6 @@ const Food = ({
         image: foodToEdit.images.url || [],
         quantity: foodToEdit.quantity,
       });
-      setOriginalImageUrl(foodToEdit.images.url);
     } else {
       reset({
         name: "",
@@ -91,9 +89,8 @@ const Food = ({
         availability: null,
         image: [],
       });
-      setOriginalImageUrl("");
     }
-  }, [isEditing, foodToEdit, categories]);
+  }, [isEditing, foodToEdit, categories, reset]);
 
   const onSubmit = (data) => {
     const formData = new FormData();
@@ -108,12 +105,10 @@ const Food = ({
       data.image.forEach((file) => formData.append("images", file));
     }
 
-    const url = isEditing
-      ? `${process.env.REACT_APP_API_LINK}/foods/${foodToEdit._id}`
-      : `${process.env.REACT_APP_API_LINK}/foods`;
+    const url = isEditing ? `/foods/${foodToEdit._id}` : `/foods`;
     const method = isEditing ? "PUT" : "POST";
 
-    axios({
+    client({
       method,
       url,
       headers: {
@@ -318,7 +313,7 @@ const Food = ({
               render={({ field }) => (
                 <FilePond
                   {...field}
-                  files={field.value}
+                  files={field.value || []}
                   onupdatefiles={(fileItems) => {
                     field.onChange(fileItems.map((fileItem) => fileItem.file));
                   }}

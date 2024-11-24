@@ -6,8 +6,9 @@ import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 import FoodModal from "../../components/admin/Modal/Food";
 import FoodImagesModal from "../../components/admin/Modal/FoodImages";
-import axios from "axios";
 import { delay, notifySuccess, notifyError } from "../../Utils/helpers";
+import { Box } from "@mui/material";
+import client from "../../Utils/client";
 
 const FoodList = () => {
   const [foods, setFoods] = useState([]);
@@ -19,10 +20,7 @@ const FoodList = () => {
 
   const fetchFoods = async () => {
     try {
-      const [response] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_API_LINK}/foods`),
-        delay(1000),
-      ]);
+      const [response] = await Promise.all([client.get(`/foods`), delay(1000)]);
       setFoods(response.data);
     } catch (err) {
       notifyError("Error Fetching foods");
@@ -67,9 +65,7 @@ const FoodList = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        const deleteRequests = ids.map((id) =>
-          axios.delete(`${process.env.REACT_APP_API_LINK}/foods/${id}`)
-        );
+        const deleteRequests = ids.map((id) => client.delete(`/foods/${id}`));
 
         Promise.all(deleteRequests)
           .then((responses) => {
@@ -199,8 +195,6 @@ const FoodList = () => {
             foodToEdit={currentFood}
             isEditing={isEditing}
             onClose={closeModal}
-            notifySuccess={notifySuccess}
-            notifyError={notifyError}
             refresh={fetchFoods}
           />
         </div>
@@ -209,8 +203,9 @@ const FoodList = () => {
       {isImagesModalOpen && selectedFood && (
         <FoodImagesModal food={selectedFood} onClose={closeImagesModal} />
       )}
-
-      <MUIDataTable data={foods} columns={columns} options={options} />
+      <Box sx={{ overflow: "auto", maxHeight: "80vh" }}>
+        <MUIDataTable data={foods} columns={columns} options={options} />
+      </Box>
     </div>
   );
 };

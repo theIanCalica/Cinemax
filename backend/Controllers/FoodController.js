@@ -3,6 +3,7 @@ const cloudinary = require("../utils/Cloudinary");
 const upload = require("../middleware/multer");
 const Category = require("../Models/Category");
 const streamifier = require("streamifier");
+const Order = require("../Models/Order");
 
 // Get all foods
 exports.getAllFoods = async (req, res) => {
@@ -74,7 +75,12 @@ exports.createFood = [
           .json({ msg: "At least one image file is required." });
       }
 
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "images/jpg",
+      ];
 
       // Upload images to Cloudinary
       const uploadToCloudinary = (file) => {
@@ -135,44 +141,81 @@ exports.updateFoodById = [
   upload.array("images"), // No limit on number of files
   async (req, res) => {
     try {
-      const currentFood = await Food.findById(req.params.id);
+      const { name, price, description, quantity, availability, category } =
+        req.body;
+
+      const foodId = req.params.id;
+      const categoryObj = await Category.findById(category);
+      console.log(categoryObj);
+      let food = await Food.findById(foodId);
       const data = {
-        category: req.body.category,
-        name: req.body.name,
-        price: req.body.price,
-        availability: req.body.availability,
+        name,
+        price,
+        description,
+        quantity,
+        availability,
+        category: {
+          id: categoryObj.id,
+          name: categoryObj.name,
+        },
+      };
+
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "images/jpg",
+      ];
+
+      // Upload images to Cloudinary
+      const uploadToCloudinary = (file) => {
+        return new Promise((resolve, reject) => {
+          if (!allowedTypes.includes(file.mimetype)) {
+            reject(
+              new Error(
+                "Invalid file type. Only JPEG, PNG, and GIF are allowed."
+              )
+            );
+          }
+
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: "foods" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          streamifier.createReadStream(file.buffer).pipe(uploadStream);
+        });
       };
 
       if (req.files && req.files.length > 0) {
-        // Delete old images
-        await Promise.all(
-          currentFood.images.map((img) =>
-            cloudinary.uploader.destroy(img.public_id)
-          )
-        );
-
+        if (!Array.isArray(food.images)) {
+          food.images = []; // Initialize as an empty array if it's undefined
+        }
         // Upload new images
         const imageUploads = await Promise.all(
-          req.files.map((file) => {
-            return cloudinary.uploader.upload(file.path, { folder: "foods" });
-          })
+          req.files.map((file) => uploadToCloudinary(file))
         );
-
-        data.images = imageUploads.map((result) => ({
+        const newImages = imageUploads.map((result) => ({
           public_id: result.public_id,
           url: result.secure_url,
         }));
+
+        food.images = [...food.images, ...newImages];
       }
 
-      const food = await Food.findByIdAndUpdate(req.params.id, data, {
-        new: true,
-      });
+      food = await Food.findByIdAndUpdate(
+        foodId,
+        { ...data, images: food.images },
+        { new: true }
+      );
 
       if (!food) {
         return res.status(404).json({ msg: "Food not found" });
       }
 
-      return res.status(201).json({ msg: "Food Successfully updated", food });
+      return res.status(200).json({ msg: "Food Successfully updated", food });
     } catch (err) {
       console.error(err.message);
       res.status(500).send("Server Error!");
@@ -200,6 +243,46 @@ exports.deleteFoodById = async (req, res) => {
     res.status(200).json({ msg: "Successfully deleted" });
   } catch (err) {
     console.error(err.message);
+    res.status(500).send("Server Error!");
+  }
+};
+
+exports.getTopFood = async (req, res) => {
+  try {
+    // Aggregate orders to get the top 5 foods based on order quantity
+    const topFoods = await Order.aggregate([
+      { $unwind: "$items" }, // Unwind the items array to process each food individually
+      {
+        $group: {
+          _id: "$items.foodId", // Group by foodId
+          totalQuantity: { $sum: "$items.quantity" }, // Sum the quantity of each food
+        },
+      },
+      { $sort: { totalQuantity: -1 } }, // Sort by totalQuantity in descending order
+      { $limit: 5 }, // Limit to top 5 foods
+    ]);
+
+    // Populate food details (name, category, price, etc.)
+    const populatedFoods = await Food.find({
+      _id: { $in: topFoods.map((food) => food._id) },
+    });
+
+    // Merge food details with the total quantities
+    const result = topFoods.map((food) => {
+      const foodDetails = populatedFoods.find(
+        (item) => item._id.toString() === food._id.toString()
+      );
+      return {
+        foodId: food._id,
+        name: foodDetails?.name || "Unknown Food",
+        category: foodDetails?.category.name || "Unknown Category",
+        totalQuantity: food.totalQuantity,
+      };
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error.message);
     res.status(500).send("Server Error!");
   }
 };

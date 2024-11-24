@@ -12,39 +12,39 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement);
 const ContactWidget = () => {
   const navigate = useNavigate();
   const [chartData, setChartData] = useState({
-    labels: ["Resolved", "Received"],
+    labels: ["Resolved", "Pending", "In Progress"],
     datasets: [
       {
-        data: [0, 0],
-        backgroundColor: ["#4BC0C0", "#FF6384"],
-        borderColor: ["#FFFFFF", "#FFFFFF"],
+        data: [0, 0, 0], // Initial counts (0 for each status)
+        backgroundColor: ["#4BC0C0", "#FF6384", "#FFCD56"], // Colors for each status
+        borderColor: ["#FFFFFF", "#FFFFFF", "#FFFFFF"],
         borderWidth: 2,
       },
     ],
   });
   const [totalContacts, setTotalContacts] = useState(0);
 
-  // Fetch the pending and resolved counts for the chart
+  // Fetch the pending, resolved, and in-progress counts for the chart
   const fetchContactStats = async () => {
     try {
       const response = await client.get("/contacts/pending-resolved"); // API endpoint that gives counts
-      const { pending, resolved } = response.data;
+      const { pending, resolved, inProgress } = response.data; // Assuming API now returns "inProgress" count
 
       // Update chart data with the received counts
       setChartData({
-        labels: ["Resolved", "Pending"],
+        labels: ["Resolved", "Pending", "In Progress"],
         datasets: [
           {
-            data: [resolved, pending], // Assuming the data includes both pending and resolved counts
-            backgroundColor: ["#4BC0C0", "#FF6384"],
-            borderColor: ["#FFFFFF", "#FFFFFF"],
+            data: [resolved, pending, inProgress], // Use all three status counts
+            backgroundColor: ["#4BC0C0", "#FF6384", "#FFCD56"], // Updated color for "In Progress"
+            borderColor: ["#FFFFFF", "#FFFFFF", "#FFFFFF"],
             borderWidth: 2,
           },
         ],
       });
 
-      // Calculate the total contacts count
-      setTotalContacts(pending + resolved);
+      // Calculate the total contacts count (sum of all statuses)
+      setTotalContacts(pending + resolved + inProgress);
     } catch (error) {
       notifyError("Error fetching contacts");
     }

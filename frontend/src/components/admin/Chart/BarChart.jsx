@@ -12,7 +12,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TextField } from "@mui/material";
+import { TextField, Box, Typography } from "@mui/material";
 import dayjs from "dayjs";
 
 // Register Chart.js components
@@ -48,7 +48,7 @@ const BarChart = () => {
         data: [
           120000, 150000, 180000, 100000, 90000, 200000, 160000, 190000, 220000,
           210000, 180000, 240000,
-        ], // Example data (in PHP)
+        ],
         backgroundColor: "rgba(75, 192, 192, 0.6)",
         borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
@@ -58,7 +58,7 @@ const BarChart = () => {
         data: [
           200000, 230000, 250000, 220000, 180000, 260000, 240000, 290000,
           310000, 320000, 280000, 340000,
-        ], // Example data (in PHP)
+        ],
         backgroundColor: "rgba(153, 102, 255, 0.6)",
         borderColor: "rgba(153, 102, 255, 1)",
         borderWidth: 1,
@@ -66,14 +66,14 @@ const BarChart = () => {
     ],
   };
 
-  // State for selected date range (using dayjs)
+  // State for selected date range
   const [startDate, setStartDate] = useState(dayjs("2024-01-01"));
   const [endDate, setEndDate] = useState(dayjs("2024-12-31"));
 
   // Filter data based on the selected date range
   const filteredData = (startDate, endDate) => {
-    const startMonth = startDate.month(); // get the month (0-indexed)
-    const endMonth = endDate.month(); // get the month (0-indexed)
+    const startMonth = startDate.month();
+    const endMonth = endDate.month();
 
     return {
       labels: data.labels.slice(startMonth, endMonth + 1),
@@ -87,6 +87,7 @@ const BarChart = () => {
   // Chart options with currency formatting
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
@@ -109,29 +110,60 @@ const BarChart = () => {
   };
 
   return (
-    <div className="chart-container">
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 3,
+        padding: 3,
+        bgcolor: "#f5f5f5",
+        borderRadius: 2,
+      }}
+    >
+      <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+        Sales and Bookings Report
+      </Typography>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <div className="date-filter">
-          <label>Start Date: </label>
-          <DatePicker
-            value={startDate}
-            onChange={(date) => setStartDate(date)}
-            renderInput={(params) => <TextField {...params} />}
-            minDate={dayjs("2024-01-01")}
-            maxDate={dayjs("2024-12-31")}
-          />
-          <label>End Date: </label>
-          <DatePicker
-            value={endDate}
-            onChange={(date) => setEndDate(date)}
-            renderInput={(params) => <TextField {...params} />}
-            minDate={startDate}
-            maxDate={dayjs("2024-12-31")}
-          />
-        </div>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 2,
+            mb: 3,
+          }}
+        >
+          <Box>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              Start Date:
+            </Typography>
+            <DatePicker
+              value={startDate}
+              onChange={(date) => setStartDate(date)}
+              renderInput={(params) => <TextField {...params} />}
+              minDate={dayjs("2024-01-01")}
+              maxDate={dayjs("2024-12-31")}
+            />
+          </Box>
+          <Box>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              End Date:
+            </Typography>
+            <DatePicker
+              value={endDate}
+              onChange={(date) => setEndDate(date)}
+              renderInput={(params) => <TextField {...params} />}
+              minDate={startDate}
+              maxDate={dayjs("2024-12-31")}
+            />
+          </Box>
+        </Box>
       </LocalizationProvider>
-      <Bar data={filteredData(startDate, endDate)} options={options} />
-    </div>
+      <Box sx={{ width: "100%", maxWidth: 900, height: "400px" }}>
+        <Bar data={filteredData(startDate, endDate)} options={options} />
+      </Box>
+    </Box>
   );
 };
 

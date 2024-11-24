@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import Select from "react-select";
-import axios from "axios";
 import { notifyError, notifySuccess } from "../../../Utils/helpers";
 import {
   TextField,
@@ -14,6 +12,7 @@ import {
   DialogActions,
   MenuItem,
 } from "@mui/material";
+import client from "../../../Utils/client";
 
 const Contact = ({ onContactCreated, onClose, contactToEdit }) => {
   const {
@@ -44,11 +43,11 @@ const Contact = ({ onContactCreated, onClose, contactToEdit }) => {
   }, [contactToEdit, reset, setValue]);
 
   const onSubmit = async (data) => {
-    const url = `${process.env.REACT_APP_API_LINK}/contacts/${contactToEdit._id}`;
+    const url = `/contacts/${contactToEdit._id}`;
     const method = "PUT";
 
     try {
-      const response = await axios({
+      const response = await client({
         method,
         url,
         headers: {

@@ -6,12 +6,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { notifySuccess, notifyError } from "../../Utils/helpers";
 import ContactModal from "../../components/admin/Modal/Contact";
 import { formatDate } from "../../Utils/helpers";
-import axios from "axios";
 import ReactLoading from "react-loading";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { delay } from "../../Utils/helpers";
 import { Box } from "@mui/material";
+import client from "../../Utils/client";
 
 const Contact = () => {
   const [contacts, setContacts] = useState([]);
@@ -24,7 +24,7 @@ const Contact = () => {
     setIsLoading(true);
     try {
       const [response] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_API_LINK}/contacts`),
+        client.get(`/contacts`),
         delay(1000),
       ]);
       setContacts(response.data);

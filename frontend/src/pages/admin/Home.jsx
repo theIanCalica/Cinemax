@@ -152,6 +152,11 @@ const Home = () => {
           <Map />
         </Paper>
       </Box>
+      <Box mt={4}>
+        <Paper elevation={3} sx={{ p: 2 }}>
+          <LineChart />
+        </Paper>
+      </Box>
     </Box>
   );
 };

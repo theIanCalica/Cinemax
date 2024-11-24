@@ -113,14 +113,18 @@ exports.getContactById = async (req, res) => {
 
 exports.getPendingAndResolvedForCharts = async (req, res) => {
   try {
-    // Get the count of 'pending' and 'resolved' contacts
+    // Get the count of 'pending', 'resolved', and 'in-progress' contacts
     const pendingCount = await Contact.countDocuments({ status: "pending" });
     const resolvedCount = await Contact.countDocuments({ status: "resolved" });
+    const inProgressCount = await Contact.countDocuments({
+      status: "in-progress",
+    });
 
     // Send the response with the counts for the chart
     res.status(200).json({
       pending: pendingCount,
       resolved: resolvedCount,
+      inProgress: inProgressCount,
     });
   } catch (error) {
     // Handle any errors
@@ -131,6 +135,7 @@ exports.getPendingAndResolvedForCharts = async (req, res) => {
     });
   }
 };
+
 // Update a contact by ID
 exports.updateContactById = async (req, res) => {
   const { name, email, phone, subject, body, status } = req.body;
@@ -160,18 +165,45 @@ exports.updateContactById = async (req, res) => {
   }
 };
 
-// Delete a contact by ID
-exports.deleteContactById = async (req, res) => {
+// Get number of received contact sent per month
+exports.getNumberOfContactPerMonth = async (req, res) => {
   try {
-    const contact = await Contact.findByIdAndDelete(req.params.id);
+    const currentYear = 2024; // Replace with dynamic year if needed
 
-    if (!contact) {
-      return res.status(404).json({ msg: "Contact not found" });
-    }
+    const contactsPerMonth = await Contact.aggregate([
+      {
+        // Match contacts created in the year 2024
+        $match: {
+          createdAt: {
+            $gte: new Date(`${currentYear}-01-01T00:00:00Z`),
+            $lt: new Date(`${currentYear + 1}-01-01T00:00:00Z`),
+          },
+        },
+      },
+      {
+        // Group by year and month extracted from the `createdAt` field
+        $group: {
+          _id: { month: { $month: "$createdAt" } },
+          count: { $sum: 1 }, // Count the number of documents
+        },
+      },
+      {
+        // Sort by month in ascending order
+        $sort: { "_id.month": 1 },
+      },
+      {
+        // Format the output
+        $project: {
+          _id: 0,
+          month: "$_id.month",
+          count: 1,
+        },
+      },
+    ]);
 
-    res.json({ msg: "Contact deleted" });
-  } catch (err) {
-    console.error(err.message);
+    res.status(200).json(contactsPerMonth);
+  } catch (error) {
+    console.error(error.message);
     res.status(500).send("Server Error");
   }
 };

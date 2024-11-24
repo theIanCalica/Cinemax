@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const FoodController = require("../Controllers/FoodController");
+const authenticateTokenAndUser = require("../middleware/Auth");
+
+// Get top 5 foods
+router.get("/top-5", authenticateTokenAndUser, FoodController.getTopFood);
 
 // Pagination for foods
 router.get("/paginated", FoodController.getPaginatedFoods);
@@ -12,12 +16,12 @@ router.get("/", FoodController.getAllFoods);
 router.get("/:id", FoodController.getFoodById);
 
 // Add new food
-router.post("/", FoodController.createFood);
+router.post("/", authenticateTokenAndUser, FoodController.createFood);
 
 // Update a food by ID
-router.put("/:id", FoodController.updateFoodById);
+router.put("/:id", authenticateTokenAndUser, FoodController.updateFoodById);
 
 // Delet food by ID
-router.delete("/:id", FoodController.deleteFoodById);
+router.delete("/:id", authenticateTokenAndUser, FoodController.deleteFoodById);
 
 module.exports = router;
