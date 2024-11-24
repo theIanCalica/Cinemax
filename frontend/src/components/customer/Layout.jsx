@@ -1,24 +1,28 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { Box, CssBaseline } from "@mui/material";
 import Navbar from "./Navbar/Navbar";
 import Footer from "./Footer/Footer";
 
 const Layout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      {/* CssBaseline to normalize the styles */}
+      <CssBaseline />
+
       {/* Header */}
       <header>
         <Navbar />
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-grow ">
+      <main style={{ flexGrow: 1 }}>
         <Outlet /> {/* Renders the matched child route */}
       </main>
 
       {/* Footer */}
       <Footer />
-    </div>
+    </Box>
   );
 };
 

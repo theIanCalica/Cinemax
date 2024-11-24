@@ -3,13 +3,38 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
-import "./NowPlaying.scss";
+import { Button, Typography, Box, Paper } from "@mui/material";
 
 const NowPlaying = () => {
   return (
-    <div className="text-center">
-      <h6 className="text-sm text-gray-500">Watch New Movies</h6>
-      <h1 className="text-5xl font-bold">Movies Now Playing</h1>
+    <Box
+      textAlign="center"
+      sx={{
+        padding: 4,
+        backgroundColor: "transparent", // Set the background to transparent
+        color: "#fff", // Keep text color white for contrast
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{
+          color: "#000000", // Dark orange color for subheading
+          marginBottom: 2,
+        }}
+      >
+        Watch New Movies
+      </Typography>
+      <Typography
+        variant="h4"
+        fontWeight="bold"
+        sx={{
+          marginBottom: 4,
+          color: "#000000", // Dark orange color for heading
+        }}
+      >
+        Movies Now Playing
+      </Typography>
+
       <Swiper
         pagination={true}
         modules={[Pagination]}
@@ -18,77 +43,301 @@ const NowPlaying = () => {
         spaceBetween={30}
       >
         <SwiperSlide>
-          <div className="movie-card">
+          <Paper
+            elevation={5}
+            sx={{
+              padding: 2,
+              borderRadius: 3,
+              backgroundColor: "transparent", // Transparent background for the card
+              boxShadow: "none", // Remove the shadow for a cleaner look
+            }}
+          >
             <img
               src="/images/IO.jpg"
               alt="The Fifth Day"
-              className="movie-image"
+              style={{
+                width: "80%", // Decrease the width
+                height: "auto",
+                aspectRatio: "2/3", // Portrait-like aspect ratio
+                objectFit: "cover", // Ensure image fits within the container without distortion
+                borderRadius: 8,
+                margin: "0 auto", // Center the image horizontally
+              }}
             />
-            <div className="movie-info">
-              <h5 className="genre">Comedy / 180 Mins</h5>
-              <h3 className="movie-title">The Fifth Day</h3>
-              <button className="ticket-button">Get Ticket</button>
-            </div>
-          </div>
+            <Box sx={{ marginTop: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#000000", // Dark orange for genre
+                  marginBottom: 1,
+                }}
+              >
+                Comedy / 180 Mins
+              </Typography>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  marginBottom: 1,
+                  color: "#000000", // White color for movie title
+                }}
+              >
+                The Fifth Day
+              </Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#ff6f00", // Dark orange button
+                  color: "#fff", // White text on button
+                  width: "100%",
+                  ":hover": {
+                    backgroundColor: "#e65c00", // Slightly darker orange on hover
+                  },
+                }}
+              >
+                Get Ticket
+              </Button>
+            </Box>
+          </Paper>
         </SwiperSlide>
+
         <SwiperSlide>
-          <div className="movie-card">
+          <Paper
+            elevation={5}
+            sx={{
+              padding: 2,
+              borderRadius: 3,
+              backgroundColor: "transparent", // Transparent background for the card
+              boxShadow: "none", // Remove the shadow for a cleaner look
+            }}
+          >
             <img
               src="/images/min.jpg"
               alt="Another Movie"
-              className="movie-image"
+              style={{
+                width: "80%", // Decrease the width
+                height: "auto",
+                aspectRatio: "2/3",
+                objectFit: "cover",
+                borderRadius: 8,
+                margin: "0 auto",
+              }}
             />
-            <div className="movie-info">
-              <h5 className="genre">Drama / 120 Mins</h5>
-              <h3 className="movie-title">Another Movie</h3>
-              <button className="ticket-button">Get Ticket</button>
-            </div>
-          </div>
+            <Box sx={{ marginTop: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#000000",
+                  marginBottom: 1,
+                }}
+              >
+                Drama / 120 Mins
+              </Typography>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  marginBottom: 1,
+                  color: "#000000",
+                }}
+              >
+                Another Movie
+              </Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#ff6f00",
+                  color: "#fff",
+                  width: "100%",
+                  ":hover": {
+                    backgroundColor: "#e65c00",
+                  },
+                }}
+              >
+                Get Ticket
+              </Button>
+            </Box>
+          </Paper>
         </SwiperSlide>
+
         <SwiperSlide>
-          <div className="movie-card">
+          <Paper
+            elevation={5}
+            sx={{
+              padding: 2,
+              borderRadius: 3,
+              backgroundColor: "transparent", // Transparent background for the card
+              boxShadow: "none", // Remove the shadow for a cleaner look
+            }}
+          >
             <img
               src="/images/q.jpg"
               alt="Movie Title 3"
-              className="movie-image"
+              style={{
+                width: "80%", // Decrease the width
+                height: "auto",
+                aspectRatio: "2/3",
+                objectFit: "cover",
+                borderRadius: 8,
+                margin: "0 auto",
+              }}
             />
-            <div className="movie-info">
-              <h5 className="genre">Action / 140 Mins</h5>
-              <h3 className="movie-title">Movie Title 3</h3>
-              <button className="ticket-button">Get Ticket</button>
-            </div>
-          </div>
+            <Box sx={{ marginTop: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#000000",
+                  marginBottom: 1,
+                }}
+              >
+                Action / 140 Mins
+              </Typography>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  marginBottom: 1,
+                  color: "#000000",
+                }}
+              >
+                Movie Title 3
+              </Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#ff6f00",
+                  color: "#fff",
+                  width: "100%",
+                  ":hover": {
+                    backgroundColor: "#e65c00",
+                  },
+                }}
+              >
+                Get Ticket
+              </Button>
+            </Box>
+          </Paper>
         </SwiperSlide>
+
         <SwiperSlide>
-          <div className="movie-card">
+          <Paper
+            elevation={5}
+            sx={{
+              padding: 2,
+              borderRadius: 3,
+              backgroundColor: "transparent", // Transparent background for the card
+              boxShadow: "none", // Remove the shadow for a cleaner look
+            }}
+          >
             <img
               src="/images/IO.jpg"
               alt="Movie Title 4"
-              className="movie-image"
+              style={{
+                width: "80%", // Decrease the width
+                height: "auto",
+                aspectRatio: "2/3",
+                objectFit: "cover",
+                borderRadius: 8,
+                margin: "0 auto",
+              }}
             />
-            <div className="movie-info">
-              <h5 className="genre">Sci-Fi / 130 Mins</h5>
-              <h3 className="movie-title">Movie Title 4</h3>
-              <button className="ticket-button">Get Ticket</button>
-            </div>
-          </div>
+            <Box sx={{ marginTop: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#000000",
+                  marginBottom: 1,
+                }}
+              >
+                Sci-Fi / 130 Mins
+              </Typography>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  marginBottom: 1,
+                  color: "#000000",
+                }}
+              >
+                Movie Title 4
+              </Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#ff6f00",
+                  color: "#fff",
+                  width: "100%",
+                  ":hover": {
+                    backgroundColor: "#e65c00",
+                  },
+                }}
+              >
+                Get Ticket
+              </Button>
+            </Box>
+          </Paper>
         </SwiperSlide>
+
         <SwiperSlide>
-          <div className="movie-card">
+          <Paper
+            elevation={5}
+            sx={{
+              padding: 2,
+              borderRadius: 3,
+              backgroundColor: "transparent", // Transparent background for the card
+              boxShadow: "none", // Remove the shadow for a cleaner look
+            }}
+          >
             <img
               src="/images/min.jpg"
               alt="Movie Title 5"
-              className="movie-image"
+              style={{
+                width: "80%", // Decrease the width
+                height: "auto",
+                aspectRatio: "2/3",
+                objectFit: "cover",
+                borderRadius: 8,
+                margin: "0 auto",
+              }}
             />
-            <div className="movie-info">
-              <h5 className="genre">Horror / 110 Mins</h5>
-              <h3 className="movie-title">Movie Title 5</h3>
-              <button className="ticket-button">Get Ticket</button>
-            </div>
-          </div>
+            <Box sx={{ marginTop: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "#000000",
+                  marginBottom: 1,
+                }}
+              >
+                Horror / 110 Mins
+              </Typography>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                sx={{
+                  marginBottom: 1,
+                  color: "#000000",
+                }}
+              >
+                Movie Title 5
+              </Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#ff6f00",
+                  color: "#fff",
+                  width: "100%",
+                  ":hover": {
+                    backgroundColor: "#e65c00",
+                  },
+                }}
+              >
+                Get Ticket
+              </Button>
+            </Box>
+          </Paper>
         </SwiperSlide>
       </Swiper>
-    </div>
+    </Box>
   );
 };
 

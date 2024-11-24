@@ -2,7 +2,7 @@ import React from "react";
 import StadiumIcon from "@mui/icons-material/Stadium";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import TheatersIcon from "@mui/icons-material/Theaters";
-import "./Widget.scss";
+import { Box, Typography } from "@mui/material";
 import filmstripImage from "../../../assets/images/filmstrip.png";
 
 const Widgets = ({ type }) => {
@@ -14,7 +14,7 @@ const Widgets = ({ type }) => {
         subtitle: "Join Now",
         icon: (
           <StadiumIcon
-            style={{
+            sx={{
               color: "white",
               fontSize: "55px",
             }}
@@ -28,7 +28,7 @@ const Widgets = ({ type }) => {
         subtitle: "Watch Now",
         icon: (
           <EmojiEventsIcon
-            style={{
+            sx={{
               color: "white",
               fontSize: "55px",
             }}
@@ -42,7 +42,7 @@ const Widgets = ({ type }) => {
         subtitle: "Get Ticket",
         icon: (
           <TheatersIcon
-            style={{
+            sx={{
               color: "white",
               fontSize: "55px",
             }}
@@ -53,23 +53,70 @@ const Widgets = ({ type }) => {
     default:
       break;
   }
+
   return (
-    <div className="widget mx-2 flex justify-center items-center  relative bg-black h-48 w-full">
+    <Box
+      sx={{
+        position: "relative",
+        backgroundColor: "black",
+        height: "192px",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        marginX: 2,
+      }}
+    >
       <img
         src={filmstripImage}
-        className="absolute inset-0 m-auto object-cover w-1/2 h-1/2 z-0 opacity-15"
         alt="Filmstrip"
+        style={{
+          position: "absolute",
+          inset: 0,
+          margin: "auto",
+          objectFit: "cover",
+          width: "50%",
+          height: "50%",
+          zIndex: 0,
+          opacity: 0.15,
+        }}
       />
-      <div className="text-white flex justify-between flex-row gap-16 p-8">
-        <div className="left">
-          <p className="text-sm text-gray-500 font-serif ">{data.subtitle}</p>
-          <h1 className="text-4xl font-bold font-mono">{data.title}</h1>
-        </div>
-        <div className="bg-themeYellow icon flex items-center justify-center">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 4,
+          padding: 2,
+          zIndex: 1,
+          color: "white",
+        }}
+      >
+        <Box>
+          <Typography variant="body2" color="gray" sx={{ fontFamily: "serif" }}>
+            {data.subtitle}
+          </Typography>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: "bold", fontFamily: "monospace" }}
+          >
+            {data.title}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            backgroundColor: "#ff8c00",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 1,
+            borderRadius: "50%",
+          }}
+        >
           {data.icon}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

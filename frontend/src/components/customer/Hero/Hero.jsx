@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Box, Typography, Container } from "@mui/material";
 
 const Hero = ({ type }) => {
   // Define data for each type
@@ -64,29 +65,65 @@ const Hero = ({ type }) => {
   const data = types[type] || defaultData;
 
   return (
-    <div className="relative">
+    <Box sx={{ position: "relative" }}>
       {/* Background Image */}
-      <div className="relative w-full h-[600px]">
-        <img
-          src={data.image}
-          alt={data.subtitle}
-          className="w-full h-full object-cover"
+      <Box
+        sx={{
+          width: "100%",
+          height: 600,
+          backgroundImage: `url(${data.image})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          position: "relative",
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "black",
+            opacity: 0.5,
+          }}
         />
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-      </div>
+      </Box>
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black opacity-30"></div>
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.3)",
+        }}
+      />
+
       {/* Text Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center space-y-4">
-        <p className="text-white font-sans">
-          Home &gt; <span className="font-semibold">{data.subtitle}</span>
-        </p>
-        <h1 className="text-5xl font-bold font-serif text-white">
+      <Container
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          textAlign: "center",
+          color: "white",
+        }}
+      >
+        <Typography variant="body1" sx={{ fontFamily: "sans-serif" }}>
+          Home &gt; <span style={{ fontWeight: "bold" }}>{data.subtitle}</span>
+        </Typography>
+        <Typography
+          variant="h1"
+          sx={{ fontFamily: "serif", fontWeight: "bold", fontSize: "3rem" }}
+        >
           {data.title}
-        </h1>
-      </div>
-    </div>
+        </Typography>
+      </Container>
+    </Box>
   );
 };
 

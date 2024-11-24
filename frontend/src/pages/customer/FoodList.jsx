@@ -28,7 +28,7 @@ const FoodList = () => {
   const [filteredFoods, setFilteredFoods] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [priceRange, setPriceRange] = useState([0, 200]);
   const [selectedRating, setSelectedRating] = useState(0);
   const [page, setPage] = useState(1); // Current page for infinite scrolling
   const [hasMore, setHasMore] = useState(true); // Tracks if there are more foods
@@ -177,7 +177,7 @@ const FoodList = () => {
               onChange={(e, newValue) => setPriceRange(newValue)}
               valueLabelDisplay="auto"
               min={0}
-              max={1000}
+              max={200}
             />
           </Box>
 
