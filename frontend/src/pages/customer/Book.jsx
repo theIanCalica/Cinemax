@@ -20,12 +20,20 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
-import { formatDate, notifyError } from "../../Utils/helpers";
+import {
+  formatDate,
+  getUser,
+  notifyError,
+  notifySuccess,
+} from "../../Utils/helpers";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Book = () => {
   const location = useLocation();
   const { movie } = location.state || {}; // Retrieve the passed movie object
-
+  const user = getUser();
+  const navigate = useNavigate();
   const totalRows = 10; // Total rows of seats
   const seatsPerRow = 10; // Seats per row
   const [selectedSeats, setSelectedSeats] = useState([]);
@@ -38,8 +46,15 @@ const Book = () => {
   const [timesByDate, setTimesByDate] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCinema, setSelectedCinema] = useState(""); // Cinema selection state
+  const [availableSeats, setAvailableSeats] = useState([]);
+  const [selectedShowtime, setSelectedShowtime] = useState(null);
 
   const handleSeatClick = (seatNumber) => {
+    if (!availableSeats.includes(seatNumber)) {
+      notifyError("This seat is not available.");
+      return;
+    }
+
     if (selectedSeats.includes(seatNumber)) {
       setSelectedSeats(selectedSeats.filter((seat) => seat !== seatNumber));
     } else {
@@ -59,9 +74,17 @@ const Book = () => {
     setError("");
   };
 
-  const handleTimeChange = (event) => setSelectedTime(event.target.value);
+  const handleTimeChange = (event) => {
+    const selected = event.target.value;
+    setSelectedTime(selected);
 
-  const handleSubmit = () => {
+    const key = `${selectedDate}_${selected}`;
+    setSelectedSeats([]); // Clear selected seats
+    setAvailableSeats(availableSeats[key] || []); // Update available seats for the selected date and time
+  };
+  const handleSubmit = async () => {
+    const userId = user._id;
+
     if (!selectedDate) {
       notifyError("Please select a date.");
       return;
@@ -78,28 +101,82 @@ const Book = () => {
     }
 
     setError("");
-    alert(
-      `Booking confirmed for ${ticketCount} tickets on ${selectedDate} at ${selectedTime}!`
-    );
+    // console.log("Selected date: ", selectedDate);
+    // console.log("Selected time: ", selectedTime);
+    // console.log("Selected seat: ", selectedSeats);
+    // console.log("# of tickets: ", ticketCount);
+    // console.log("Selected Cinema: ", selectedCinema);
+    // console.log("Selected Showtime: ", selectedShowtime);
+
+    const data = {
+      selectedShowtime,
+      selectedCinema,
+      selectedDate,
+      selectedTime,
+      selectedSeats,
+      ticketCount,
+      userId,
+    };
+
+    // console.log(data);
+
+    Swal.fire({
+      title: "Choose Payment Method",
+      html: `
+        <select id="payment-method" class="swal2-input">
+          <option value="" disabled selected>Select a payment method</option>
+          <option value="cash">Cash</option>
+          <option value="credit_card">Credit Card</option>
+        </select>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      preConfirm: () => {
+        const paymentMethod = document.getElementById("payment-method").value;
+        if (!paymentMethod) {
+          Swal.showValidationMessage("Please select a payment method.");
+          return null;
+        }
+        return paymentMethod;
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const paymentMethod = result.value;
+        if (paymentMethod === "cash") {
+          await client
+            .post("/bookings/", data)
+            .then((response) => {
+              if (response.status === 201) {
+                notifySuccess("Thank you! Your booking is confirmed.");
+                navigate("/my-bookings");
+              }
+            })
+            .catch((error) => {
+              notifyError("Something went wrong, please try again");
+            });
+        } else {
+          console.log("Payment method is credit card");
+        }
+      }
+    });
   };
 
   const handleCinemaChange = async (event) => {
     const selectedCinema = event.target.value;
-    console.log(selectedCinema);
     setSelectedCinema(selectedCinema);
 
     try {
       const response = await client.get(`/showtimes/${movie._id}`, {
-        params: { theater: selectedCinema }, // Use `params` for query parameters
+        params: { theater: selectedCinema },
       });
 
       const showtimeData = response.data.showtime;
       const dates = [];
       const timesByDate = {};
-      const availableTimesByDate = {};
+      const seatsByDateAndTime = {};
 
-      showtimeData.forEach(({ showtimes, availableSeats }) => {
-        showtimes.forEach(({ date, times }, idx) => {
+      showtimeData.forEach(({ showtimes }) => {
+        showtimes.forEach(({ date, times }) => {
           const formattedDate = formatDate(
             new Date(date).toISOString().split("T")[0]
           );
@@ -108,21 +185,19 @@ const Book = () => {
             dates.push(formattedDate);
           }
 
-          // Filter times to only include those with available seats
-          const availableTimes = times.filter((timeSlot, index) => {
-            return availableSeats[index] > 0; // Only include time slots with available seats
-          });
+          timesByDate[formattedDate] = times.map(({ time }) => time);
 
-          timesByDate[formattedDate] = availableTimes.map(
-            (timeSlot) => timeSlot.time
-          );
-          availableTimesByDate[formattedDate] = availableTimes;
+          times.forEach(({ time, availableSeats }) => {
+            const key = `${formattedDate}_${time}`;
+            seatsByDateAndTime[key] = availableSeats;
+          });
         });
       });
 
       setAvailableDates(dates);
-      setTimesByDate(timesByDate); // Update the timesByDate state
-      setAvailableTimes(availableTimesByDate[selectedDate] || []); // Set available times for selected date
+      setTimesByDate(timesByDate);
+      setAvailableSeats(seatsByDateAndTime);
+      setSelectedShowtime(showtimeData[0]._id);
     } catch (error) {
       console.error("Error fetching showtimes:", error);
     }

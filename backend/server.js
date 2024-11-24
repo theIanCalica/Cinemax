@@ -18,6 +18,7 @@ const authRoutes = require("./routes/AuthRoutes");
 const CartRoutes = require("./routes/CartRoutes");
 const OrderRoutes = require("./routes/OrderRoutes");
 const ShowtimeRoutes = require("./routes/ShowtimeRoutes");
+const BookingRoutes = require("./routes/BookingRoutes");
 
 // Configure CORS options
 const corsOptions = {
@@ -48,6 +49,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/carts", CartRoutes);
 app.use("/api/v1/orders", OrderRoutes);
 app.use("/api/v1/showtimes", ShowtimeRoutes);
+app.use("/api/v1/bookings", BookingRoutes);
 
 mongoose
   .connect(process.env.MONG_URL)

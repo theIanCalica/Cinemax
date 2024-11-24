@@ -55,7 +55,6 @@ exports.googleLogin = async (req, res) => {
 exports.UpdateFcmToken = async (req, res) => {
   try {
     const { _id, token } = req.body;
-    console.log(req.body);
     // Validate inputs
     if (!_id || !token) {
       return res

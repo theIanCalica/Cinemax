@@ -32,7 +32,17 @@ const sendEmail = (to, subject, text, attachments = []) => {
 };
 
 const sendEmailOrder = (to, subject, html) => {
-  console.log(to);
+  const mailOptions = {
+    from: "cinemax.inc.manila@gmail.com",
+    to: to,
+    subject: subject,
+    html: html,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+
+const sendEmailBooking = (to, subject, html) => {
   const mailOptions = {
     from: "cinemax.inc.manila@gmail.com",
     to: to,
@@ -46,4 +56,5 @@ const sendEmailOrder = (to, subject, html) => {
 module.exports = {
   sendEmail,
   sendEmailOrder,
+  sendEmailBooking,
 };
