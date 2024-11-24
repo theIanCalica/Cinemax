@@ -3,6 +3,9 @@ const router = express.Router();
 const authenticateTokenAndUser = require("../middleware/Auth");
 const BookingController = require("../Controllers/BookingController");
 
+// Count all bookings for admin
+router.get("/count", authenticateTokenAndUser, BookingController.countBookings);
+
 // Get all bookings for admin
 router.get("/", authenticateTokenAndUser, BookingController.getBookings);
 
@@ -19,9 +22,6 @@ router.get(
   authenticateTokenAndUser,
   BookingController.getSingleBooking
 );
-
-// Count all bookings for admin
-router.get("/count", authenticateTokenAndUser, BookingController.countBookings);
 
 // Create a booking which is for user
 

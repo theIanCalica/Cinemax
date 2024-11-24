@@ -34,6 +34,7 @@ exports.createMovie = async (req, res) => {
     genre,
     title,
     description,
+    price,
     release_date,
     duration,
     mainCast,
@@ -43,7 +44,7 @@ exports.createMovie = async (req, res) => {
     writer,
     trailer,
   } = req.body;
-
+  console.log(req.body);
   // Validate required fields
   if (
     !Array.isArray(genre) || // Ensure genre is an array
@@ -103,6 +104,7 @@ exports.createMovie = async (req, res) => {
     const newMovie = new Movie({
       genre: Array.isArray(genre) ? genre : JSON.parse(genre), // Assuming genre is sent as a JSON string
       title,
+      price,
       description,
       release_date: new Date(release_date),
       duration,

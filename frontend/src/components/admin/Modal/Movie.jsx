@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { getBorderColor } from "../../../Utils/helpers";
 import Select from "react-select";
-import axios from "axios";
 import {
   TextField,
   Button,
@@ -63,19 +62,24 @@ const MovieModal = ({
     if (isEditing && movieToEdit) {
       reset({
         title: movieToEdit.title,
-        producer: movieToEdit.producer || "",
-        writer: movieToEdit.writer || "",
-        director: movieToEdit.director || "",
+        description: movieToEdit.description || "",
+        price: movieToEdit.price || 0,
+        director: movieToEdit.directorName || "",
+        producer: movieToEdit.producerName || "",
+        writer: movieToEdit.writerName || "",
         mainCast: movieToEdit.mainCast || "",
         release_date: movieToEdit.release_date || null,
         duration: movieToEdit.duration || "",
         rating: movieToEdit.rating || "",
+        trailer: movieToEdit.trailer || "",
       });
     } else {
       reset({
         title: "",
         producer: "",
         writer: "",
+        description: "",
+        price: "",
         director: "",
         mainCast: "",
         release_date: null,
@@ -95,8 +99,8 @@ const MovieModal = ({
     // Append regular fields
     formData.append("title", data.title);
     formData.append("description", data.description);
+    formData.append("price", data.price);
     formData.append("trailer", data.trailer);
-    formData.append("description", data.description);
     formData.append("producer", data.producer);
     formData.append("writer", data.writer);
     formData.append("director", data.director);
@@ -158,7 +162,7 @@ const MovieModal = ({
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <Controller
                 name="genre"
                 control={control}
@@ -186,6 +190,8 @@ const MovieModal = ({
                       control: (base) => ({
                         ...base,
                         borderColor: errors.genre ? "red" : base.borderColor,
+                        height: "56px", // Match MUI's default TextField height
+                        minHeight: "56px",
                       }),
                       menu: (base) => ({
                         ...base,
@@ -200,6 +206,21 @@ const MovieModal = ({
                   {errors.genre.message}
                 </Typography>
               )}
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Price"
+                fullWidth
+                variant="outlined"
+                type="number"
+                {...register("price", {
+                  required: "Price is required",
+                  min: { value: 0, message: "Price must be a positive value" },
+                })}
+                error={!!errors.price}
+                helperText={errors.price?.message}
+                inputProps={{ step: "0.01" }} // Allows decimals for currency
+              />
             </Grid>
 
             {[
