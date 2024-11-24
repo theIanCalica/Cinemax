@@ -170,3 +170,37 @@ exports.deleteMovieById = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
+exports.deleteMoviePic = async (req, res) => {
+  try {
+    const { publicId } = req.body;
+    const { movieId } = req.params;
+
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({ msg: "Movie not found" });
+    }
+
+    // Find the image by public_id in the images array
+    const imageIndex = movie.images.findIndex(
+      (img) => img.public_id === publicId
+    );
+    if (imageIndex === -1) {
+      return res.status(404).json({ msg: "Image not found" });
+    }
+
+    await cloudinary.uploader.destroy(publicId);
+
+    // Remove the image from the movie's images array
+    movie.images.splice(imageIndex, 1);
+
+    // Save the updated movie document
+    await movie.save();
+
+    // Send success response
+    res.status(200).json({ msg: "Image deleted successfully" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");
+  }
+};

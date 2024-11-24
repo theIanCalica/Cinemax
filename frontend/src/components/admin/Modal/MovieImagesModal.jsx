@@ -6,31 +6,30 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import client from "../../../Utils/client";
-import { notifySuccess } from "../../../Utils/helpers.js";
+import { notifyError, notifySuccess } from "../../../Utils/helpers";
 
-const FoodImages = ({ food, onClose }) => {
-  const [images, setImages] = useState(food?.images || []);
-  const handleDelete = async (public_id, foodId) => {
-    console.log(public_id);
-    console.log(foodId);
-    client
-      .delete(`/foods/deletePic/${foodId}`, {
+const MovieImagesModal = ({ movie, onClose, refresh }) => {
+  const [images, setImages] = useState(movie?.images || []);
+
+  const handleDelete = async (publicId, movieId) => {
+    await client
+      .delete(`/movies/delete-pic/${movieId}`, {
         data: {
-          publicId: public_id,
+          publicId: publicId,
         },
       })
       .then((response) => {
-        if (response.status) {
-          notifySuccess("Successfully deleted");
+        notifySuccess("Successfully deleted");
+        // Remove the image from the local images array
+        const updatedImages = images.filter(
+          (image) => image.public_id !== publicId
+        );
+        setImages(updatedImages);
 
-          // Remove the image from the local images array
-          const updatedImages = images.filter(
-            (image) => image.public_id !== public_id
-          );
-          setImages(updatedImages);
-
-          // refresh();
-        }
+        refresh();
+      })
+      .catch((error) => {
+        notifyError("Something went wrong, please try again");
       });
   };
 
@@ -50,7 +49,7 @@ const FoodImages = ({ food, onClose }) => {
         }}
       >
         <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-          {food.name + " " + "images"}
+          {movie.title + " " + "images"}
         </Typography>
 
         {/* Use MUI Grid to make the images responsive */}
@@ -75,7 +74,7 @@ const FoodImages = ({ food, onClose }) => {
                     }}
                   />
                   <IconButton
-                    onClick={() => handleDelete(image.public_id, food._id)}
+                    onClick={() => handleDelete(image.public_id, movie._id)}
                     sx={{
                       position: "absolute",
                       top: 4,
@@ -112,4 +111,4 @@ const FoodImages = ({ food, onClose }) => {
   );
 };
 
-export default FoodImages;
+export default MovieImagesModal;

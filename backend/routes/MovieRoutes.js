@@ -27,4 +27,10 @@ router.delete(
   MovieController.deleteMovieById
 );
 
+// Delete a pic based on movie Id
+router.delete(
+  "/delete-pic/:movieId",
+  authenticateTokenAndUser,
+  MovieController.deleteMoviePic
+);
 module.exports = router;

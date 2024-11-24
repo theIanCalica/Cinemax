@@ -7,13 +7,15 @@ import MUIDataTable from "mui-datatables";
 import MovieModal from "../../components/admin/Modal/Movie";
 import { notifyError, notifySuccess, formatDate } from "../../Utils/helpers";
 import client from "../../Utils/client";
-
+import MovieImagesModal from "../../components/admin/Modal/MovieImagesModal";
 const Movie = () => {
   const [movies, setMovies] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMovie, setCurrentMovie] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [isImagesModalOpen, setIsImagesModalOpen] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
   const fetchMovies = () => {
     client.get(`/movies`).then((response) => {
@@ -31,6 +33,16 @@ const Movie = () => {
     setCurrentMovie(null);
     setIsEditing(false);
     setIsModalOpen(false);
+  };
+
+  const openImagesModal = (movie) => {
+    setSelectedMovie(movie);
+    setIsImagesModalOpen(true);
+  };
+
+  const closeImagesModal = () => {
+    setIsImagesModalOpen(false);
+    setSelectedMovie(null);
   };
 
   const handleDelete = (movieID) => {
@@ -109,19 +121,29 @@ const Movie = () => {
     { name: "producerName", label: "Producer Name" },
     { name: "writerName", label: "Writer Name" },
     {
-      name: "createdAt",
-      label: "Created",
+      name: "images",
+      label: "Image",
       options: {
-        customBodyRender: (value) => formatDate(value),
+        customBodyRender: (images, tableMeta) => {
+          const movie = movies[tableMeta.rowIndex];
+          const imageUrl = images && images.length > 0 ? images[0].url : null;
+
+          return imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={movie.title || "Movie Image"}
+              height={100}
+              width={100}
+              className="cursor-pointer"
+              onClick={() => openImagesModal(movie)}
+            />
+          ) : (
+            "No image"
+          );
+        },
       },
     },
-    {
-      name: "updatedAt",
-      label: "Updated",
-      options: {
-        customBodyRender: (value) => formatDate(value),
-      },
-    },
+
     {
       name: "actions",
       label: "Actions",
@@ -207,6 +229,14 @@ const Movie = () => {
           onClose={closeModal}
           notifySuccess={notifySuccess}
           notifyError={notifyError}
+          refresh={fetchMovies}
+        />
+      )}
+
+      {isImagesModalOpen && selectedMovie && (
+        <MovieImagesModal
+          movie={selectedMovie}
+          onClose={closeImagesModal}
           refresh={fetchMovies}
         />
       )}

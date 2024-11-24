@@ -21,7 +21,14 @@ router.post("/", authenticateTokenAndUser, FoodController.createFood);
 // Update a food by ID
 router.put("/:id", authenticateTokenAndUser, FoodController.updateFoodById);
 
-// Delet food by ID
+// Delete food by ID
 router.delete("/:id", authenticateTokenAndUser, FoodController.deleteFoodById);
+
+// Delete single pic based on public_id and foodId
+router.delete(
+  "/deletePic/:foodId",
+  authenticateTokenAndUser,
+  FoodController.DeleteSinglePic
+);
 
 module.exports = router;
